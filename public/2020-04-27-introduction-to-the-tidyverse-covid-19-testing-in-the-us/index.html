@@ -79,7 +79,7 @@
     <time datetime="2020-04-27 00:00:00 &#43;0000 UTC">2020-04-27</time> |
 </span>
 <span>
-    <span>406 words</span> |
+    <span>302 words</span> |
 </span>
 <span>
     
@@ -100,147 +100,36 @@
 
 </div>
 <p><br><br> First, let’s load the packages we’ll use for this analysis. Calling <code>library(tidyverse)</code> will load all the functions we’ll need today, except we must also import <code>magrittr</code>, which provides us with the pipe (<code>%&gt;%</code>) operator for chaining syntax.</p>
-<pre><code>## ── Attaching packages ─────────────────────────────────────────────── tidyverse 1.3.0 ──</code></pre>
-<pre><code>## ✓ ggplot2 3.3.0     ✓ purrr   0.3.4
-## ✓ tibble  3.0.0     ✓ dplyr   0.8.5
-## ✓ tidyr   1.0.2     ✓ stringr 1.4.0
-## ✓ readr   1.3.1     ✓ forcats 0.5.0</code></pre>
-<pre><code>## Warning: package &#39;tibble&#39; was built under R version 3.6.2</code></pre>
-<pre><code>## Warning: package &#39;purrr&#39; was built under R version 3.6.2</code></pre>
-<pre><code>## ── Conflicts ────────────────────────────────────────────────── tidyverse_conflicts() ──
-## x dplyr::filter() masks stats::filter()
-## x dplyr::lag()    masks stats::lag()</code></pre>
-<pre><code>## 
-## Attaching package: &#39;magrittr&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:purrr&#39;:
-## 
-##     set_names</code></pre>
-<pre><code>## The following object is masked from &#39;package:tidyr&#39;:
-## 
-##     extract</code></pre>
-<pre><code>## Warning: package &#39;covid19us&#39; was built under R version 3.6.2</code></pre>
+<pre class="r"><code>library(tidyverse)  # data science toolkit
+library(magrittr)   # corresponding operators
+library(covid19us)  # scrapes https://covidtracking.com/ API
+library(ggsci)      # custom color palettes
+library(ggpubr)     # publication-ready plots
+library(knitr)      # create docs of text + code</code></pre>
 <p><br><br> Then, let’s load the complete longitudinal dataset and select the variables that will be relevant for our analysis. Additionally, we’re going to pull a csv file from <a href="https://worldpopulationreview.com/" class="uri">https://worldpopulationreview.com/</a> that contains state-abbreviation pairs (e.g. CA, California) that we’ll use later to ‘beautify’ our plots. Lastly, from that same website I have downloaded the (projected) 2020 census estimates, which we’ll read in and use to standardize our data to e.g. tests per 100,000 residents.</p>
 <pre class="r"><code>states.data &lt;- get_states_daily() %&gt;%
     select(c(&#39;state&#39;,&#39;date&#39;,&#39;positive&#39;,&#39;negative&#39;,&#39;death&#39;,&#39;total_test_results&#39;))
 
-states.data %&gt;%
-    dplyr::slice(1:10) %&gt;%
-    knitr::kable(results = &#39;html&#39;)</code></pre>
-<table>
-<thead>
-<tr class="header">
-<th align="left">state</th>
-<th align="left">date</th>
-<th align="right">positive</th>
-<th align="right">negative</th>
-<th align="right">death</th>
-<th align="right">total_test_results</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">AK</td>
-<td align="left">2020-04-26</td>
-<td align="right">341</td>
-<td align="right">15836</td>
-<td align="right">9</td>
-<td align="right">16177</td>
-</tr>
-<tr class="even">
-<td align="left">AL</td>
-<td align="left">2020-04-26</td>
-<td align="right">6270</td>
-<td align="right">67281</td>
-<td align="right">216</td>
-<td align="right">73551</td>
-</tr>
-<tr class="odd">
-<td align="left">AR</td>
-<td align="left">2020-04-26</td>
-<td align="right">2941</td>
-<td align="right">36528</td>
-<td align="right">49</td>
-<td align="right">39469</td>
-</tr>
-<tr class="even">
-<td align="left">AS</td>
-<td align="left">2020-04-26</td>
-<td align="right">0</td>
-<td align="right">3</td>
-<td align="right">0</td>
-<td align="right">3</td>
-</tr>
-<tr class="odd">
-<td align="left">AZ</td>
-<td align="left">2020-04-26</td>
-<td align="right">6526</td>
-<td align="right">58285</td>
-<td align="right">275</td>
-<td align="right">64811</td>
-</tr>
-<tr class="even">
-<td align="left">CA</td>
-<td align="left">2020-04-26</td>
-<td align="right">42164</td>
-<td align="right">483920</td>
-<td align="right">1710</td>
-<td align="right">526084</td>
-</tr>
-<tr class="odd">
-<td align="left">CO</td>
-<td align="left">2020-04-26</td>
-<td align="right">12968</td>
-<td align="right">46823</td>
-<td align="right">672</td>
-<td align="right">59791</td>
-</tr>
-<tr class="even">
-<td align="left">CT</td>
-<td align="left">2020-04-26</td>
-<td align="right">25269</td>
-<td align="right">54542</td>
-<td align="right">1924</td>
-<td align="right">79811</td>
-</tr>
-<tr class="odd">
-<td align="left">DC</td>
-<td align="left">2020-04-26</td>
-<td align="right">3841</td>
-<td align="right">14227</td>
-<td align="right">178</td>
-<td align="right">18068</td>
-</tr>
-<tr class="even">
-<td align="left">DE</td>
-<td align="left">2020-04-26</td>
-<td align="right">4034</td>
-<td align="right">15215</td>
-<td align="right">120</td>
-<td align="right">19249</td>
-</tr>
-</tbody>
-</table>
-<pre class="r"><code>states.abbrev &lt;- read_csv(&#39;https://worldpopulationreview.com/static/states/abbr-name-list.csv&#39;)</code></pre>
-<pre><code>## Parsed with column specification:
-## cols(
-##   name = col_character(),
-##   abbreviation = col_character()
-## )</code></pre>
-<pre class="r"><code>states.population &lt;- &#39;../data/covid-tidyverse/covid.us.state.population.csv&#39; %&gt;%
+states.data</code></pre>
+<pre><code>## # A tibble: 2,937 x 6
+##    state date       positive negative death total_test_results
+##    &lt;chr&gt; &lt;date&gt;        &lt;int&gt;    &lt;int&gt; &lt;int&gt;              &lt;int&gt;
+##  1 AK    2020-04-26      341    15836     9              16177
+##  2 AL    2020-04-26     6270    67281   216              73551
+##  3 AR    2020-04-26     2941    36528    49              39469
+##  4 AS    2020-04-26        0        3     0                  3
+##  5 AZ    2020-04-26     6526    58285   275              64811
+##  6 CA    2020-04-26    42164   483920  1710             526084
+##  7 CO    2020-04-26    12968    46823   672              59791
+##  8 CT    2020-04-26    25269    54542  1924              79811
+##  9 DC    2020-04-26     3841    14227   178              18068
+## 10 DE    2020-04-26     4034    15215   120              19249
+## # … with 2,927 more rows</code></pre>
+<pre class="r"><code>states.abbrev &lt;- read_csv(&#39;https://worldpopulationreview.com/static/states/abbr-name-list.csv&#39;)
+
+states.population &lt;- &#39;../data/covid-tidyverse/covid.us.state.population.csv&#39; %&gt;%
     read_csv() %&gt;%
     select(c(&#39;rank&#39;,&#39;State&#39;,&#39;Pop&#39;))</code></pre>
-<pre><code>## Parsed with column specification:
-## cols(
-##   rank = col_double(),
-##   State = col_character(),
-##   Pop = col_double(),
-##   Growth = col_double(),
-##   Pop2018 = col_double(),
-##   Pop2010 = col_double(),
-##   growthSince2010 = col_double(),
-##   Percent = col_double(),
-##   density = col_double()
-## )</code></pre>
 
     </div>
 </article>

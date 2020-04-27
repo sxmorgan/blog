@@ -17,8 +17,11 @@ We're going to be using data from the COVID Tracking Project in the US. The API 
 
 <br><br>
 First, let's load the packages we'll use for this analysis. Calling `library(tidyverse)` will load all the functions we'll need today, except we must also import `magrittr`, which provides us with the pipe (`%>%`) operator for chaining syntax.
+```{r knitr, include = FALSE}
+knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+```
 
-```{r libraries, echo = FALSE}
+```{r libraries}
 library(tidyverse)  # data science toolkit
 library(magrittr)   # corresponding operators
 library(covid19us)  # scrapes https://covidtracking.com/ API
@@ -30,14 +33,14 @@ library(knitr)      # create docs of text + code
 <br><br>
 Then, let's load the complete longitudinal dataset and select the variables that will be relevant for our analysis. Additionally, we're going to pull a csv file from https://worldpopulationreview.com/ that contains state-abbreviation pairs (e.g. CA, California) that we'll use later to 'beautify' our plots. Lastly, from that same website I have downloaded the (projected) 2020 census estimates, which we'll read in and use to standardize our data to e.g. tests per 100,000 residents.
 
-```{r load.data}
+```{r load.data.1}
 states.data <- get_states_daily() %>%
     select(c('state','date','positive','negative','death','total_test_results'))
 
-states.data %>%
-    dplyr::slice(1:10) %>%
-    knitr::kable(results = 'html')
+states.data
+```
 
+```{r load.data.2}
 states.abbrev <- read_csv('https://worldpopulationreview.com/static/states/abbr-name-list.csv')
 
 states.population <- '../data/covid-tidyverse/covid.us.state.population.csv' %>%
