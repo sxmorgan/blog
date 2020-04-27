@@ -25,13 +25,10 @@
  Import Calling library(tidyverse) will load all the functions we’ll need today, except we must also import magrittr, which provides us with the pipe (%&gt;%) operator for chaining syntax." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="/tidyverse-covid-19/" />
-<meta property="og:image" content="/img/og.png"/>
 <meta property="article:published_time" content="2020-04-27T00:00:00+00:00" />
 <meta property="article:modified_time" content="2020-04-27T00:00:00+00:00" />
 
-<meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="/img/og.png"/>
-
+<meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Introduction to the Tidyverse"/>
 <meta name="twitter:description" content="Import Munge Plot   We’re going to be using data from the COVID Tracking Project in the US. The API is easily accessible, and a woman already created a wrapper package for R to make accessing historical and current statistics incredibly simple.
  Import Calling library(tidyverse) will load all the functions we’ll need today, except we must also import magrittr, which provides us with the pipe (%&gt;%) operator for chaining syntax."/>
@@ -82,7 +79,7 @@
     <time datetime="2020-04-27 00:00:00 &#43;0000 UTC">2020-04-27</time> |
 </span>
 <span>
-    <span>636 words</span> |
+    <span>757 words</span> |
 </span>
 <span>
     
@@ -178,25 +175,53 @@ states.population</code></pre>
 <div id="munge" class="section level3">
 <h3>Munge</h3>
 <p>To munge is to manipulate raw data. We’ll start by combining the three different datasets we have loaded to look at testing rates among the most populated states.</p>
-<pre class="r"><code>states.data %&gt;%
-    # add the longform name of each state for later plots
+<pre class="r"><code>testing.data &lt;- states.data %&gt;%
+        # add the longform name of each state for later plots
     left_join(states.abbrev, by = c(&#39;state&#39; = &#39;abbreviation&#39;)) %&gt;%
-    # also that we can add the population for calculations
-    left_join(states.population, by = c(&#39;name&#39; = &#39;State&#39;))</code></pre>
-<pre><code>## # A tibble: 2,929 x 9
-##    state date       positive negative death total_test_resu… name   rank     Pop
-##    &lt;chr&gt; &lt;date&gt;        &lt;int&gt;    &lt;int&gt; &lt;int&gt;            &lt;int&gt; &lt;chr&gt; &lt;dbl&gt;   &lt;dbl&gt;
-##  1 AK    2020-04-26      341    15836     9            16177 Alas…    49  7.34e5
-##  2 AL    2020-04-26     6270    67281   216            73551 Alab…    24  4.91e6
-##  3 AR    2020-04-26     2941    36528    49            39469 Arka…    33  3.04e6
-##  4 AS    2020-04-26        0        3     0                3 &lt;NA&gt;     NA NA     
-##  5 AZ    2020-04-26     6526    58285   275            64811 Ariz…    14  7.38e6
-##  6 CA    2020-04-26    42164   483920  1710           526084 Cali…     1  3.99e7
-##  7 CO    2020-04-26    12968    46823   672            59791 Colo…    21  5.85e6
-##  8 CT    2020-04-26    25269    54542  1924            79811 Conn…    29  3.56e6
-##  9 DC    2020-04-26     3841    14227   178            18068 Dist…    NA NA     
-## 10 DE    2020-04-26     4034    15215   120            19249 Dela…    46  9.83e5
+        # also that we can add the population for calculations
+    left_join(states.population, by = c(&#39;name&#39; = &#39;State&#39;))
+
+testing.data %&gt;%
+        # peeking at newly joined variables
+    select(c(&#39;state&#39;,&#39;date&#39;,&#39;name&#39;,&#39;rank&#39;,&#39;Pop&#39;))</code></pre>
+<pre><code>## # A tibble: 2,929 x 5
+##    state date       name                  rank      Pop
+##    &lt;chr&gt; &lt;date&gt;     &lt;chr&gt;                &lt;dbl&gt;    &lt;dbl&gt;
+##  1 AK    2020-04-26 Alaska                  49   734002
+##  2 AL    2020-04-26 Alabama                 24  4908621
+##  3 AR    2020-04-26 Arkansas                33  3038999
+##  4 AS    2020-04-26 &lt;NA&gt;                    NA       NA
+##  5 AZ    2020-04-26 Arizona                 14  7378494
+##  6 CA    2020-04-26 California               1 39937489
+##  7 CO    2020-04-26 Colorado                21  5845526
+##  8 CT    2020-04-26 Connecticut             29  3563077
+##  9 DC    2020-04-26 District Of Columbia    NA       NA
+## 10 DE    2020-04-26 Delaware                46   982895
 ## # … with 2,919 more rows</code></pre>
+<p>Then we’ll use the lubridate package within the tidyverse to quickly split the date into month # and day # components so we can look at data from the 9th of March onward.</p>
+<pre class="r"><code>testing.data %&lt;&gt;%
+    mutate(month = lubridate::month(date)) %&gt;%
+    mutate(day = lubridate::day(date)) %&gt;%
+    # filter for data after 9 march
+    filter(month &gt;= 3) %&gt;%
+    filter(day &gt;= 9)
+
+testing.data %&gt;%
+    select(c(&#39;state&#39;,&#39;date&#39;,&#39;total_test_results&#39;,&#39;month&#39;,&#39;day&#39;))</code></pre>
+<pre><code>## # A tibble: 2,258 x 5
+##    state date       total_test_results month   day
+##    &lt;chr&gt; &lt;date&gt;                  &lt;int&gt; &lt;dbl&gt; &lt;int&gt;
+##  1 AK    2020-04-26              16177     4    26
+##  2 AL    2020-04-26              73551     4    26
+##  3 AR    2020-04-26              39469     4    26
+##  4 AS    2020-04-26                  3     4    26
+##  5 AZ    2020-04-26              64811     4    26
+##  6 CA    2020-04-26             526084     4    26
+##  7 CO    2020-04-26              59791     4    26
+##  8 CT    2020-04-26              79811     4    26
+##  9 DC    2020-04-26              18068     4    26
+## 10 DE    2020-04-26              19249     4    26
+## # … with 2,248 more rows</code></pre>
 </div>
 <div id="plot" class="section level3">
 <h3>Plot</h3>
@@ -236,10 +261,6 @@ states.population</code></pre>
             <a href="/about/">About</a>
         </li>
         
-        <li>
-            <a href="/post/">Posts</a>
-        </li>
-        
     </ul>
 </div>
 <div id="widget-tags">
@@ -258,10 +279,6 @@ states.population</code></pre>
         
         <li>
             <a href="https://github.com/sxmorgan" target="_blank"><span>GitHub</span></a>
-        </li>
-        
-        <li>
-            <a href="https://twitter.com/sxmorgan_" target="_blank"><span>Twitter</span></a>
         </li>
         
     </ul>

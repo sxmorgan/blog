@@ -64,13 +64,30 @@ states.population
 To munge is to manipulate raw data. We'll start by combining the three different datasets we have loaded to look at testing rates among the most populated states.
 
 ```{r munge.1}
-states.data %>%
-    # add the longform name of each state for later plots
+testing.data <- states.data %>%
+        # add the longform name of each state for later plots
     left_join(states.abbrev, by = c('state' = 'abbreviation')) %>%
-    # also that we can add the population for calculations
+        # also that we can add the population for calculations
     left_join(states.population, by = c('name' = 'State'))
+
+testing.data %>%
+        # peeking at newly joined variables
+    select(c('state','date','name','rank','Pop'))
 ```
 
+Then we'll use the lubridate package within the tidyverse to quickly split the date into month # and day # components so we can look at data from the 9th of March onward. 
+
+```{r munge.2}
+testing.data %<>%
+    mutate(month = lubridate::month(date)) %>%
+    mutate(day = lubridate::day(date)) %>%
+    # filter for data after 9 march
+    filter(month >= 3) %>%
+    filter(day >= 9)
+
+testing.data %>%
+    select(c('state','date','total_test_results','month','day'))
+```
 
 
 ### Plot
