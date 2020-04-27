@@ -18,14 +18,15 @@ description: '...'
 <img src="../data/covid-tidyverse/covidtracking.png" />
 
 </div>
-<p><br><br> First, let’s load the packages we’ll use for this analysis. Calling <code>library(tidyverse)</code> will load all the functions we’ll need today, except we must also import <code>magrittr</code>, which provides us with the pipe (<code>%&gt;%</code>) operator for chaining syntax.</p>
+<div id="import" class="section level3">
+<h3>Import</h3>
+<p>Calling <code>library(tidyverse)</code> will load all the functions we’ll need today, except we must also import <code>magrittr</code>, which provides us with the pipe (<code>%&gt;%</code>) operator for chaining syntax.</p>
 <pre class="r"><code>library(tidyverse)  # data science toolkit
 library(magrittr)   # corresponding operators
 library(covid19us)  # scrapes https://covidtracking.com/ API
 library(ggsci)      # custom color palettes
-library(ggpubr)     # publication-ready plots
-library(knitr)      # create docs of text + code</code></pre>
-<p><br><br> Then, let’s load the complete longitudinal dataset and select the variables that will be relevant for our analysis. Additionally, we’re going to pull a csv file from <a href="https://worldpopulationreview.com/" class="uri">https://worldpopulationreview.com/</a> that contains state-abbreviation pairs (e.g. CA, California) that we’ll use later to ‘beautify’ our plots. Lastly, from that same website I have downloaded the (projected) 2020 census estimates, which we’ll read in and use to standardize our data to e.g. tests per 100,000 residents.</p>
+library(ggpubr)     # publication-ready plots</code></pre>
+<p><br><br> Then, let’s load the complete longitudinal dataset and select the variables that will be relevant for our analysis.</p>
 <pre class="r"><code>states.data &lt;- get_states_daily() %&gt;%
     select(c(&#39;state&#39;,&#39;date&#39;,&#39;positive&#39;,&#39;negative&#39;,&#39;death&#39;,&#39;total_test_results&#39;))
 
@@ -44,8 +45,55 @@ states.data</code></pre>
 ##  9 DC    2020-04-26     3841    14227   178              18068
 ## 10 DE    2020-04-26     4034    15215   120              19249
 ## # … with 2,927 more rows</code></pre>
+<p>Additionally, we’re going to pull a csv file from <a href="https://worldpopulationreview.com/" class="uri">https://worldpopulationreview.com/</a> that contains state-abbreviation pairs (e.g. CA, California) that we’ll use later to ‘beautify’ our plots.</p>
 <pre class="r"><code>states.abbrev &lt;- read_csv(&#39;https://worldpopulationreview.com/static/states/abbr-name-list.csv&#39;)
 
-states.population &lt;- &#39;../data/covid-tidyverse/covid.us.state.population.csv&#39; %&gt;%
+states.abbrev</code></pre>
+<pre><code>## # A tibble: 51 x 2
+##    name                 abbreviation
+##    &lt;chr&gt;                &lt;chr&gt;       
+##  1 Alabama              AL          
+##  2 Alaska               AK          
+##  3 Arizona              AZ          
+##  4 Arkansas             AR          
+##  5 California           CA          
+##  6 Colorado             CO          
+##  7 Connecticut          CT          
+##  8 Delaware             DE          
+##  9 District Of Columbia DC          
+## 10 Florida              FL          
+## # … with 41 more rows</code></pre>
+<p>Lastly, from that same website I have downloaded the (projected) 2020 census estimates, which we’ll read in and use to standardize our data to e.g. tests per 100,000 residents.</p>
+<pre class="r"><code>states.population &lt;- &#39;../data/covid-tidyverse/covid.us.state.population.csv&#39; %&gt;%
     read_csv() %&gt;%
-    select(c(&#39;rank&#39;,&#39;State&#39;,&#39;Pop&#39;))</code></pre>
+    select(c(&#39;rank&#39;,&#39;State&#39;,&#39;Pop&#39;))
+
+states.population</code></pre>
+<pre><code>## # A tibble: 52 x 3
+##     rank State               Pop
+##    &lt;dbl&gt; &lt;chr&gt;             &lt;dbl&gt;
+##  1     1 California     39937489
+##  2     2 Texas          29472295
+##  3     3 Florida        21992985
+##  4     4 New York       19440469
+##  5     5 Pennsylvania   12820878
+##  6     6 Illinois       12659682
+##  7     7 Ohio           11747694
+##  8     8 Georgia        10736059
+##  9     9 North Carolina 10611862
+## 10    10 Michigan       10045029
+## # … with 42 more rows</code></pre>
+</div>
+<div id="munge" class="section level3">
+<h3>Munge</h3>
+<p>To munge is to manipulate raw data. We’ll start by combining the three different datasets we have loaded.</p>
+<pre class="r"><code>## let&#39;s look at testing rates among the most populated states
+testing.data &lt;- states.data %&gt;%
+    # add the longform name of each state for later plots
+    left_join(states.abbrev, by = c(&#39;state&#39; = &#39;abbreviation&#39;)) %&gt;%
+    # also that we can add the population for calculations
+    left_join(states.population, by = c(&#39;name&#39; = &#39;State&#39;))</code></pre>
+</div>
+<div id="plot" class="section level3">
+<h3>Plot</h3>
+</div>

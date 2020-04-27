@@ -15,8 +15,9 @@ We're going to be using data from the COVID Tracking Project in the US. The API 
 
 ![](../data/covid-tidyverse/covidtracking.png)
 
-<br><br>
-First, let's load the packages we'll use for this analysis. Calling `library(tidyverse)` will load all the functions we'll need today, except we must also import `magrittr`, which provides us with the pipe (`%>%`) operator for chaining syntax.
+### Import
+
+Calling `library(tidyverse)` will load all the functions we'll need today, except we must also import `magrittr`, which provides us with the pipe (`%>%`) operator for chaining syntax.
 ```{r knitr, include = FALSE}
 knitr::opts_chunk$set(message = FALSE, warning = FALSE)
 ```
@@ -27,11 +28,10 @@ library(magrittr)   # corresponding operators
 library(covid19us)  # scrapes https://covidtracking.com/ API
 library(ggsci)      # custom color palettes
 library(ggpubr)     # publication-ready plots
-library(knitr)      # create docs of text + code
 ```
 
 <br><br>
-Then, let's load the complete longitudinal dataset and select the variables that will be relevant for our analysis. Additionally, we're going to pull a csv file from https://worldpopulationreview.com/ that contains state-abbreviation pairs (e.g. CA, California) that we'll use later to 'beautify' our plots. Lastly, from that same website I have downloaded the (projected) 2020 census estimates, which we'll read in and use to standardize our data to e.g. tests per 100,000 residents.
+Then, let's load the complete longitudinal dataset and select the variables that will be relevant for our analysis. 
 
 ```{r load.data.1}
 states.data <- get_states_daily() %>%
@@ -40,10 +40,34 @@ states.data <- get_states_daily() %>%
 states.data
 ```
 
+Additionally, we're going to pull a csv file from https://worldpopulationreview.com/ that contains state-abbreviation pairs (e.g. CA, California) that we'll use later to 'beautify' our plots. 
+
 ```{r load.data.2}
 states.abbrev <- read_csv('https://worldpopulationreview.com/static/states/abbr-name-list.csv')
 
+states.abbrev
+```
+
+Lastly, from that same website I have downloaded the (projected) 2020 census estimates, which we'll read in and use to standardize our data to e.g. tests per 100,000 residents.
+
+```{r load.data.3}
 states.population <- '../data/covid-tidyverse/covid.us.state.population.csv' %>%
     read_csv() %>%
     select(c('rank','State','Pop'))
+
+states.population
 ```
+
+
+### Munge
+To munge is to manipulate raw data. We'll start by combining the three different datasets we have loaded.
+```{r munge.1}
+## let's look at testing rates among the most populated states
+testing.data <- states.data %>%
+    # add the longform name of each state for later plots
+    left_join(states.abbrev, by = c('state' = 'abbreviation')) %>%
+    # also that we can add the population for calculations
+    left_join(states.population, by = c('name' = 'State'))
+```
+
+### Plot
