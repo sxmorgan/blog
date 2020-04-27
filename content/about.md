@@ -3,7 +3,9 @@ title: About
 date: ''
 ---
 
-My name is Morgan and I am a second year computational biology / bioinformatics PhD student at the Experimental and Clinical Research Center in Berlin, Germany. 
+## I'm Morgan
+
+a second year computational biology / bioinformatics PhD student at the Experimental and Clinical Research Center in Berlin, Germany. 
 
 In the next two years I hope to (1) benchmark and advance the statistical methods being widely deployed in microbiome and multi-omics research in order to (2) better illuminate robust and covariate-aware host-microbiome interactions through various clinical collaborations.
 
