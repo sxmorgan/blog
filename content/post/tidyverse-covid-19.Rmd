@@ -1,5 +1,6 @@
 ---
 title: 'Introduction to the Tidyverse'
+subtitle: 'COVID-19 Testing in the US'
 author: Morgan Essex
 date: '2020-04-27'
 slug: tidyverse-covid-19
@@ -10,10 +11,10 @@ categories:
   - R
 tags:
   - tidyverse
-description: 'COVID-19 Testing in the US'
 ---
 
 We're going to be using data from the COVID Tracking Project in the US. The API is easily accessible, and a woman already created a wrapper package for R to make accessing historical and current statistics incredibly simple. 
+<!--more-->
 
 ![](../data/covid-tidyverse/covidtracking.png)
 

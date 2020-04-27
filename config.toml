@@ -18,7 +18,7 @@ paginate = 10
 # googleAnalytics = "UA-000000000-0" # Set your Google Analytics UA here, or comment out to disable
 
 [permalinks]
-  post = "/:filename/" # Custom post links, e.g. "/:year/:month/:title/"
+  post = "/:slug/" # Custom post links, e.g. "/:year/:month/:title/"
 
 [params]
   author = "Morgan Essex" # You can also set author in post front matter individually
