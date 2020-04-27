@@ -122,7 +122,7 @@ library(ggpubr)     # publication-ready plots</code></pre>
     select(c(&#39;state&#39;,&#39;date&#39;,&#39;positive&#39;,&#39;negative&#39;,&#39;death&#39;,&#39;total_test_results&#39;))
 
 states.data</code></pre>
-<pre><code>## # A tibble: 2,937 x 6
+<pre><code>## # A tibble: 2,929 x 6
 ##    state date       positive negative death total_test_results
 ##    &lt;chr&gt; &lt;date&gt;        &lt;int&gt;    &lt;int&gt; &lt;int&gt;              &lt;int&gt;
 ##  1 AK    2020-04-26      341    15836     9              16177
@@ -135,7 +135,7 @@ states.data</code></pre>
 ##  8 CT    2020-04-26    25269    54542  1924              79811
 ##  9 DC    2020-04-26     3841    14227   178              18068
 ## 10 DE    2020-04-26     4034    15215   120              19249
-## # … with 2,927 more rows</code></pre>
+## # … with 2,919 more rows</code></pre>
 <p>Additionally, we’re going to pull a csv file from <a href="https://worldpopulationreview.com/" class="uri">https://worldpopulationreview.com/</a> that contains state-abbreviation pairs (e.g. CA, California) that we’ll use later to ‘beautify’ our plots.</p>
 <pre class="r"><code>states.abbrev &lt;- read_csv(&#39;https://worldpopulationreview.com/static/states/abbr-name-list.csv&#39;)
 
@@ -183,7 +183,7 @@ states.population</code></pre>
     left_join(states.abbrev, by = c(&#39;state&#39; = &#39;abbreviation&#39;)) %&gt;%
     # also that we can add the population for calculations
     left_join(states.population, by = c(&#39;name&#39; = &#39;State&#39;))</code></pre>
-<pre><code>## # A tibble: 2,937 x 9
+<pre><code>## # A tibble: 2,929 x 9
 ##    state date       positive negative death total_test_resu… name   rank     Pop
 ##    &lt;chr&gt; &lt;date&gt;        &lt;int&gt;    &lt;int&gt; &lt;int&gt;            &lt;int&gt; &lt;chr&gt; &lt;dbl&gt;   &lt;dbl&gt;
 ##  1 AK    2020-04-26      341    15836     9            16177 Alas…    49  7.34e5
@@ -196,7 +196,7 @@ states.population</code></pre>
 ##  8 CT    2020-04-26    25269    54542  1924            79811 Conn…    29  3.56e6
 ##  9 DC    2020-04-26     3841    14227   178            18068 Dist…    NA NA     
 ## 10 DE    2020-04-26     4034    15215   120            19249 Dela…    46  9.83e5
-## # … with 2,927 more rows</code></pre>
+## # … with 2,919 more rows</code></pre>
 </div>
 <div id="plot" class="section level3">
 <h3>Plot</h3>

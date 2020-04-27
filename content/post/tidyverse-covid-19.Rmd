@@ -7,8 +7,6 @@ slug: tidyverse-covid-19
 output: 
   blogdown::html_page:
     toc: true
-categories:
-  - R
 tags:
   - tidyverse
 ---
