@@ -1,6 +1,5 @@
 ---
 title: About
-date: ''
 ---
 
 ## I'm Morgan

@@ -5,6 +5,7 @@ hasCJKLanguage = true
 enableEmoji = true
 enableRobotsTXT = true
 disableKinds = ["RSS", "taxonomyTerm"]
+ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
 
 ## Change this two to switch between different language
 ## Now support: en, zh-hans, zh-hant, ja
