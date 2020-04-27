@@ -22,12 +22,12 @@ paginate = 10
 
 [params]
   author = "Morgan Essex" # You can also set author in post front matter individually
-  subTitle = ""
+  # subTitle = ""
 
   # Open Graph & Twitter Card variables
   # You can also set description and images in post front matter individually
-  description = "A minimal hugo theme powered by Primer CSS."
-  images = ["img/og.png"] # This will use the image called og.png in static/img folder
+  # description = "A minimal hugo theme powered by Primer CSS."
+  # images = ["img/og.png"] # This will use the image called og.png in static/img folder
 
   # Posts shown in homepage
   mainSections = ["post"]
@@ -39,8 +39,8 @@ paginate = 10
   scrollTop = true
 
   # License
-  license = "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License (CC BY-NC-SA 4.0)"
-  licenseLink = "http://creativecommons.org/licenses/by-nc-sa/4.0/"
+  # license = "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License (CC BY-NC-SA 4.0)"
+  # licenseLink = "http://creativecommons.org/licenses/by-nc-sa/4.0/"
 
   # Comments
   # utterances, see: https://utteranc.es/
@@ -89,16 +89,8 @@ paginate = 10
     name = "About"
     url = "/about/"
     weight = 2
-  [[menu.nav]]
-    name = "Posts"
-    url = "/post/"
-    weight = 3
 
   [[menu.link]]
     name = "GitHub"
     url = "https://github.com/sxmorgan"
     weight = 1
-  [[menu.link]]
-    name = "Twitter"
-    url = "https://twitter.com/sxmorgan_"
-    weight = 2
