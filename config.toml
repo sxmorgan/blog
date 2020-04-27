@@ -85,13 +85,9 @@ paginate = 10
     url = "/"
     weight = 1
   [[menu.nav]]
-    name = "Archives"
-    url = "/archives/"
-    weight = 2
-  [[menu.nav]]
     name = "About"
     url = "/about/"
-    weight = 3
+    weight = 2
 
   [[menu.link]]
     name = "GitHub"

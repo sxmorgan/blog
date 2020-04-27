@@ -1,5 +1,6 @@
 ---
 title: About
+date: ''
 ---
 
 My name is Morgan and I am a second year computational biology / bioinformatics PhD student at the Experimental and Clinical Research Center in Berlin, Germany. 
