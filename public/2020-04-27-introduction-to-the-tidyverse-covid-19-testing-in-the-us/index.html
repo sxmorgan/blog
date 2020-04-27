@@ -79,7 +79,7 @@
     <time datetime="2020-04-27 00:00:00 &#43;0000 UTC">2020-04-27</time> |
 </span>
 <span>
-    <span>492 words</span> |
+    <span>636 words</span> |
 </span>
 <span>
     
@@ -93,6 +93,13 @@
     <div class="markdown-body" id="post-content">
         
 
+<div id="TOC">
+<ul>
+<li><a href="#import">Import</a></li>
+<li><a href="#munge">Munge</a></li>
+<li><a href="#plot">Plot</a></li>
+</ul>
+</div>
 
 <p>We’re going to be using data from the COVID Tracking Project in the US. The API is easily accessible, and a woman already created a wrapper package for R to make accessing historical and current statistics incredibly simple.</p>
 <div class="figure">
@@ -167,13 +174,26 @@ states.population</code></pre>
 </div>
 <div id="munge" class="section level3">
 <h3>Munge</h3>
-<p>To munge is to manipulate raw data. We’ll start by combining the three different datasets we have loaded.</p>
-<pre class="r"><code>## let&#39;s look at testing rates among the most populated states
-testing.data &lt;- states.data %&gt;%
+<p>To munge is to manipulate raw data. We’ll start by combining the three different datasets we have loaded to look at testing rates among the most populated states.</p>
+<pre class="r"><code>states.data %&gt;%
     # add the longform name of each state for later plots
     left_join(states.abbrev, by = c(&#39;state&#39; = &#39;abbreviation&#39;)) %&gt;%
     # also that we can add the population for calculations
     left_join(states.population, by = c(&#39;name&#39; = &#39;State&#39;))</code></pre>
+<pre><code>## # A tibble: 2,937 x 9
+##    state date       positive negative death total_test_resu… name   rank     Pop
+##    &lt;chr&gt; &lt;date&gt;        &lt;int&gt;    &lt;int&gt; &lt;int&gt;            &lt;int&gt; &lt;chr&gt; &lt;dbl&gt;   &lt;dbl&gt;
+##  1 AK    2020-04-26      341    15836     9            16177 Alas…    49  7.34e5
+##  2 AL    2020-04-26     6270    67281   216            73551 Alab…    24  4.91e6
+##  3 AR    2020-04-26     2941    36528    49            39469 Arka…    33  3.04e6
+##  4 AS    2020-04-26        0        3     0                3 &lt;NA&gt;     NA NA     
+##  5 AZ    2020-04-26     6526    58285   275            64811 Ariz…    14  7.38e6
+##  6 CA    2020-04-26    42164   483920  1710           526084 Cali…     1  3.99e7
+##  7 CO    2020-04-26    12968    46823   672            59791 Colo…    21  5.85e6
+##  8 CT    2020-04-26    25269    54542  1924            79811 Conn…    29  3.56e6
+##  9 DC    2020-04-26     3841    14227   178            18068 Dist…    NA NA     
+## 10 DE    2020-04-26     4034    15215   120            19249 Dela…    46  9.83e5
+## # … with 2,927 more rows</code></pre>
 </div>
 <div id="plot" class="section level3">
 <h3>Plot</h3>
