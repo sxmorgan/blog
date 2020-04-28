@@ -9,7 +9,15 @@ output:
     toc: true
 tags:
   - tidyverse
+  - R
 ---
+
+### Tidy Principles
+The [tidyverse](https://www.tidyverse.org/packages/) is a set of R packages specifically developed to improve the typical data analysis workflow. Most of it has been designed by [Hadley Wickham](http://hadley.nz/), who's been chief scientist at R Studio since 2013 and a philosopher of data for a lot longer than that. In 2007 he published `ggplot2`, an open source implementation of [The Grammar of Graphics](https://towardsdatascience.com/a-comprehensive-guide-to-the-grammar-of-graphics-for-effective-visualization-of-multi-dimensional-1f92b4ed4149), a statistical textbook from the 1980s that explained how to construct any data visualization in a consistent, structured manner. 
+
+The tidyverse is the result of 
+
+![cite](../data/covid-tidyverse/pkgs.png)
 
 We're going to be using data from the COVID Tracking Project in the US. The API is easily accessible, and a woman already created a wrapper package for R to make accessing historical and current statistics incredibly simple. 
 
@@ -31,7 +39,6 @@ library(ggsci)      # custom color palettes
 library(ggpubr)     # publication-ready plots
 ```
 
-<br><br>
 Then, let's load the complete longitudinal dataset and select the variables that will be relevant for our analysis. 
 
 ```{r load.data.1}
@@ -49,7 +56,7 @@ states.abbrev <- read_csv('https://worldpopulationreview.com/static/states/abbr-
 states.abbrev
 ```
 
-Lastly, from that same website I have downloaded the (projected) 2020 census estimates, which we'll read in and use to standardize our data to e.g. tests per 100,000 residents.
+Lastly, from that same website I have downloaded the (projected) 2020 census estimates, which we'll read in and use to standardize our data to tests per 100,000 residents.
 
 ```{r load.data.3}
 states.population <- '../data/covid-tidyverse/covid.us.state.population.csv' %>%
@@ -65,23 +72,20 @@ To munge is to manipulate raw data. We'll start by combining the three different
 
 ```{r munge.1}
 testing.data <- states.data %>%
-        # add the longform name of each state for later plots
     left_join(states.abbrev, by = c('state' = 'abbreviation')) %>%
-        # also that we can add the population for calculations
     left_join(states.population, by = c('name' = 'State'))
 
+# peeking at newly joined variables
 testing.data %>%
-        # peeking at newly joined variables
     select(c('state','date','name','rank','Pop'))
 ```
 
-Then we'll use the lubridate package within the tidyverse to quickly split the date into month # and day # components so we can look at data from the 9th of March onward. 
+Then we'll use the lubridate package within the tidyverse to quickly split the dates into month and day components so we can look at data from the 9th of March. 
 
 ```{r munge.2}
 testing.data %<>%
     mutate(month = lubridate::month(date)) %>%
     mutate(day = lubridate::day(date)) %>%
-    # filter for data after 9 march
     filter(month >= 3) %>%
     filter(day >= 9)
 
