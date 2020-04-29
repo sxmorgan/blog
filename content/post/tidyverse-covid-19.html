@@ -4,7 +4,7 @@ subtitle: 'COVID-19 Testing in the US'
 author: Morgan Essex
 date: '2020-04-27'
 slug: tidyverse-covid-19
-output: 
+output:
   blogdown::html_page:
     toc: true
 tags:
@@ -24,11 +24,12 @@ tags:
 
 <div id="tidy-principles" class="section level3">
 <h3>Tidy Principles</h3>
-<p>The <a href="https://www.tidyverse.org/packages/">tidyverse</a> is a set of R packages specifically developed to improve the typical data analysis workflow. Most of it has been designed by <a href="http://hadley.nz/">Hadley Wickham</a>, who’s been chief scientist at R Studio since 2013 and a philosopher of data for a lot longer than that. In 2007 he published <code>ggplot2</code>, an open source implementation of <a href="https://towardsdatascience.com/a-comprehensive-guide-to-the-grammar-of-graphics-for-effective-visualization-of-multi-dimensional-1f92b4ed4149">The Grammar of Graphics</a>, a statistical textbook from the 1980s that explained how to construct any data visualization in a consistent, structured manner.</p>
-<p>The tidyverse is the result of</p>
+<p>The <a href="https://www.tidyverse.org/packages/">tidyverse</a> is a set of R packages specifically developed to improve the typical data analysis workflow. While the syntax will be unfamilar to base R users and many common base functions have tidy counterparts, the two do not exist in a dichotomy; there is no tidyverse without base R, and your favorite base R functions are amenable to tidy syntax.</p>
+<p>Most of the tidyverse has been designed by <a href="http://hadley.nz/">Hadley Wickham</a>, who’s been chief scientist at R Studio since 2013 and a philosopher of data for a lot longer than that. In 2007 he published <code>ggplot2</code>, an open source implementation of <a href="https://towardsdatascience.com/a-comprehensive-guide-to-the-grammar-of-graphics-for-effective-visualization-of-multi-dimensional-1f92b4ed4149">The Grammar of Graphics</a>, a statistical textbook from the 1980s that explained how to construct any data visualization in a consistent, structured manner.</p>
+<p>The other packages in the tidyverse do the same for <em>their</em> respective portion of the data analysis process, shown below.</p>
 <div class="figure">
-<img src="../data/covid-tidyverse/pkgs.png" alt="cite" />
-<p class="caption">cite</p>
+<img src="../data/covid-tidyverse/data.science.process.png" alt="R for Data Science" />
+<p class="caption"><a href="https://r4ds.had.co.nz/introduction.html#what-you-will-learn">R for Data Science</a></p>
 </div>
 <p>We’re going to be using data from the COVID Tracking Project in the US. The API is easily accessible, and a woman already created a wrapper package for R to make accessing historical and current statistics incredibly simple.</p>
 <div class="figure">
@@ -49,20 +50,20 @@ library(ggpubr)     # publication-ready plots</code></pre>
     select(c(&#39;state&#39;,&#39;date&#39;,&#39;positive&#39;,&#39;negative&#39;,&#39;death&#39;,&#39;total_test_results&#39;))
 
 states.data</code></pre>
-<pre><code>## # A tibble: 2,985 x 6
+<pre><code>## # A tibble: 3,041 x 6
 ##    state date       positive negative death total_test_results
 ##    &lt;chr&gt; &lt;date&gt;        &lt;int&gt;    &lt;int&gt; &lt;int&gt;              &lt;int&gt;
-##  1 AK    2020-04-27      345    15911     9              16256
-##  2 AL    2020-04-27     6499    67498   222              73997
-##  3 AR    2020-04-27     3017    37440    50              40457
-##  4 AS    2020-04-27        0        3     0                  3
-##  5 AZ    2020-04-27     6716    59827   275              66543
-##  6 CA    2020-04-27    43464   509945  1755             553409
-##  7 CO    2020-04-27    13441    49833   680              63274
-##  8 CT    2020-04-27    25269    54542  1998              79811
-##  9 DC    2020-04-27     3892    14524   185              18416
-## 10 DE    2020-04-27     4162    15454   125              19616
-## # … with 2,975 more rows</code></pre>
+##  1 AK    2020-04-28      351    16738     9              17089
+##  2 AL    2020-04-28     6687    69140   242              75827
+##  3 AR    2020-04-28     3111    37560    52              40671
+##  4 AS    2020-04-28        0        3     0                  3
+##  5 AZ    2020-04-28     6948    60490   293              67438
+##  6 CA    2020-04-28    45031   532577  1809             577608
+##  7 CO    2020-04-28    13879    52462   706              66341
+##  8 CT    2020-04-28    26312    66433  2089              92745
+##  9 DC    2020-04-28     3994    14891   190              18885
+## 10 DE    2020-04-28     4575    16605   137              21180
+## # … with 3,031 more rows</code></pre>
 <p>Additionally, we’re going to pull a csv file from <a href="https://worldpopulationreview.com/" class="uri">https://worldpopulationreview.com/</a> that contains state-abbreviation pairs (e.g. CA, California) that we’ll use later to ‘beautify’ our plots.</p>
 <pre class="r"><code>states.abbrev &lt;- read_csv(&#39;https://worldpopulationreview.com/static/states/abbr-name-list.csv&#39;)
 
@@ -112,20 +113,20 @@ states.population</code></pre>
 # peeking at newly joined variables
 testing.data %&gt;%
     select(c(&#39;state&#39;,&#39;date&#39;,&#39;name&#39;,&#39;rank&#39;,&#39;Pop&#39;))</code></pre>
-<pre><code>## # A tibble: 2,985 x 5
+<pre><code>## # A tibble: 3,041 x 5
 ##    state date       name                  rank      Pop
 ##    &lt;chr&gt; &lt;date&gt;     &lt;chr&gt;                &lt;dbl&gt;    &lt;dbl&gt;
-##  1 AK    2020-04-27 Alaska                  49   734002
-##  2 AL    2020-04-27 Alabama                 24  4908621
-##  3 AR    2020-04-27 Arkansas                33  3038999
-##  4 AS    2020-04-27 &lt;NA&gt;                    NA       NA
-##  5 AZ    2020-04-27 Arizona                 14  7378494
-##  6 CA    2020-04-27 California               1 39937489
-##  7 CO    2020-04-27 Colorado                21  5845526
-##  8 CT    2020-04-27 Connecticut             29  3563077
-##  9 DC    2020-04-27 District Of Columbia    NA       NA
-## 10 DE    2020-04-27 Delaware                46   982895
-## # … with 2,975 more rows</code></pre>
+##  1 AK    2020-04-28 Alaska                  49   734002
+##  2 AL    2020-04-28 Alabama                 24  4908621
+##  3 AR    2020-04-28 Arkansas                33  3038999
+##  4 AS    2020-04-28 &lt;NA&gt;                    NA       NA
+##  5 AZ    2020-04-28 Arizona                 14  7378494
+##  6 CA    2020-04-28 California               1 39937489
+##  7 CO    2020-04-28 Colorado                21  5845526
+##  8 CT    2020-04-28 Connecticut             29  3563077
+##  9 DC    2020-04-28 District Of Columbia    NA       NA
+## 10 DE    2020-04-28 Delaware                46   982895
+## # … with 3,031 more rows</code></pre>
 <p>Then we’ll use the lubridate package within the tidyverse to quickly split the dates into month and day components so we can look at data from the 9th of March.</p>
 <pre class="r"><code>testing.data %&lt;&gt;%
     mutate(month = lubridate::month(date)) %&gt;%
@@ -135,20 +136,20 @@ testing.data %&gt;%
 
 testing.data %&gt;%
     select(c(&#39;state&#39;,&#39;date&#39;,&#39;total_test_results&#39;,&#39;month&#39;,&#39;day&#39;))</code></pre>
-<pre><code>## # A tibble: 2,314 x 5
+<pre><code>## # A tibble: 2,370 x 5
 ##    state date       total_test_results month   day
 ##    &lt;chr&gt; &lt;date&gt;                  &lt;int&gt; &lt;dbl&gt; &lt;int&gt;
-##  1 AK    2020-04-27              16256     4    27
-##  2 AL    2020-04-27              73997     4    27
-##  3 AR    2020-04-27              40457     4    27
-##  4 AS    2020-04-27                  3     4    27
-##  5 AZ    2020-04-27              66543     4    27
-##  6 CA    2020-04-27             553409     4    27
-##  7 CO    2020-04-27              63274     4    27
-##  8 CT    2020-04-27              79811     4    27
-##  9 DC    2020-04-27              18416     4    27
-## 10 DE    2020-04-27              19616     4    27
-## # … with 2,304 more rows</code></pre>
+##  1 AK    2020-04-28              17089     4    28
+##  2 AL    2020-04-28              75827     4    28
+##  3 AR    2020-04-28              40671     4    28
+##  4 AS    2020-04-28                  3     4    28
+##  5 AZ    2020-04-28              67438     4    28
+##  6 CA    2020-04-28             577608     4    28
+##  7 CO    2020-04-28              66341     4    28
+##  8 CT    2020-04-28              92745     4    28
+##  9 DC    2020-04-28              18885     4    28
+## 10 DE    2020-04-28              21180     4    28
+## # … with 2,360 more rows</code></pre>
 </div>
 <div id="plot" class="section level3">
 <h3>Plot</h3>
