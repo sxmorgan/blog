@@ -15,18 +15,18 @@ tags:
 
 <div id="TOC">
 <ul>
-<li><a href="#tidy-principles">Tidy Principles</a></li>
+<li><a href="#tidy-philosophy">Tidy Philosophy</a></li>
 <li><a href="#import">Import</a></li>
 <li><a href="#munge">Munge</a></li>
 <li><a href="#plot">Plot</a></li>
 </ul>
 </div>
 
-<div id="tidy-principles" class="section level3">
-<h3>Tidy Principles</h3>
-<p>The <a href="https://www.tidyverse.org/packages/">tidyverse</a> is a set of R packages specifically developed to improve the typical data analysis workflow. While the syntax will be unfamilar to base R users and many common base functions have tidy counterparts, the two do not exist in a dichotomy; there is no tidyverse without base R, and your favorite base R functions are amenable to tidy syntax.</p>
-<p>Most of the tidyverse has been designed by <a href="http://hadley.nz/">Hadley Wickham</a>, who’s been chief scientist at R Studio since 2013 and a philosopher of data for a lot longer than that. In 2007 he published <code>ggplot2</code>, an open source implementation of <a href="https://towardsdatascience.com/a-comprehensive-guide-to-the-grammar-of-graphics-for-effective-visualization-of-multi-dimensional-1f92b4ed4149">The Grammar of Graphics</a>, a statistical textbook from the 1980s that explained how to construct any data visualization in a consistent, structured manner.</p>
-<p>The other packages in the tidyverse do the same for <em>their</em> respective portion of the data analysis process, shown below.</p>
+<div id="tidy-philosophy" class="section level3">
+<h3>Tidy Philosophy</h3>
+<p>The <a href="https://www.tidyverse.org/packages/">tidyverse</a> is a set of actively developed and well-maintained R packages tailored to the typical data analysis workflow. While the syntax will be unfamiliar to base R users, and many common base functions (such as <code>subset()</code>) have tidy counterparts, the two do <em>not</em> exist in a dichotomy: there is no tidyverse without base R, and your favorite base R functions are likely amenable to tidy syntax, which we’ll get into briefly later.</p>
+<p>Most but not all of the tidyverse has been designed by <a href="http://hadley.nz/">Hadley Wickham</a>, chief scientist at R Studio since 2013 and data enthusiast for a lot longer than that. In 2007 he published <code>ggplot2</code>, an open source implementation of <a href="https://towardsdatascience.com/a-comprehensive-guide-to-the-grammar-of-graphics-for-effective-visualization-of-multi-dimensional-1f92b4ed4149">The Grammar of Graphics</a> (hence <strong>gg</strong>plot). This was a statistical textbook from the 1980s that attempted to break data visualization down into common elements so that it could be built back up in a more consistent, structured manner.</p>
+<p>This approach was broadly applied and refined to other the other packages do the same for <em>their</em> respective portion of the data analysis process, shown below.</p>
 <div class="figure">
 <img src="../data/covid-tidyverse/data.science.process.png" alt="R for Data Science" />
 <p class="caption"><a href="https://r4ds.had.co.nz/introduction.html#what-you-will-learn">R for Data Science</a></p>
