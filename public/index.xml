@@ -6,40 +6,30 @@
     <description>Recent content on data&#43;science</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 05 May 2016 21:48:51 -0700</lastBuildDate>
+    <copyright>© Athul</copyright>
+    <lastBuildDate>Mon, 27 Apr 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
+      <title>Introduction to the Tidyverse</title>
+      <link>/post/tidyverse-covid-19/</link>
+      <pubDate>Mon, 27 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/post/tidyverse-covid-19/</guid>
+      <description>Tidy Philosophy Import Munge Plot   The tidyverse is a set of actively developed and well-maintained R packages to facilitate the typical data analysis workflow, shown below. Most but not all of the core tidyverse packages (there are now 8) were designed by Hadley Wickham, chief scientist at R Studio since 2013. He’s written a book, R for Data Science, which is an incredible resource for all programming levels, and given several talks which are of course available on YouTube if you find yourself becoming a nerd too… here’s a good one from the VIZBI conference at EMBL last year.</description>
+    </item>
+    
+    <item>
       <title>About</title>
       <link>/about/</link>
-      <pubDate>Thu, 05 May 2016 21:48:51 -0700</pubDate>
-      
-      <guid>/about/</guid>
-      <description>This is a &amp;ldquo;hello world&amp;rdquo; example website for the blogdown package. The theme was forked from @jrutheiser/hugo-lithium-theme and modified by Yihui Xie.</description>
-    </item>
-    
-    <item>
-      <title>Hello R Markdown</title>
-      <link>/2015/07/23/hello-r-markdown/</link>
-      <pubDate>Thu, 23 Jul 2015 21:13:14 -0500</pubDate>
-      
-      <guid>/2015/07/23/hello-r-markdown/</guid>
-      <description>R Markdown This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see http://rmarkdown.rstudio.com.
-You can embed an R code chunk like this:
-summary(cars) ## speed dist ## Min. : 4.0 Min. : 2.00 ## 1st Qu.:12.0 1st Qu.: 26.00 ## Median :15.0 Median : 36.00 ## Mean :15.4 Mean : 42.98 ## 3rd Qu.</description>
-    </item>
-    
-    <item>
-      <title>Introduction to the Tidyverse</title>
-      <link>/covid.tidyverse/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/covid.tidyverse/</guid>
-      <description>We’re going to be using data from the COVID Tracking Project in the US. To my knowledge, nothing similar exists for European or world data, or we would have looked at local data. The API is easily accessible, and a woman already created a wrapper package for R to make accessing historical and current statistics incredibly simple. That’s what we’ll use today.
- 
-First, let’s load the packages we’ll use for this analysis.</description>
+      <guid>/about/</guid>
+      <description>I’m Morgan a second year computational biology / bioinformatics PhD student at the Experimental and Clinical Research Center in Berlin, Germany.
+In the next two years I hope to (1) benchmark and advance the statistical methods being widely deployed in microbiome and multi-omics research in order to (2) better illuminate robust and covariate-aware host-microbiome interactions through various clinical collaborations.
+This website is where I hope to digest and document some of what I’m learning for my research along the way, especially but not limited to statistical analysis in R.</description>
     </item>
     
   </channel>
