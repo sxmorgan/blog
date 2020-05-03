@@ -13,20 +13,23 @@ tags:
 ---
 
 ### Tidy Philosophy
-The [tidyverse](https://www.tidyverse.org/packages/) is a set of actively developed and well-maintained R packages tailored to the typical data analysis workflow. While the syntax will be unfamiliar to base R users, and many common base functions (such as `subset()`) have tidy counterparts, the two do _not_ exist in a dichotomy: there is no tidyverse without base R, and your favorite base R functions are likely amenable to tidy syntax, which we'll get into briefly later.
+The [tidyverse](https://www.tidyverse.org/packages/) is a set of actively developed and well-maintained R packages to facilitate the typical data analysis workflow, shown below. Most but not all of the core tidyverse packages (there are now 8) were designed by [Hadley Wickham](http://hadley.nz/), chief scientist at R Studio since 2013. He's written a book, [_R for Data Science_](https://r4ds.had.co.nz/), which is an incredible resource for all programming levels, and given several talks which are of course available on YouTube if you find yourself becoming a nerd too... [here's a good one](https://www.youtube.com/watch?v=9YTNYT1maa4) from the [VIZBI](https://vizbi.org/) conference at EMBL last year. 
 
-Most but not all of the tidyverse has been designed by [Hadley Wickham](http://hadley.nz/), chief scientist at R Studio since 2013 and data enthusiast for a lot longer than that. In 2007 he published `ggplot2`, an open source implementation of [The Grammar of Graphics](https://towardsdatascience.com/a-comprehensive-guide-to-the-grammar-of-graphics-for-effective-visualization-of-multi-dimensional-1f92b4ed4149) (hence **gg**plot). This was a statistical textbook from the 1980s that attempted to break data visualization down into common elements so that it could be built back up in a more consistent, structured manner.
+In 2007 he published probably the most well-known component of the tidyverse, `ggplot2`, as an open source implementation of [_The Grammar of Graphics_](https://towardsdatascience.com/a-comprehensive-guide-to-the-grammar-of-graphics-for-effective-visualization-of-multi-dimensional-1f92b4ed4149), a statistical textbook from the 1980s that looked at the fundamentals of data visualization. Grammar is an attribute of language that tells us how elements must be expressed in order to be understood, and where natural languages predominately evolve the grammars that distinguish them functionally, programming languages can be created or tweaked to suit a specific need from the beginning. _The Grammar of Graphics_ is just a rationally-designed graphic language embedded in a programming language (hence **gg**plot). 
 
-This approach was broadly applied and refined to other the other packages do the same for _their_ respective portion of the data analysis process, shown below. 
+What it achieved the process of data visualization - the abilty to describe and construct an array of visualizations in a layered, structured manner - was extended to other aspects of the data analysis process and refined over years to become the tidyverse in 2016. R users who have ever melted or reshaped a data frame might be curious to know that those packages were also Hadley's work and key predecessors of the `dplyr` and `tidyr` packages in the current core tidyverse.
 
-![[R for Data Science](https://r4ds.had.co.nz/introduction.html#what-you-will-learn)](../data/covid-tidyverse/data.science.process.png)
+![](../data/covid-tidyverse/data.science.process.png)
+
+I really like the graphic above because it unites the computational data sciences regardless of motivating discipline or question and encapsulates my entire job as a researcher: it starts with data and ends with me communicating something I've learned from the nonlinear process of exploring that data. This process was already strenuous during my master's thesis, so I knew that I would need to get a lot better at organizing my efforts and gain a lot of technical proficiency in order to complete my PhD. The tidyverse attracted me because it offered consistency and complete workflow coverage, which felt like were the best ways to attain the fluency I needed to do my job effectively. 
+
+At most I hope I can inspire someone else to interact with their data science questions differently too - with more curiosity and flow, and less frustration and disorganization - and at the very least I hope people will consider using chaining syntax for more readable code.
+
+### Import
 
 We're going to be using data from the COVID Tracking Project in the US. The API is easily accessible, and a woman already created a wrapper package for R to make accessing historical and current statistics incredibly simple.
 
-
 ![](../data/covid-tidyverse/covidtracking.png)
-
-### Import
 
 Calling `library(tidyverse)` will load all the functions we'll need today, except we must also import `magrittr`, which provides us with the pipe (`%>%`) operator for chaining syntax.
 ```{r knitr, include = FALSE}
