@@ -12,14 +12,10 @@ pygmentscodefencesguesssyntax = true
 name = "GitHub"
 icon = "github"
 url = "https://github.com/sxmorgan"
-
-[[params.social]]
-name = "Twitter"
-icon = "twitter"
-url = "https://github.com/sxmorgan_/"
+weight = 1
 
 [[menu.main]]
-name = "All posts"
+name = "Posts"
 url = "/posts"
 weight = 2
 
