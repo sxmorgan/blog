@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>data&#43;science</title>
-    <link>/</link>
-    <description>Recent content on data&#43;science</description>
+    <title>tutorial on data&#43;science</title>
+    <link>/tags/tutorial/</link>
+    <description>Recent content in tutorial on data&#43;science</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>© Athul</copyright>
     <lastBuildDate>Mon, 27 Apr 2020 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="/tags/tutorial/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
@@ -19,17 +19,6 @@
       
       <guid>/post/tidyverse-covid-19/</guid>
       <description>Tidy Philosophy Import Munge Plot   The tidyverse is a set of actively developed and well-maintained R packages to facilitate the typical data analysis workflow, shown below. Most but not all of the core tidyverse packages (there are now 8) were designed by Hadley Wickham, chief scientist at R Studio since 2013. He’s written a book, R for Data Science, which is an incredible resource for all programming levels, and given several talks which are of course available on YouTube if you find yourself becoming a nerd too… here’s a good one from the VIZBI conference at EMBL last year.</description>
-    </item>
-    
-    <item>
-      <title>About</title>
-      <link>/about/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/about/</guid>
-      <description>I’m Morgan a second year computational biology / bioinformatics PhD student at the Experimental and Clinical Research Center in Berlin, Germany.
-In the next two years I hope to (1) benchmark and advance the statistical methods being widely deployed in microbiome and multi-omics research in order to (2) better illuminate robust and covariate-aware host-microbiome interactions through various clinical collaborations.
-This website is where I hope to digest and document some of what I’m learning for my research along the way, especially but not limited to statistical analysis in R.</description>
     </item>
     
   </channel>

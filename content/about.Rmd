@@ -1,7 +1,6 @@
-+++
-title = "About"
-description = "A blog about data and science"
-+++
+---
+title: "About"
+---
 
 ### I'm Morgan
 

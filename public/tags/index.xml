@@ -13,11 +13,20 @@
     
     
     <item>
-      <title>R</title>
-      <link>/tags/r/</link>
+      <title>forslund-lab</title>
+      <link>/tags/forslund-lab/</link>
       <pubDate>Mon, 27 Apr 2020 00:00:00 +0000</pubDate>
       
-      <guid>/tags/r/</guid>
+      <guid>/tags/forslund-lab/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>r-stats</title>
+      <link>/tags/r-stats/</link>
+      <pubDate>Mon, 27 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/r-stats/</guid>
       <description></description>
     </item>
     
@@ -27,6 +36,15 @@
       <pubDate>Mon, 27 Apr 2020 00:00:00 +0000</pubDate>
       
       <guid>/tags/tidyverse/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>tutorials</title>
+      <link>/tags/tutorials/</link>
+      <pubDate>Mon, 27 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/tutorials/</guid>
       <description></description>
     </item>
     

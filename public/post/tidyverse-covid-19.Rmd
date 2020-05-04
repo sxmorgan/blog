@@ -9,7 +9,9 @@ output:
     toc: true
 tags:
   - tidyverse
-  - R
+  - tutorials
+  - r-stats
+  - forslund-lab
 ---
 
 The [tidyverse](https://www.tidyverse.org/packages/) is a set of actively developed and well-maintained R packages to facilitate the typical data analysis workflow, shown below. Most but not all of the core tidyverse packages (there are now 8) were designed by Hadley Wickham, chief scientist at R Studio since 2013. He's written a book, [_R for Data Science_](https://r4ds.had.co.nz/), which is an incredible resource for all programming levels, and given several talks which are of course available on YouTube if you find yourself becoming a nerd too... [here's a good one](https://www.youtube.com/watch?v=9YTNYT1maa4) from the [VIZBI](https://vizbi.org/) conference at EMBL last year. 
