@@ -13,6 +13,8 @@ tags:
   - tutorials
   - r-stats
   - forslund-lab
+summary:
+    The tidyverse is a set of actively developed and well-maintained R packages to facilitate the typical data analysis workflow. Most but not all of the core tidyverse packages (there are now 8) were designed by Hadley Wickham, chief scientist at R Studio since 2013. He's written a book, _R for Data Science_, which is an incredible resource for all programming levels, and given several talks which are of course available on YouTube if you find yourself becoming curious too...
 ---
 
 The [tidyverse](https://www.tidyverse.org/packages/) is a set of actively developed and well-maintained R packages to facilitate the typical data analysis workflow. Most but not all of the core tidyverse packages (there are now 8) were designed by Hadley Wickham, chief scientist at R Studio since 2013. He's written a book, _[R for Data Science](https://r4ds.had.co.nz/)_, which is an incredible resource for all programming levels, and given several [talks](https://www.youtube.com/watch?v=9YTNYT1maa4) which are of course available on YouTube if you find yourself becoming curious too... 
@@ -22,7 +24,7 @@ Many R programmers who don't explicitly know what the tidyverse is have at least
 This goal of getting from data to visualization more intuitively paved the way for the rest of the tidyverse. R users who have ever melted or reshaped a data frame might be curious to know that those packages were also Hadley's work and key predecessors of the `dplyr` and `tidyr` packages in the current core tidyverse. As he puts it, so often getting to a visualization is about getting the data in the right form.
 
 ![](data/data.science.process.png)
-
+<br>
 I personally really like the graphic above because it unites the computational data sciences regardless of motivating discipline or question and encapsulates my entire job as a researcher: it starts with data and ends with me communicating something I've learned from the nonlinear process of exploring that data. This process was already strenuous during my master's thesis, so I knew that I would need to get a lot better at organizing my efforts and gain a lot of technical proficiency in order to complete my PhD. The tidyverse attracted me because it offered consistency and complete workflow coverage, which felt like were the best ways to attain the fluency I needed to do my job effectively. 
 
 At most I hope I can inspire someone else to interact with their data science questions differently too - with more curiosity and flow, and less frustration and disorganization - and at the very least I hope people will consider using chaining syntax for more readable code.
@@ -34,6 +36,7 @@ At most I hope I can inspire someone else to interact with their data science qu
 We're going to be using data from the COVID Tracking Project in the US. The API is easily accessible, and a woman already created a wrapper package for R to make accessing historical and current statistics incredibly simple.
 
 ![](data/covidtracking.png)
+
 
 Calling `library(tidyverse)` will load all the functions we'll need today, except we must also import `magrittr`, which provides us with the pipe (`%>%`) operator and some 'aliases' useful when using chaining syntax.
 
@@ -105,3 +108,13 @@ testing.data %>%
 
 
 ### Plot
+
+```{css, echo = FALSE}
+img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 60%;
+    padding: 10px
+}
+```

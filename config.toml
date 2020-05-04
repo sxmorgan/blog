@@ -5,10 +5,10 @@ languageCode = "en-us"
 ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
 
 [params]
-  highlightjsVersion = "10.0.2"
-  highlightjsCDN = "//cdnjs.cloudflare.com"
-  highlightjsLang = ["r", "yaml"]
-  highlightjsTheme = "tomorrow"
+  #highlightjsVersion = "10.0.2"
+  #highlightjsCDN = "//cdnjs.cloudflare.com"
+  #highlightjsLang = ["r", "yaml"]
+  #highlightjsTheme = "tomorrow"
   
   [[params.navlinks]]
   name = "about/"
@@ -25,3 +25,7 @@ ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
   [[params.navlinks]]
   name = "tags/"
   url = "tags/"
+
+#[markup]
+#  [markup.highlight]
+#    style = "tomorrow"
