@@ -77,31 +77,6 @@ body {
     margin-bottom: 75px;
 }
 
-/* Code blocks */
-code {
-  /* background-color: #f1f1f1; */
-  padding: .1em .2em;
-}
-
-pre {
-  background-color: #ececec;
-  line-height: 1.4;
-  overflow-x: auto;
-  padding: 1em;
-}
-
-.highlight pre ::selection {
-  background: rgba(255, 255, 255, 0.2);
-  color: inherit;
-}
-
-pre code {
-  background-color: transparent;
-  color: inherit;
-  font-size: 100%;
-  padding: 0;
-}
-
 h1,
 h2,
 h3,
@@ -120,6 +95,20 @@ h6,
 
 h1 {
     margin-bottom: 150px;
+}
+
+pre {
+  background-color: #ececec;
+  line-height: 1.4;
+  overflow-x: auto;
+  padding: 1em;
+}
+
+pre code {
+  background-color: transparent;
+  color: inherit;
+  font-size: 100%;
+  padding: 0;
 }
 
 .content-column-content p,

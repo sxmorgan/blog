@@ -97,20 +97,6 @@ h1 {
     margin-bottom: 150px;
 }
 
-pre {
-  background-color: #ececec;
-  line-height: 1.4;
-  overflow-x: auto;
-  padding: 1em;
-}
-
-pre code {
-  background-color: transparent;
-  color: inherit;
-  font-size: 100%;
-  padding: 0;
-}
-
 .content-column-content p,
 .content-column-content li {
     color: #666;
