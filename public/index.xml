@@ -27,7 +27,7 @@
       
       <guid>/about/</guid>
       <description>img { border-radius: 50%; width: 20em; }  I’m Morgan, a second year computational biology / bioinformatics PhD student at the Experimental and Clinical Research Center in Berlin, Germany.
-In the next two years I hope to (1) benchmark and advance the statistical methods being widely deployed in microbiome and multi-omics research in order to (2) better illuminate robust and covariate-aware host-microbiome interactions through various clinical collaborations.
+In the next two years I hope to (1) benchmark and advance the statistical methods being widely deployed in microbiome and multi-omics research in order to (2) yield more robust biomarkers when examining host-microbiome interactions from clinical collaborations.
 Here is where I hope to digest and document some of what I’m learning for my research along the way, especially but not limited to statistical analysis in R.</description>
     </item>
     
