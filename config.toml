@@ -1,16 +1,25 @@
-baseurl = "https://sxmorgan.netlify.app/"
+baseurl = "/"
 title = "data+science"
 theme = "hugo-theme-console"
 languageCode = "en-us"
 
 [params]
+  highlightjsVersion = "10.0.2"
+  highlightjsCDN = "//cdnjs.cloudflare.com"
+  highlightjsLang = ["r", "yaml"]
+  highlightjsTheme = "mono-blue"
+  
   [[params.navlinks]]
   name = "about/"
   url = "about/"
 
   [[params.navlinks]]
-  name = "posts/"
+  name = "archive/"
   url = "posts/"
+  
+  [[params.navlinks]]
+  name = "resources/"
+  url = "resources/"
   
   [[params.navlinks]]
   name = "tags/"
