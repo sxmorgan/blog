@@ -6,7 +6,6 @@
     <description>Recent content in forslund-lab on data&#43;science</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <copyright>© Athul</copyright>
     <lastBuildDate>Mon, 27 Apr 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/forslund-lab/index.xml" rel="self" type="application/rss+xml" />
@@ -14,10 +13,10 @@
     
     <item>
       <title>Introduction to the Tidyverse</title>
-      <link>/post/tidyverse-covid-19/</link>
+      <link>/posts/tidyverse-covid-19/</link>
       <pubDate>Mon, 27 Apr 2020 00:00:00 +0000</pubDate>
       
-      <guid>/post/tidyverse-covid-19/</guid>
+      <guid>/posts/tidyverse-covid-19/</guid>
       <description>Tidy Philosophy Import Munge Plot   The tidyverse is a set of actively developed and well-maintained R packages to facilitate the typical data analysis workflow, shown below. Most but not all of the core tidyverse packages (there are now 8) were designed by Hadley Wickham, chief scientist at R Studio since 2013. He’s written a book, R for Data Science, which is an incredible resource for all programming levels, and given several talks which are of course available on YouTube if you find yourself becoming a nerd too… here’s a good one from the VIZBI conference at EMBL last year.</description>
     </item>
     

@@ -1,30 +1,17 @@
-baseURL = "/"
-languageCode = "en-us"
+baseurl = "https://sxmorgan.netlify.app/"
 title = "data+science"
-theme="archie"
-copyright = "© Athul"
-pygmentsstyle = "monokai"
-pygmentscodefences = true
-pygmentscodefencesguesssyntax = true
+theme = "hugo-theme-console"
+languageCode = "en-us"
 
-[[menu.main]]
-name = "Posts"
-url = "/post"
-weight = 2
+[params]
+  [[params.navlinks]]
+  name = "about/"
+  url = "about/"
 
-[[menu.main]]
-name = "About"
-url = "/about"
-weight = 1
-
-[[menu.main]]
-name = "Tags"
-url = "/tags"
-weight = 3
-
-#[[params.social]]
-[[menu.main]]
-name = "GitHub"
-#icon = "github"
-url = "https://github.com/sxmorgan"
-weight = 4
+  [[params.navlinks]]
+  name = "posts/"
+  url = "posts/"
+  
+  [[params.navlinks]]
+  name = "tags/"
+  url = "tags/"
