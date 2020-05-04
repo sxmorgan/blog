@@ -6,21 +6,10 @@
     <description>Recent content on data&#43;science</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 01 Oct 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 27 Apr 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     
-    
-    <item>
-      <title>About</title>
-      <link>/about/</link>
-      <pubDate>Thu, 01 Oct 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/about/</guid>
-      <description>I&amp;rsquo;m Morgan a second year computational biology / bioinformatics PhD student at the Experimental and Clinical Research Center in Berlin, Germany.
-In the next two years I hope to (1) benchmark and advance the statistical methods being widely deployed in microbiome and multi-omics research in order to (2) better illuminate robust and covariate-aware host-microbiome interactions through various clinical collaborations.
-Here is where I hope to digest and document some of what I&amp;rsquo;m learning for my research along the way, especially but not limited to statistical analysis in R.</description>
-    </item>
     
     <item>
       <title>Introduction to the Tidyverse</title>
@@ -29,6 +18,17 @@ Here is where I hope to digest and document some of what I&amp;rsquo;m learning 
       
       <guid>/posts/tidyverse-covid-19/</guid>
       <description>Tidy Philosophy Import Munge Plot   The tidyverse is a set of actively developed and well-maintained R packages to facilitate the typical data analysis workflow. Most but not all of the core tidyverse packages (there are now 8) were designed by Hadley Wickham, chief scientist at R Studio since 2013. He’s written a book, R for Data Science, which is an incredible resource for all programming levels, and given several talks which are of course available on YouTube if you find yourself becoming curious too…</description>
+    </item>
+    
+    <item>
+      <title>About</title>
+      <link>/about/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/about/</guid>
+      <description>I&amp;rsquo;m Morgan: a second year computational biology / bioinformatics PhD student at the Experimental and Clinical Research Center in Berlin, Germany.
+In the next two years I hope to (1) benchmark and advance the statistical methods being widely deployed in microbiome and multi-omics research in order to (2) better illuminate robust and covariate-aware host-microbiome interactions through various clinical collaborations.
+Here is where I hope to digest and document some of what I&amp;rsquo;m learning for my research along the way, especially but not limited to statistical analysis in R.</description>
     </item>
     
   </channel>

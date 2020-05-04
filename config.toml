@@ -9,6 +9,7 @@ ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
   highlightjsCDN = "//cdnjs.cloudflare.com"
   highlightjsLang = ["r", "yaml"]
   highlightjsTheme = "tomorrow"
+  
   [[params.navlinks]]
   name = "about/"
   url = "about/"
