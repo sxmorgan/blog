@@ -1,3 +1,7 @@
++++
+title = "About"
+description = "A blog about data and science"
++++
 
 ### I'm Morgan
 
