@@ -20,4 +20,4 @@ I built this site as a place to digest and document some of what I'm learning fr
 
 You can check out some of my [code](https://github.com/sxmorgan) on GitHub, my [publications](https://scholar.google.com/citations?user=bZuOHS8AAAAJ&hl=en) on Google Scholar, or my [photography](https://cargocollective.com/messex) on Cargo.
 
-This website was created using the [**blogdown**](https://github.com/rstudio/blogdown) package in RStudio and the [**console theme**](https://github.com/mrmierzejewski/hugo-theme-console/).
+This website was created with the [**blogdown**](https://github.com/rstudio/blogdown) package in RStudio using the [**console theme**](https://github.com/mrmierzejewski/hugo-theme-console/).
