@@ -199,6 +199,13 @@ figure {
     margin-top: 21px;
 }
 
+/* riff on .posts-lists so tags aren't centered */
+.tags-list {
+    position: relative;
+    top: 0;
+    margin-top: 21px;
+}
+
 .post h1 {
     padding-top: 0;
 }

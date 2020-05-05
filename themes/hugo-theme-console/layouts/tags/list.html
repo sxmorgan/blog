@@ -1,0 +1,17 @@
+{{ define "main" }}
+<h1>{{ .Page.Title }}</h1>
+<br/>
+{{ .Content }}
+
+<div class="tags-list">
+{{ range sort .Data.Pages "value" "desc" }}
+    {{ if not .Params.private }}
+        <div class="post">
+            <h1><a href="{{ .Permalink }}" title="{{ .Title }}">{{ .Title }}</a></h1>
+            {{ .Summary }}
+        </div>
+    {{ end }}
+{{ end }}
+</div>
+
+{{ end }}

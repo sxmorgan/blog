@@ -4,6 +4,9 @@ theme = "hugo-theme-console"
 languageCode = "en-us"
 ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
 
+#[permalinks]
+#  posts = "/:title/"
+
 [params]
   #highlightjsVersion = "10.0.2"
   #highlightjsCDN = "//cdnjs.cloudflare.com"

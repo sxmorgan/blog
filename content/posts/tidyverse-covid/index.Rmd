@@ -8,9 +8,10 @@ output:
   blogdown::html_page:
     css: tomorrow.css
     toc: true
+category: tutorial
 tags:
+  - tutorial
   - tidyverse
-  - tutorials
   - r-stats
   - forslund-lab
 summary:
