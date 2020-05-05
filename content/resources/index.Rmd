@@ -4,6 +4,5 @@ title: "Resources"
 
 Here's where I'll eventually link to all the tagged/categorized resources I've used.
 
-<!-- ![[Work by Megan Diddie](http://www.megandiddie.com/)](../megan-diddie-connected.png) -->
 <img src="../megan-diddie-connected.png">
 <a href="http://www.megandiddie.com/">Work by Megan Diddie.</a>
