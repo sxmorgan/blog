@@ -17,7 +17,7 @@
       <pubDate>Mon, 27 Apr 2020 00:00:00 +0000</pubDate>
       
       <guid>/posts/tidyverse-covid-19/</guid>
-      <description>The tidyverse is a set of actively developed and well-maintained R packages to facilitate the typical data analysis workflow. Most but not all of the core tidyverse packages (there are now 8) were designed by Hadley Wickham, chief scientist at R Studio since 2013. He&amp;rsquo;s written a book, &lt;em&gt;R for Data Science&lt;/em&gt;, which is an incredible resource for all programming levels, and given several talks which are of course available on YouTube if you find yourself becoming curious too&amp;hellip;</description>
+      <description>The tidyverse is a set of actively developed and well-maintained R packages to facilitate the typical data analysis workflow. Most but not all of the core tidyverse packages (there are now 8) were designed by Hadley Wickham, chief scientist at R Studio since 2013. He&amp;rsquo;s written a book, &lt;em&gt;R for Data Science&lt;/em&gt;, which is an incredible resource for all programming levels, and given plenty of conceptual talks which are of course available on YouTube.</description>
     </item>
     
     <item>
@@ -27,7 +27,7 @@
       
       <guid>/about/</guid>
       <description>img { border-radius: 50%; width: 20em; }  I’m Morgan, a second year computational biology / bioinformatics PhD student in the Forslund Lab at the Experimental and Clinical Research Center in Berlin, Germany.
-My academic background consists of a BSc in Pharmaceutical Sciences from Purdue University (2015) and an MSc in Systems Biology from Heidelberg University (2018). Though my curiosity to learn the inner workings of the human body has most strongly influenced my career decisions, I have nurtured a joy for programming since I first took Java in high school.</description>
+My academic background consists of a BSc in Pharmaceutical Sciences from Purdue University (2015) and an MSc in Systems Biology from Heidelberg University (2018). Though my curiosity to learn the inner workings of the human body has been the strongest influence of my career decisions, I have nurtured a joy for programming since I first took Java in high school.</description>
     </item>
     
     <item>
@@ -36,7 +36,8 @@ My academic background consists of a BSc in Pharmaceutical Sciences from Purdue 
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/resources/</guid>
-      <description>Here&amp;rsquo;s where I&amp;rsquo;ll eventually link to all the tagged/categorized resources I&amp;rsquo;ve used.</description>
+      <description>Here’s where I’ll eventually link to all the tagged/categorized resources I’ve used.
+Work by Megan Diddie.</description>
     </item>
     
   </channel>
