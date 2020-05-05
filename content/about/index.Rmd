@@ -16,7 +16,7 @@ My academic background consists of a BSc in Pharmaceutical Sciences from Purdue 
 
 In the next two years I hope to (1) benchmark and advance the statistical methods being widely deployed in microbiome research in order to (2) yield more robust biomarkers for complex disease phenotypes when exploring host-microbiome interactions from clinical collaborations. I do hope to elaborate on this here for different audiences, but for now please check out the lab homepage for more context on my work. 
 
-I built this site as a placeto digest and document some of what I'm learning for my research along the way, especially but not limited to statistical analysis in the R programming language. 
+I built this site as a place to digest and document some of what I'm learning for my research along the way, especially but not limited to statistical analysis in the R programming language. 
 
 You can check out some of my [code](https://github.com/sxmorgan) on GitHub, my [publications](https://scholar.google.com/citations?user=bZuOHS8AAAAJ&hl=en) on Google Scholar, or my [photography](https://cargocollective.com/messex) on Cargo.
 
