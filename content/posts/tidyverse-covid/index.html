@@ -6,6 +6,7 @@ date: '2020-04-27'
 slug: tidyverse-covid-19
 output:
   blogdown::html_page:
+    fig_caption: true
     css: tomorrow.css
     toc: true
 category: tutorial
@@ -15,35 +16,35 @@ tags:
   - r-stats
   - forslund-lab
 summary:
-    The tidyverse is a set of actively developed and well-maintained R packages to facilitate the typical data analysis workflow. Most but not all of the core tidyverse packages (there are now 8) were designed by Hadley Wickham, chief scientist at R Studio since 2013. He's written a book, _R for Data Science_, which is an incredible resource for all programming levels, and given plenty of conceptual talks which are of course available on YouTube.
+    The tidyverse is a set of actively developed and well-maintained R packages to facilitate the typical data analysis workflow. We're going to demo it using data from the COVID Tracking Project in the US.
 ---
 
   <link rel="stylesheet" href="tomorrow.css" type="text/css" />
 
 <div id="TOC">
 <ul>
+<li><a href="#history">History</a></li>
 <li><a href="#tidy-philosophy">Tidy Philosophy</a></li>
 <li><a href="#import">Import</a></li>
 <li><a href="#munge">Munge</a></li>
-<li><a href="#plot">Plot</a></li>
+<li><a href="#visualize">Visualize</a></li>
 </ul>
 </div>
 
-<p>The <a href="https://www.tidyverse.org/packages/">tidyverse</a> is a set of actively developed and well-maintained R packages to facilitate the typical data analysis workflow. Most but not all of the core tidyverse packages (there are now 8) were designed by Hadley Wickham, chief scientist at R Studio since 2013. He’s written a book, <em><a href="https://r4ds.had.co.nz/">R for Data Science</a></em>, which is an incredible resource for all programming levels, and given plenty of <a href="https://www.youtube.com/watch?v=9YTNYT1maa4">talks</a> which are of course available on YouTube.</p>
-<p>Many R programmers who don’t explicitly know what the tidyverse is have at least used <code>ggplot2</code>, and if they got their start in base R as I did, probably found it annoying because of the slightly different syntax. Hadley got the idea for <code>ggplot</code> around 2007 after he read <em><a href="https://towardsdatascience.com/a-comprehensive-guide-to-the-grammar-of-graphics-for-effective-visualization-of-multi-dimensional-1f92b4ed4149">The Grammar of Graphics</a></em>, a statistical textbook from the 1980s that looked at the fundamentals of data visualization. Grammar is an attribute of language that tells us how elements must be expressed in order to be understood, and where human languages predominately evolve the grammars that distinguish them functionally, programming languages are designed to suit a specific need. <em>The Grammar of Graphics</em> provides a flexible and concise way to describe data visualizations that was eventually embedded in the R programming language (hence <strong>gg</strong>plot).</p>
+<div id="history" class="section level2">
+<h2>History</h2>
+<p>The <a href="https://www.tidyverse.org/packages/">tidyverse</a> is a set of actively developed and well-maintained R packages to facilitate the typical data analysis workflow. Most but not all of the core tidyverse packages (there are now 8) were designed by Hadley Wickham, chief scientist at R Studio since 2013. His book <em><a href="https://r4ds.had.co.nz/">R for Data Science</a></em> is an incredible resource for all programming levels and will be referenced throughout this tutorial. Plenty of his talks and interviews are available on YouTube; <a href="(https://www.youtube.com/watch?v=9YTNYT1maa4)">here’s</a> my favorite from the VIZBI conference at EMBL last year.</p>
+<p>Many R programmers who don’t explicitly know what the tidyverse is have at least used <code>ggplot2</code>, and if they got their start in base R as I did, probably found it annoying because of the slightly different syntax. The inspiration behind it was to be the first open source implementation of <em><a href="https://towardsdatascience.com/a-comprehensive-guide-to-the-grammar-of-graphics-for-effective-visualization-of-multi-dimensional-1f92b4ed4149">The Grammar of Graphics</a></em>, a statistical textbook from the 1980s that provided a concise way to describe a range of data visualizations. Grammar is simply an attribute of language that dictates how elements must be expressed in order to be understood, and where human languages predominately evolve the grammar that distinguishes them functionally, programming languages can be tailored and tweaked. that was eventually embedded in the R programming language (hence <strong>gg</strong>plot).</p>
 <p>The goal of <code>ggplot</code> - getting from data to visualization more intuitively - paved the way for the rest of the tidyverse. R users who have ever melted or reshaped a data frame might be curious to know that those packages were also Hadley’s work and key predecessors of the <code>dplyr</code> and <code>tidyr</code> packages in the current core tidyverse. As he puts it, very often the key to creating a visualization is about getting the data in the right form.</p>
-<p><img src="data/data.science.process.png" alt="Figure 1 from R for Data Science" /> <br> image above because it unites the computational data sciences regardless of motivating discipline or question and encapsulates my entire job as a researcher: it starts with data and ends with me communicating something I’ve learned from the nonlinear process of exploring that data. This process was already strenuous during my master’s thesis, so I knew that I would need to get a lot better at organizing my efforts and gain a lot of technical proficiency in order to complete my PhD. The tidyverse attracted me because it offered consistency and complete workflow coverage, which felt like were the best ways to attain the fluency I needed to do my job effectively.</p>
+<p><img src="data/data.science.process.png" alt="Figure 1 from R for Data Science" /> <br> The workflow above encapsulates my work as a computational scientist and unites me with others: regardless of discipline or motivating question, it starts with data and ends with me communicating something I’ve learned from the nonlinear process of exploring that data. The tidyverse attracted me because it offered consistency throughout, which felt like the best ways to attain fluency and proficiency.</p>
 <p>At most I hope I can inspire someone else to interact with their data science questions differently too - with more curiosity and flow, and less frustration and disorganization - and at the very least I hope people will consider using chaining syntax for more readable code.</p>
-<div id="tidy-philosophy" class="section level3">
-<h3>Tidy Philosophy</h3>
 </div>
-<div id="import" class="section level3">
-<h3>Import</h3>
+<div id="tidy-philosophy" class="section level2">
+<h2>Tidy Philosophy</h2>
+</div>
+<div id="import" class="section level2">
+<h2>Import</h2>
 <p>We’re going to be using data from the COVID Tracking Project in the US. The API is easily accessible, and a woman already created a wrapper package for R to make accessing historical and current statistics incredibly simple.</p>
-<div class="figure">
-<img src="data/covidtracking.png" />
-
-</div>
 <p>Calling <code>library(tidyverse)</code> will load all the functions we’ll need today, except we must also import <code>magrittr</code>, which provides us with the pipe (<code>%&gt;%</code>) operator and some ‘aliases’ useful when using chaining syntax.</p>
 <pre class="r"><code>library(tidyverse)  # data science toolkit
 library(magrittr)   # corresponding operators
@@ -108,8 +109,8 @@ states.population</code></pre>
 ## 10    10 Michigan       10045029
 ## # … with 42 more rows</code></pre>
 </div>
-<div id="munge" class="section level3">
-<h3>Munge</h3>
+<div id="munge" class="section level2">
+<h2>Munge</h2>
 <p>To munge is to manipulate raw data. We’ll start by combining the three different datasets we have loaded to look at testing rates among the most populated states.</p>
 <pre class="r"><code>testing.data &lt;- states.data %&gt;%
     left_join(states.abbrev, by = c(&#39;state&#39; = &#39;abbreviation&#39;)) %&gt;%
@@ -156,14 +157,14 @@ testing.data %&gt;%
 ## 10 DE    2020-04-30              21820     4    30
 ## # … with 2,472 more rows</code></pre>
 </div>
-<div id="plot" class="section level3">
-<h3>Plot</h3>
+<div id="visualize" class="section level2">
+<h2>Visualize</h2>
 <style type="text/css">
 img {
     display: block;
     margin-left: auto;
     margin-right: auto;
-    width: 60%;
+    width: 70%;
     padding: 10px
 }
 </style>
