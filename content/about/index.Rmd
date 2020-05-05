@@ -10,13 +10,13 @@ img {
 <img src="intranet_square_sm.png">
 <!-- ![](intranet_square_sm.png) -->
 
-**I'm Morgan,** a second year computational biology / bioinformatics PhD student in the [Forslund Lab](https://www.mdc-berlin.de/forslund) at the Experimental and Clinical Research Center in Berlin, Germany.
+**I'm Morgan,** a second year systems biology / bioinformatics PhD student in the [Forslund Lab](https://www.mdc-berlin.de/forslund) at the Experimental and Clinical Research Center in Berlin, Germany.
 
 My academic background consists of a BSc in Pharmaceutical Sciences from Purdue University (2015) and an MSc in Systems Biology from Heidelberg University (2018). Though my curiosity to learn the inner workings of the human body has been the strongest influence of my career decisions, I have nurtured a joy for programming since I first took Java in high school. The past year that has manifest as a deepened interest in data science.  
 
 In the next two years I hope to (1) benchmark and advance the statistical methods being widely deployed in microbiome research in order to (2) yield more robust biomarkers for complex disease phenotypes when exploring host-microbiome interactions from clinical collaborations. I do hope to elaborate on this here for different audiences, but for now please check out the lab homepage for more context on my work. 
 
-Here is where I hope to digest and document some of what I'm learning for my research along the way, especially but not limited to statistical analysis in the R programming language. 
+I built this site as a place to digest and document some of what I'm learning for my research along the way, especially but not limited to statistical analysis in the R programming language. 
 
 You can check out some of my [code](https://github.com/sxmorgan) on GitHub, my [publications](https://scholar.google.com/citations?user=bZuOHS8AAAAJ&hl=en) on Google Scholar, or my [photography](https://cargocollective.com/messex) on Cargo.
 
