@@ -66,7 +66,7 @@
 
 <div id="TOC">
 <ul>
-<li><a href="#history">History</a></li>
+<li><a href="#background">Background</a></li>
 <li><a href="#tidy-philosophy">Tidy Philosophy</a></li>
 <li><a href="#import">Import</a></li>
 <li><a href="#munge">Munge</a></li>
@@ -74,23 +74,23 @@
 </ul>
 </div>
 
-<div id="history" class="section level2">
-<h2>History</h2>
-<p>The <a href="https://www.tidyverse.org/packages/">tidyverse</a> is a set of actively developed and well-maintained R packages to facilitate the typical data analysis workflow. Most but not all of the core tidyverse packages (there are now 8) were designed by Hadley Wickham, chief scientist at R Studio since 2013. His book <em><a href="https://r4ds.had.co.nz/">R for Data Science</a></em> is an incredible resource for all programming levels and will be referenced throughout this tutorial. Plenty of his talks and interviews are available on YouTube; <a href="https://www.youtube.com/watch?v=9YTNYT1maa4">here’s</a> my favorite from the VIZBI conference at EMBL last year.</p>
-<p>Many R programmers who don’t explicitly know what the tidyverse is have at least used <code>ggplot2</code>, and if they got their start in base R as I did, probably found it annoying because of the slightly different syntax. The inspiration behind it was to be the first open source implementation of <em><a href="https://towardsdatascience.com/a-comprehensive-guide-to-the-grammar-of-graphics-for-effective-visualization-of-multi-dimensional-1f92b4ed4149">The Grammar of Graphics</a></em> (hence <strong>gg</strong>plot), a statistical textbook from the 1980s that provided a concise way to describe a range of data visualizations. Grammar is simply an attribute of language that dictates how elements must be expressed in order to be understood, and where human languages predominately evolve the grammar that distinguishes them functionally, programming languages can be tailored and tweaked. The tidyverse is a kind of Esperanto in that regard.</p>
-<p>The goal of <code>ggplot</code> though - getting from data to visualization more intuitively - is what paved the way for the rest of the tidyverse. R users who have ever melted or reshaped a data frame might be curious to know that those packages were also Hadley’s work and key predecessors of the <code>dplyr</code> and <code>tidyr</code> packages in the current core tidyverse. As he puts it, very often the key to creating a visualization is about getting the data in the right form.</p>
-<p><img src="data/data.science.process.png" alt="Figure 1 from R for Data Science" /> <br> I like seeing the simple workflow above because it encapsulates my work as a computational scientist and places me firmly in the growing field of data science: regardless of discipline or motivating question, the work starts with data and ends with communicating something learned from the nonlinear process of exploring that data. The tidyverse attracted me because it offered complete workflow coverage and consistency throughout, which felt like the best ways to attain fluency and proficiency. Once I got into it, I realized that the weird syntax that kept me from liking <code>ggplot2</code> a few years ago is exactly what gives it those attractive qualities.</p>
+<div id="background" class="section level2">
+<h2>Background</h2>
+<p>The <a href="https://www.tidyverse.org/packages/">tidyverse</a> is a set of actively developed and well-maintained R packages to facilitate the typical data analysis workflow. Most but not all of the core tidyverse packages (there are now 8) were designed by Hadley Wickham, chief scientist at R Studio since 2013. His book <em><a href="https://r4ds.had.co.nz/">R for Data Science</a></em> is an incredible resource that is only roughly summarized in this tutorial. Plenty of his talks and interviews are available on YouTube as well; <a href="https://www.youtube.com/watch?v=9YTNYT1maa4">here’s</a> my favorite from the VIZBI conference at EMBL last year.</p>
+<p>Many R programmers who don’t explicitly know what the tidyverse is have at least used <code>ggplot2</code>, and if they got their start in base R as I did, probably found it annoying because of the slightly different syntax. The inspiration behind it was to be the first open source implementation of <em><a href="https://towardsdatascience.com/a-comprehensive-guide-to-the-grammar-of-graphics-for-effective-visualization-of-multi-dimensional-1f92b4ed4149">The Grammar of Graphics</a></em> (hence <strong>gg</strong>plot), a statistical textbook from the 1980s that provided a concise way to describe a range of data visualizations. Grammar is simply an attribute of language that dictates how elements must be expressed in order to be understood, and where human languages predominately evolve the grammar that distinguishes them functionally, programming languages can be tailored and tweaked.</p>
+<p>The goal of <code>ggplot</code> - getting from data to visualization more intuitively - is what paved the way for the rest of the tidyverse. R users who have ever melted or reshaped a data frame might be curious to know that those packages were also Hadley’s work and key predecessors of the <code>dplyr</code> and <code>tidyr</code> packages in the current core tidyverse. As he puts it, very often the key to creating a visualization is about getting the data in the right form, hence the emphasis on data manipulation.</p>
+<p><img src="data/data.science.process.png" alt="Figure 1 from R for Data Science" /> <br> I like seeing the simple workflow above because it encapsulates my entire job as a researcher and places it firmly in the growing field of data science: regardless of discipline or motivating question, the work starts with data and ends with communicating something learned from the nonlinear process of exploring that data. The tidyverse attracted me because it offered complete workflow coverage and consistency throughout, which felt like the best way to attain fluency and proficiency. Once I got into it, I realized that the weird syntax that kept me from liking <code>ggplot2</code> a few years ago is exactly what gives it those attractive qualities.</p>
 </div>
 <div id="tidy-philosophy" class="section level2">
 <h2>Tidy Philosophy</h2>
 </div>
 <div id="import" class="section level2">
 <h2>Import</h2>
-<p>We’re going to be using data from the COVID Tracking Project in the US. The API is easily accessible, and a woman already created a wrapper package for R to make accessing historical and current statistics incredibly simple.</p>
-<p>Calling <code>library(tidyverse)</code> will load all the functions we’ll need today, except we must also import <code>magrittr</code>, which provides us with the pipe (<code>%&gt;%</code>) operator and some ‘aliases’ useful when using chaining syntax.</p>
+<p>We’re going to be using data from the <a href="https://covidtracking.com/">COVID Tracking Project</a> in the US. The API is easily accessible, and a woman already created a wrapper package for R to make accessing historical and current statistics incredibly simple.</p>
+<p>Calling <code>library(tidyverse)</code> will load all the functions we’ll need, except we must also import <code>magrittr</code>, which provides us with the pipe (<code>%&gt;%</code>) operator and some ‘aliases’ useful when using chaining syntax.</p>
 <pre class="r"><code>library(tidyverse)  # data science toolkit
 library(magrittr)   # corresponding operators
-library(covid19us)  # scrapes https://covidtracking.com/ API
+library(covid19us)  # scrapes API
 library(ggsci)      # custom color palettes
 library(ggpubr)     # publication-ready plots</code></pre>
 <p>Then, let’s load the complete longitudinal dataset and select the variables that will be relevant for our analysis.</p>
