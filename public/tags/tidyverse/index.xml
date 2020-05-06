@@ -6,18 +6,27 @@
     <description>Recent content in tidyverse on data&#43;science</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 27 Apr 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 02 May 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/tidyverse/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>Introduction to the Tidyverse</title>
+      <title>A Simple Tidyverse Workflow</title>
       <link>/posts/tidyverse-covid-19/</link>
-      <pubDate>Mon, 27 Apr 2020 00:00:00 +0000</pubDate>
+      <pubDate>Sat, 02 May 2020 00:00:00 +0000</pubDate>
       
       <guid>/posts/tidyverse-covid-19/</guid>
-      <description>The tidyverse is a set of actively developed and well-maintained R packages to facilitate the typical data analysis workflow. We&amp;rsquo;re going to demo it using data from the COVID Tracking Project in the US.</description>
+      <description>Exploratory data analysis with COVID-19 testing and prognosis in the US.</description>
+    </item>
+    
+    <item>
+      <title>A Case for the Tidyverse</title>
+      <link>/posts/why-tidyverse/</link>
+      <pubDate>Mon, 27 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/posts/why-tidyverse/</guid>
+      <description>The tidyverse is a set of actively developed and well-maintained R packages to facilitate the typical data analysis workflow. Here&amp;rsquo;s why you should use it in your projects.</description>
     </item>
     
   </channel>
