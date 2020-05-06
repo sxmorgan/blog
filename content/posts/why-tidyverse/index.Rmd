@@ -36,11 +36,31 @@ The canonical data analysis workflow above also encapsulates my entire job as a 
 
 ## Favorite Features
 
+To show my favorite features, let's load the **mtcars** data frame.
+
+```{r knitr, include = FALSE}
+knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+```
+
+```{r load.mtcars}
+data(mtcars)
+head(mtcars)
+```
+
 ### Tibbles
 - tibble and readr
 - no rownames
 - shows types
 - no console overflow
+
+Then, let's transform it to a [tibble](https://tibble.tidyverse.org/) and see if you can spot the differences.
+
+```{r as.tibble}
+library(tibble)
+as_tibble(mtcars)
+```
+
+Two things should stand out: our rownames are missing and the data type of each column is now displayed in the console. A bit more subtle differences: the full dimensions of the data are printed, and we didn't need to call `head` - the first 10 rows were automatically displayed.
 
 ### Pipes
 - pipe and magrittr
