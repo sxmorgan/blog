@@ -18,11 +18,9 @@ summary:
     The tidyverse is a set of actively developed and well-maintained R packages to facilitate the typical data analysis workflow. Here's why you should use it in your projects.
 ---
 
-The [tidyverse](https://www.tidyverse.org/packages/) is a set of actively developed and well-maintained R packages to facilitate the typical data analysis workflow. 
-
 ## Inspiration and Inception
 
-Most but not all of the core tidyverse packages (there are now 8) were designed by [Hadley Wickham](http://hadley.nz/), chief scientist at RStudio since 2013. His book _[R for Data Science](https://r4ds.had.co.nz/)_ is an incredible resource that is only roughly summarized in this tutorial. Plenty of his talks and interviews are available on YouTube as well; [here's](https://www.youtube.com/watch?v=9YTNYT1maa4) my favorite from the [VIZBI](https://vizbi.org/) conference at EMBL last year. 
+The [tidyverse](https://www.tidyverse.org/packages/) is a set of actively developed and well-maintained R packages to facilitate the typical data analysis workflow. Most but not all of the core tidyverse packages (there are now 8) were designed by [Hadley Wickham](http://hadley.nz/), chief scientist at RStudio since 2013. His book _[R for Data Science](https://r4ds.had.co.nz/)_ is an incredible resource that is only roughly summarized in this tutorial. Plenty of his talks and interviews are available on YouTube as well; [here's](https://www.youtube.com/watch?v=9YTNYT1maa4) my favorite from the [VIZBI](https://vizbi.org/) conference at EMBL last year. 
 
 Many R programmers who don't explicitly know what the tidyverse is have at least used `ggplot2`, and if they got their start in base R as I did, probably found it annoying because of the slightly different syntax. The inspiration behind it was to be the first open source implementation of _[The Grammar of Graphics](https://towardsdatascience.com/a-comprehensive-guide-to-the-grammar-of-graphics-for-effective-visualization-of-multi-dimensional-1f92b4ed4149)_ (hence **gg**plot), a statistical textbook from the 1980s that provided a concise way to describe a range of data visualizations. Grammar is simply an attribute of language that dictates how elements must be expressed in order to be understood, and where human languages predominately evolve the grammar that distinguishes them functionally, programming languages can be tailored and tweaked. 
 
@@ -39,27 +37,29 @@ The canonical data analysis workflow above also encapsulates my entire job as a 
 ## Favorite Features
 
 ### Tibbles
-tibble and readr
-no rownames
-shows types
-no console overflow
+- tibble and readr
+- no rownames
+- shows types
+- no console overflow
 
 ### Pipes
-pipe and magrittr
-seamless with ggplot syntax
-data frame doesn't always have to be first argument
-readability
+- pipe and magrittr
+- seamless with ggplot syntax
+- data frame doesn't always have to be first argument
+- works with other functions
+- bit of relative programming, purrr? later?
+- readability
 
 ### Wrangling
-dplyr and tidyr
-mutate
-gather and spread
-nesting and summarizing
+- dplyr and tidyr
+- mutate
+- gather and spread
+- nesting and summarizing
 
 ### Strings and Factors
-stringr - str_detect with filter
-forcats for factors - useful before plotting
-ideal for working with two annoying data types
+- stringr - str_detect with filter
+- forcats for factors - useful before plotting
+- ideal for working with two annoying data types
 
 ## TL;DR
 
@@ -69,7 +69,7 @@ R is an open source programming language already tailored to statistical analysi
 
 It involves learning some new syntax, and some lingo. For light R users, simply investing in tibbles and the pipe (`%>%`) operator will allow you to interact with your raw data in a less frustrating and error-prone manner and generate more readable code. Similarly, understanding even a little bit how `ggplot2` was structured will make working with it more intuitive.
 
-For those working extensively in R, committing to tidy data structures will make you a better, more curious programmer. Especially if you are self-taught, the tidyverse is the quickest path to proficiency for data analysis in R. The [documentation](https://tidyverse.tidyverse.org/) is immaculate, there are [cheatsheets](https://rstudio.com/resources/cheatsheets/) as well as [deeper resources](https://rstudio.com/resources/books/) available, plus an active community on GitHub and Stack Overflow. Mastery of the basics opens up a wealth of more advanced tools that I will advocate for in future posts, like nested list-columns and the `purrr` package. 
+For those working extensively in R, committing to that as well as tidy data structures will make you a better, more curious programmer. Especially if you are self-taught, the tidyverse is the quickest path to proficiency for data analysis in R. The [documentation](https://tidyverse.tidyverse.org/) is immaculate, there are [cheatsheets](https://rstudio.com/resources/cheatsheets/) as well as [deeper resources](https://rstudio.com/resources/books/) available, plus an active community on GitHub and Stack Overflow. Mastery of the basics opens up a wealth of more advanced tools that I will advocate for in future posts, like nested list-columns and the `purrr` package. 
 
 ```{css, echo = FALSE}
 img {
