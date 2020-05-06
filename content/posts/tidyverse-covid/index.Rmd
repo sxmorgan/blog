@@ -18,16 +18,16 @@ summary:
     Exploratory data analysis with COVID-19 testing and prognosis in the US.
 ---
 
-This post is intended to be a follow up from my presentation for members of the ECRC and a resource. If you haven't seen those or are new here, check out my previous [post](../why-tidyverse) on why you should use the tidyverse. This is the workflow we'll be completing today:
+This post is intended to be a follow up resource from my presentation for members of the ECRC. If you haven't seen those or are new here, check out my previous [post](../why-tidyverse) on why you should use the tidyverse. The workflow we'll be completing is a shorter but complete version of the following:
 
 ![](../why-tidyverse/data/data.science.process.png)
 
-In follow up posts I will go through this same workflow with microbiome-specific examples, but
-for this introductory demo we are going to be using data from the [COVID Tracking Project](https://covidtracking.com/) in the US. One of my favorite things about R is the active development community: we don't need to download any files or even access this data through the API, because someone's already created a `covid19us` wrapper package to do this for us with a single line of code in R.
+
+In later posts I will go through this workflow in more fine-grained detail with microbiome-specific examples, but for this introductory demo we are going to be using data from the [COVID Tracking Project](https://covidtracking.com/) in the US. One of my favorite things about R is the active development community: we don't need to download any files or even access this data through the API, because someone's already created a `covid19us` wrapper package to do this for us with a single line of code in R.
 
 ## Import
 
-Calling `library(tidyverse)` will load all the functions we'll need, except we must also import `magrittr`, which provides us with the pipe (`%>%`) operator and some 'aliases' useful when using chaining syntax. Additionally, I always load the [ggsci](https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html) and [ggpubr](https://rpkgs.datanovia.com/ggpubr/index.html) packages for my plots.
+Calling `library(tidyverse)` will load all the packages and functions we'll need, including `magrittr`, which provides us with the pipe (`%>%`) operator and some 'aliases' useful when using chaining syntax. Sometimes I have to load this explicitly (perhaps depending on version of R) so beware. Additionally, I always load the [ggsci](https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html) and [ggpubr](https://rpkgs.datanovia.com/ggpubr/index.html) packages for my plots.
 
 ```{r knitr, include = FALSE}
 knitr::opts_chunk$set(message = FALSE, warning = FALSE)
@@ -35,7 +35,6 @@ knitr::opts_chunk$set(message = FALSE, warning = FALSE)
 
 ```{r libraries}
 library(tidyverse)
-library(magrittr) 
 library(covid19us) 
 library(ggsci) 
 library(ggpubr)
