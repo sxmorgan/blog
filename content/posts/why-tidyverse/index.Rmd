@@ -1,0 +1,34 @@
+---
+title: "A Case for the Tidyverse"
+author: Morgan Essex
+date: '2020-04-27'
+slug: why-tidyverse
+output:
+  blogdown::html_page:
+    fig_caption: true
+    css: tomorrow.css
+    toc: true
+category: article
+tags:
+  - tidyverse
+  - r-stats
+summary:
+    The tidyverse is a set of actively developed and well-maintained R packages to facilitate the typical data analysis workflow. Here's why you should use it in your projects.
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+```
+
+## Background
+The [tidyverse](https://www.tidyverse.org/packages/) is a set of actively developed and well-maintained R packages to facilitate the typical data analysis workflow. Most but not all of the core tidyverse packages (there are now 8) were designed by Hadley Wickham, chief scientist at R Studio since 2013. His book _[R for Data Science](https://r4ds.had.co.nz/)_ is an incredible resource that is only roughly summarized in this tutorial. Plenty of his talks and interviews are available on YouTube as well; [here's](https://www.youtube.com/watch?v=9YTNYT1maa4) my favorite from the VIZBI conference at EMBL last year. 
+
+Many R programmers who don't explicitly know what the tidyverse is have at least used `ggplot2`, and if they got their start in base R as I did, probably found it annoying because of the slightly different syntax. The inspiration behind it was to be the first open source implementation of _[The Grammar of Graphics](https://towardsdatascience.com/a-comprehensive-guide-to-the-grammar-of-graphics-for-effective-visualization-of-multi-dimensional-1f92b4ed4149)_ (hence **gg**plot), a statistical textbook from the 1980s that provided a concise way to describe a range of data visualizations. Grammar is simply an attribute of language that dictates how elements must be expressed in order to be understood, and where human languages predominately evolve the grammar that distinguishes them functionally, programming languages can be tailored and tweaked. 
+
+The goal of `ggplot` - getting from data to visualization more intuitively - is what paved the way for the rest of the tidyverse. R users who have ever melted or reshaped a data frame might be curious to know that those packages were also Hadley's work and key predecessors of the `dplyr` and `tidyr` packages in the current core tidyverse. As he puts it, very often the key to creating a visualization is about getting the data in the right form, hence the emphasis on data manipulation.
+
+![Figure 1 from _R for Data Science_](data/data.science.process.png)
+<br>
+The canonical data analysis workflow above also encapsulates my entire job as a researcher: regardless of discipline or motivating question, the work starts with data and ends with communicating something learned from the nonlinear process of exploring that data. The tidyverse attracted me because it offered complete workflow coverage and consistency throughout, which felt like the best way to attain fluency and proficiency. Once I got into it, I realized that the weird syntax that kept me from liking `ggplot2` a few years ago is exactly what gives it those attractive qualities.
+
+## Tidy Philosophy

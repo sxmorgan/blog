@@ -28,7 +28,7 @@ The goal of `ggplot` - getting from data to visualization more intuitively - is 
 
 ![Figure 1 from _R for Data Science_](data/data.science.process.png)
 <br>
-I like seeing the simple workflow above because it encapsulates my entire job as a researcher and places it firmly in the growing field of data science: regardless of discipline or motivating question, the work starts with data and ends with communicating something learned from the nonlinear process of exploring that data. The tidyverse attracted me because it offered complete workflow coverage and consistency throughout, which felt like the best way to attain fluency and proficiency. Once I got into it, I realized that the weird syntax that kept me from liking `ggplot2` a few years ago is exactly what gives it those attractive qualities.
+The canonical data analysis workflow above also encapsulates my entire job as a researcher: regardless of discipline or motivating question, the work starts with data and ends with communicating something learned from the nonlinear process of exploring that data. The tidyverse attracted me because it offered complete workflow coverage and consistency throughout, which felt like the best way to attain fluency and proficiency. Once I got into it, I realized that the weird syntax that kept me from liking `ggplot2` a few years ago is exactly what gives it those attractive qualities.
 
 ## Tidy Philosophy
 
@@ -112,7 +112,7 @@ img {
     display: block;
     margin-left: auto;
     margin-right: auto;
-    width: 70%;
+    width: 50em;
     padding: 10px
 }
 ```
