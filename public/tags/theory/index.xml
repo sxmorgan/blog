@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>theory on data&#43;science</title>
+    <link>/tags/theory/</link>
+    <description>Recent content in theory on data&#43;science</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 27 Apr 2020 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/theory/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>A Case for the Tidyverse</title>
+      <link>/posts/why-tidyverse/</link>
+      <pubDate>Mon, 27 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/posts/why-tidyverse/</guid>
+      <description>The tidyverse is a set of actively developed and well-maintained R packages to facilitate the typical data analysis workflow. Here&amp;rsquo;s why you should use it in your projects.</description>
+    </item>
+    
+  </channel>
+</rss>
