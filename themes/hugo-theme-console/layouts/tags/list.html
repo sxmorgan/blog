@@ -1,6 +1,6 @@
 {{ define "main" }}
 <h1>{{ .Page.Title }}</h1>
-<br/>
+
 {{ .Content }}
 
 <div class="tags-list">
@@ -9,7 +9,6 @@
         <div class="post">
             <h1><a href="{{ .Permalink }}" title="{{ .Title }}">{{ .Title }}</a></h1>
             {{ .Summary }}
-            <br><br>
         </div>
     {{ end }}
 {{ end }}
