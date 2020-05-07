@@ -24,7 +24,7 @@ The [tidyverse](https://www.tidyverse.org/packages/) is a set of actively develo
 
 Many R programmers who don't explicitly know what the tidyverse is have at least used `ggplot2`, and if they got their start in base R as I did, probably found it annoying because of the slightly different syntax. The inspiration behind it was to be the first open source implementation of _[The Grammar of Graphics](https://towardsdatascience.com/a-comprehensive-guide-to-the-grammar-of-graphics-for-effective-visualization-of-multi-dimensional-1f92b4ed4149)_ (hence **gg**plot), a statistical textbook from the 1980s that provided a concise way to describe a range of data visualizations. Grammar is simply an attribute of language that dictates how elements must be expressed in order to be understood, and where human languages predominately evolve the grammar that distinguishes them functionally, programming languages can be tailored and tweaked. 
 
-The goal of `ggplot` - getting from data to visualization more intuitively - is what paved the way for the rest of the tidyverse. R users who have ever melted or reshaped a data frame might be curious to know that those packages were also Hadley's work and key predecessors of the `dplyr` and `tidyr` packages in the current core tidyverse. As he puts it, very often the key to creating a visualization is about getting the data in the right form, hence the emphasis on data manipulation.
+The goal of `ggplot` - getting from data to visualization more intuitively - is what paved the way for the rest of the tidyverse. R users who have ever melted or reshaped a data frame might be curious to know that those packages were also Hadley's work and key milestones of the `dplyr` and `tidyr` packages in the mature tidyverse. As he puts it, very often the key to creating a visualization is about getting the data in the right form, hence the emphasis on data manipulation.
 
 ![Figure 1 from _R for Data Science_](data/data.science.process.png)
 <br>
@@ -34,7 +34,7 @@ The canonical data analysis workflow above also encapsulates my entire job as a 
 
 
 
-## Favorite Features
+## Features and Demo
 
 To show my favorite features, let's load the **mtcars** data frame.
 
@@ -47,12 +47,6 @@ data(mtcars)
 head(mtcars)
 ```
 
-### Tibbles
-- tibble and readr
-- no rownames
-- shows types
-- no console overflow
-
 Then, let's transform it to a [tibble](https://tibble.tidyverse.org/) and see if you can spot the differences.
 
 ```{r as.tibble}
@@ -60,26 +54,109 @@ library(tibble)
 as_tibble(mtcars)
 ```
 
-Two things should stand out: our rownames are missing and the data type of each column is now displayed in the console. A bit more subtle differences: the full dimensions of the data are printed, and we didn't need to call `head` - the first 10 rows were automatically displayed.
+Two things should stand out: our rownames are missing and the data type of each column is now displayed in the console. Subtler differences: the full dimensions of the data are printed, and the first 10 rows were automatically displayed without us needing to call `head()`. If you're following along in your own R console or R Notebook, there will be pronounced sylistic changes.
+
+### Tibbles
+
+Aside from the lack of rownames, which is a philosophy choice of the tidyverse I will get back to shortly, the other changes are upgrades to the data frame in my opinion. I frequently need to peek at my data structures in the console when I'm programming, and always hated having to type e.g. `head()` or `dim()` to get information I needed to proceed. I also frequently find out that a bug I'm having is because my column variables are encoded differently than I thought (e.g. an integer rather than a factor). Seeing these attributes of my variables without needing to explicitly check for them forces me to confront potential issues early on.
+
+The best programmers are the laziest programmers. Someone said that to me once and it stuck; you can only be lazy if you're good at what you do.
+
+What's even better, 99 times out of 100 any function in R that accepts a data frame as an argument will accept a tibble as is without you needing to explicitly use `as.data.frame()` on it. That's because a tibble is of class `data.frame` as well.
+
+```{r tibble.df}
+class(as_tibble(mtcars))
+```
+
+Importantly, **tibbles are _not_ equivalent to numeric matrices**, and need to undergo a few transformations before applying functions that require numeric matrices, which is frequently the case in my little biostatistics niche. I'll get back to that shortly. 
+
+On a data structure level what differentiates a tibble from data frame or a matrix is that **a tibble doesn't have rownames.** That may seem silly, but it's actually really smart. Including e.g. "SampleID" and treating it as any other column doesn't have any downsides (unless you need numeric matrices), but has the huge upside of never having to call `rownames()` when coding. The rowname is after all just another variable describing the data - why not treat it as such structurally.
+
+Most R packages don't use tibbles though, and many require rownames or matrices, which the package is aware of. There are two **key methods for interconverting between data frames/matrices** and tibbles that I use all the time. 
+
+One for converting from a data frame to a tibble to explore it in the console (`rownames_to_column()`), and another for converting from a tibble I've been working with to a data frame in order to apply an external function (`column_to_rownames()`). 
+
+```{r}
+# convert data frame with rownames (mtcars) to tibble
+as_tibble(rownames_to_column(mtcars, var = 'model'))
+
+# convert tibble to data frame with rownames
+mtcars.tbl <- as_tibble(rownames_to_column(mtcars, var = 'model'))
+head(column_to_rownames(mtcars.tbl, var = 'model'))
+```
+
+Matrices require an extra step, and if you're thinking "I thought she said this would _save_ time not _add_ steps" - here's a concrete example from one of my actual workflows. I am trying to benchmark an in-house statistical package that works with numeric matrices, which looks something like this: 1) use `readr` to read in tabular data, which defaults to a tibble type, 2) tidy it locally i.e. obsessively print it to the console after each step to make sure it worked, 3) run two lines of code to before feeding it into that package, 4) run two more lines on the results to get it back into a tibble so I can continue my analysis. 
+
+Ultimately, typing two lines to interconvert has been a lot more efficient than having to question my data structure (literally, by asking it `dim()` or `head()` or `class(df$column)`) repeatedly throughout an exploratory analysis/tidying session. I worked exclusively in base R for my MSc thesis and remember being truly enraged for a tiny second each time I accidentally just typed a variable name and watched a huge matrix print to the console - erasing my thought process and forcing me to _retype_ along with e.g. `dim()` this time.
 
 ### Pipes
-- pipe and magrittr
-- seamless with ggplot syntax
-- data frame doesn't always have to be first argument
-- works with other functions
-- bit of relative programming, purrr? later?
-- readability
+
+One of the weirdest things about the tidyverse that probably deters beginners, as it did me, is its use of new operators: `+` in `ggplot2` and the **pipe** `%>%` elsewhere. Bioinformaticians coming from other scripting and shell languages might be more comfortable thinking flexibly about operators, but it was pretty foreign to me even as someone with a (distant) programming background. 
+
+The intent is to **make code more readable,** almost like a recipe. Indeed, the whole idea of _The Grammar of Graphics_ was to break a data visualization down into raw ingredients, which is reflected in the `ggplot2` implementation that combines these ingredients stepwise. The pipe however comes from the [magrittr](https://magrittr.tidyverse.org/) package and it functions by 'feeding' the product of a function or calculation forward to another one. 
+
+From our above example interconverting between data frames and tibbles, here's how the pipe operator would execute the same command:
+
+```{r, }
+mtcars.tbl <- mtcars %>%
+    rownames_to_column(var = 'model') %>%
+    as_tibble()
+```
+
+This is the most general way the pipe is used (but not the only one); the first line is always the variable you wish to create followed by what you're starting with followed by the `%>%` operator. In our example, `mtcars` is fed into `rownames_to_column()` which doesn't need us to explicitly give `mtcars` as a first argument anymore - same with `as_tibble()`. 
+
+In my opinion, this is not only easier to read but also a lot less frustrating when working in the console. I suspect the tidyverse developers work on Macs and aren't used to having a home/end/insert key, because cursoring around to add parentheses and whatnot without those three keys was the bane of my R existence before I started using pipes.
+
+**Importantly**, the pipe only works with tibbles, but its use extends far beyond the tidyverse: the pipe operator and 'piping' works for base R commands (like `nrow()`) and even functions from specialized packages that read data frames, too. 
+
+Here are two equivalent expressions calculating a Spearman correlation matrix from `mtcars`.
+
+```{r}
+cor.mat <- cor(mtcars, method = 'spearman')
+
+cor.mat <- mtcars %>%
+    cor(method = 'spearman')
+```
+
+The pipe actually makes the code _longer_, but what about the next step? What if we don't care at all about the actual correlation matrix and just want to plot it? 
+
+```{r, fig.show = 'hide'}
+library(corrplot)
+
+# nested function calls
+cor.plot <- corrplot(cor(mtcars, method = 'spearman'))
+
+# intermediate variable stored
+cor.mat <- cor(mtcars, method = 'spearman')
+cor.plot <- corrplot(cor.mat)
+
+cor.plot <- mtcars %>%
+    cor(method = 'spearman') %>%
+    corrplot()
+```
+
+There's a way to pipe to functions that ask for a data frame as the second or third argument, or only want a specific column of your data frame. That is slightly advanced though and I will table it for later along with the `purrr` package and formula shortcuts. 
+
+Hopefully you get the potential, but the real value of the pipe only became clearer to me the more intricate my manipulations and data structures became. I use them pretty exclusively and will continue to point out their utility to me. 
+
+Straight from the documentation, it makes code more readable by:
+
+- structuring sequences of data operations left-to-right (as opposed to from the inside and out),
+- avoiding nested function calls,
+- minimizing the need for local variables and function definitions, and
+- making it easy to add steps anywhere in the sequence of operations.
 
 ### Wrangling
-- dplyr and tidyr
-- mutate
-- gather and spread
-- nesting and summarizing
+
+<!-- - dplyr and tidyr -->
+<!-- - mutate -->
+<!-- - gather and spread -->
+<!-- - nesting and summarizing -->
 
 ### Strings and Factors
-- stringr - str_detect with filter
-- forcats for factors - useful before plotting
-- ideal for working with two annoying data types
+<!-- - stringr - str_detect with filter -->
+<!-- - forcats for factors - useful before plotting -->
+<!-- - ideal for working with two annoying data types -->
 
 ## TL;DR
 
