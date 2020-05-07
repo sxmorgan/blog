@@ -90,7 +90,7 @@
 </div>
 <div id="features-and-demo" class="section level2">
 <h2>Features and Demo</h2>
-<p>To show my favorite features, let’s load the <strong>mtcars</strong> data frame.</p>
+<p>To show my favorite features, let’s load everyone’s least favorite dataset: <strong>mtcars</strong>.</p>
 <pre class="r"><code>data(mtcars)
 head(mtcars)</code></pre>
 <pre><code>##                    mpg cyl disp  hp drat    wt  qsec vs am gear carb
@@ -100,7 +100,7 @@ head(mtcars)</code></pre>
 ## Hornet 4 Drive    21.4   6  258 110 3.08 3.215 19.44  1  0    3    1
 ## Hornet Sportabout 18.7   8  360 175 3.15 3.440 17.02  0  0    3    2
 ## Valiant           18.1   6  225 105 2.76 3.460 20.22  1  0    3    1</code></pre>
-<p>Then, let’s transform it to a <a href="https://tibble.tidyverse.org/">tibble</a> and see if you can spot the differences.</p>
+<p>It’s a data frame. Let’s transform it to a <a href="https://tibble.tidyverse.org/">tibble</a> and see if you can spot the differences.</p>
 <pre class="r"><code>library(tibble)
 as_tibble(mtcars)</code></pre>
 <pre><code>## # A tibble: 32 x 11
@@ -126,9 +126,8 @@ as_tibble(mtcars)</code></pre>
 <pre class="r"><code>class(as_tibble(mtcars))</code></pre>
 <pre><code>## [1] &quot;tbl_df&quot;     &quot;tbl&quot;        &quot;data.frame&quot;</code></pre>
 <p>Importantly, <strong>tibbles are <em>not</em> equivalent to numeric matrices</strong>, and need to undergo a few transformations before applying functions that require numeric matrices, which is frequently the case in my little biostatistics niche. I’ll get back to that shortly.</p>
-<p>On a data structure level what differentiates a tibble from data frame or a matrix is that <strong>a tibble doesn’t have rownames.</strong> That may seem silly, but it’s actually really smart. Including e.g. “SampleID” and treating it as any other column doesn’t have any downsides (unless you need numeric matrices), but has the huge upside of never having to call <code>rownames()</code> when coding. The rowname is after all just another variable describing the data - why not treat it as such structurally.</p>
-<p>Most R packages don’t use tibbles though, and many require rownames or matrices, which the package is aware of. There are two <strong>key methods for interconverting between data frames/matrices</strong> and tibbles that I use all the time.</p>
-<p>One for converting from a data frame to a tibble to explore it in the console (<code>rownames_to_column()</code>), and another for converting from a tibble I’ve been working with to a data frame in order to apply an external function (<code>column_to_rownames()</code>).</p>
+<p>On a data structural level, what differentiates a tibble from a data frame or a matrix is that <strong>a tibble doesn’t have rownames.</strong> That may seem silly, but it’s actually really smart. Including e.g. “SampleID” and treating it as any other column doesn’t have any downsides really, but has the huge upside of never having to call <code>rownames()</code> when coding. The rowname is after all just another variable describing the data - why not treat it as such structurally.</p>
+<p>Many R functions require rownames or matrices, which I would agree is a slight downside, but it’s one the package is aware of. There are two <strong>key methods for interconverting between data frames/matrices</strong> and tibbles that I use all the time to avoid this: one for converting from a data frame to a tibble to explore it in the console (<code>rownames_to_column()</code>), and another for converting from a tibble I’ve been working with to a data frame in order to apply an external function (<code>column_to_rownames()</code>).</p>
 <pre class="r"><code># convert data frame with rownames (mtcars) to tibble
 as_tibble(rownames_to_column(mtcars, var = &#39;model&#39;))</code></pre>
 <pre><code>## # A tibble: 32 x 12
@@ -160,15 +159,15 @@ head(column_to_rownames(mtcars.tbl, var = &#39;model&#39;))</code></pre>
 </div>
 <div id="pipes" class="section level3">
 <h3>Pipes</h3>
-<p>One of the weirdest things about the tidyverse that probably deters beginners, as it did me, is its use of new operators: <code>+</code> in <code>ggplot2</code> and the <strong>pipe</strong> <code>%&gt;%</code> elsewhere. Bioinformaticians coming from other scripting and shell languages might be more comfortable thinking flexibly about operators, but it was pretty foreign to me even as someone with a (distant) programming background.</p>
-<p>The intent is to <strong>make code more readable,</strong> almost like a recipe. Indeed, the whole idea of <em>The Grammar of Graphics</em> was to break a data visualization down into raw ingredients, which is reflected in the <code>ggplot2</code> implementation that combines these ingredients stepwise. The pipe however comes from the <a href="https://magrittr.tidyverse.org/">magrittr</a> package and it functions by ‘feeding’ the product of a function or calculation forward to another one.</p>
+<p>One of the weirdest things about the tidyverse that probably deters beginners, as it did me, is its use of the <strong>pipe</strong> <code>%&gt;%</code> operator Bioinformaticians coming from other scripting and shell languages might be more comfortable thinking flexibly about operators, but it was pretty foreign to me even as someone with a (distant) programming background. I didn’t know any off the top of my head except <code>&lt;-</code> and <code>=</code>.</p>
+<p>The intent of the pipe is to <strong>make code more readable,</strong> almost like a recipe. Remember, the whole idea of <em>The Grammar of Graphics</em> was to break a data visualization down into raw ingredients, and this same recipe mentality is present in the <code>ggplot2</code> implementation that combines these ingredients in a structured, stepwise way using the <code>+</code> operator. The pipe however comes from the <a href="https://magrittr.tidyverse.org/">magrittr</a> package, but it functions much the same by ‘piping’ the product of a function or calculation forward to another one.</p>
 <p>From our above example interconverting between data frames and tibbles, here’s how the pipe operator would execute the same command:</p>
 <pre class="r"><code>mtcars.tbl &lt;- mtcars %&gt;%
     rownames_to_column(var = &#39;model&#39;) %&gt;%
     as_tibble()</code></pre>
 <p>This is the most general way the pipe is used (but not the only one); the first line is always the variable you wish to create followed by what you’re starting with followed by the <code>%&gt;%</code> operator. In our example, <code>mtcars</code> is fed into <code>rownames_to_column()</code> which doesn’t need us to explicitly give <code>mtcars</code> as a first argument anymore - same with <code>as_tibble()</code>.</p>
 <p>In my opinion, this is not only easier to read but also a lot less frustrating when working in the console. I suspect the tidyverse developers work on Macs and aren’t used to having a home/end/insert key, because cursoring around to add parentheses and whatnot without those three keys was the bane of my R existence before I started using pipes.</p>
-<p><strong>Importantly</strong>, the pipe only works with tibbles, but its use extends far beyond the tidyverse: the pipe operator and ‘piping’ works for base R commands (like <code>nrow()</code>) and even functions from specialized packages that read data frames, too.</p>
+<p>Importantly, <strong>the pipe only works with tibbles and data frames</strong>, not matrices, but its use extends far beyond the tidyverse: the pipe operator and ‘piping’ works for base R commands (like <code>nrow()</code>, provided it’s the end command in your pipe) and even functions from specialized packages that read data frames, too.</p>
 <p>Here are two equivalent expressions calculating a Spearman correlation matrix from <code>mtcars</code>.</p>
 <pre class="r"><code>cor.mat &lt;- cor(mtcars, method = &#39;spearman&#39;)
 
@@ -187,7 +186,7 @@ cor.plot &lt;- corrplot(cor.mat)</code></pre>
     cor(method = &#39;spearman&#39;) %&gt;%
     corrplot()</code></pre>
 <p>There’s a way to pipe to functions that ask for a data frame as the second or third argument, or only want a specific column of your data frame. That is slightly advanced though and I will table it for later along with the <code>purrr</code> package and formula shortcuts.</p>
-<p>Hopefully you get the potential, but the real value of the pipe only became clearer to me the more intricate my manipulations and data structures became. I use them pretty exclusively and will continue to point out their utility to me.</p>
+<p>Hopefully you get the potential, but the real value of the pipe only became clearer to me the more intricate my manipulations and data structures became. I use them pretty exclusively in both my quick and dirty console programming and my polished scripts, and will continue to point out their utility to me.</p>
 <p>Straight from the documentation, it makes code more readable by:</p>
 <ul>
 <li>structuring sequences of data operations left-to-right (as opposed to from the inside and out),</li>
@@ -195,6 +194,7 @@ cor.plot &lt;- corrplot(cor.mat)</code></pre>
 <li>minimizing the need for local variables and function definitions, and</li>
 <li>making it easy to add steps anywhere in the sequence of operations.</li>
 </ul>
+<p>It even has a series of <a href="https://magrittr.tidyverse.org/reference/aliases.html">‘aliases’</a> to do common data frame calculations and manipulations (like accessing a specific column), and some that work for subsetting and inserting into lists, too (again, to come later with <code>purrr</code>). At this point I opt for <code>use_series()</code> instead of <code>$</code> and <code>extract2()</code> instead of <code>[[]]</code>.</p>
 </div>
 <div id="wrangling" class="section level3">
 <h3>Wrangling</h3>
@@ -215,7 +215,7 @@ cor.plot &lt;- corrplot(cor.mat)</code></pre>
 <p>The typical data analysis project is a set of interconnected steps - a workflow - and there are benefits to using programming as a tool throughout, including automation and reproducibility (it’s easy to save and rerun code), as well as the ability to handle more difficult problems later on.</p>
 <p>R is an open source programming language already tailored to statistical analysis. Its base implementation enables extensive modelling and visualization and thousands of specialized packages and niches have emerged on top of this (e.g. <code>phyloseq</code> for the microbiome community). The tidyverse is a large initiative to streamline the entire data analysis workflow by encompassing what comes before and after statistical analysis into a coherent set of packages.</p>
 <p>It involves learning some new syntax, and some lingo. For light R users, simply investing in tibbles and the pipe (<code>%&gt;%</code>) operator will allow you to interact with your raw data in a less frustrating and error-prone manner and generate more readable code. Similarly, understanding even a little bit how <code>ggplot2</code> was structured will make working with it more intuitive.</p>
-<p>For those working extensively in R, committing to that as well as tidy data structures will make you a better, more curious programmer. Especially if you are self-taught, the tidyverse is the quickest path to proficiency for data analysis in R. The <a href="https://tidyverse.tidyverse.org/">documentation</a> is immaculate, there are <a href="https://rstudio.com/resources/cheatsheets/">cheatsheets</a> as well as <a href="https://rstudio.com/resources/books/">deeper resources</a> available, plus an active community on GitHub and Stack Overflow. Mastery of the basics opens up a wealth of more advanced tools that I will advocate for in future posts, like nested list-columns and the <code>purrr</code> package.</p>
+<p>For those working extensively in R, committing to that as well as tidy data structures will make you a better, more curious programmer. Especially if you are self-taught, the tidyverse is the quickest path to proficiency for data analysis in R. The <a href="https://tidyverse.tidyverse.org/">documentation</a> is immaculate, there are <a href="https://rstudio.com/resources/cheatsheets/">cheatsheets</a> as well as <a href="https://rstudio.com/resources/books/">deeper resources</a> available, plus an active community on GitHub and Stack Overflow. Mastery of the basics opens up a wealth of more advanced tools that I will advocate for and explore myself in future posts, like nested list-columns and the <code>purrr</code> package.</p>
 <style type="text/css">
 img {
     display: block;
