@@ -29,12 +29,8 @@ summary:
 </ul>
 </div>
 
-<p>This post is intended to be a follow up resource from my presentation for members of the ECRC. If you haven’t seen those or are new here, check out my previous <a href="../why-tidyverse">post</a> on why you should use the tidyverse. The workflow we’ll be completing is a shorter but complete version of the following:</p>
-<div class="figure">
-<img src="../why-tidyverse/data/data.science.process.png" />
-
-</div>
-<p>In later posts I will go through this workflow in more fine-grained detail with microbiome-specific examples, but for this introductory demo we are going to be using data from the <a href="https://covidtracking.com/">COVID Tracking Project</a> in the US. One of my favorite things about R is the active development community: we don’t need to download any files or even access this data through the API, because someone’s already created a <code>covid19us</code> wrapper package to do this for us with a single line of code in R.</p>
+<p>This post is intended to be a follow up resource from my presentation for members of the ECRC. If you haven’t seen those or are new here, check out my previous <a href="../why-tidyverse">post</a> on why you should use the tidyverse.</p>
+<p>In later posts I will go through a more complete workflow in more fine-grained detail with microbiome-specific examples, but for this introductory demo we are going to be using data from the <a href="https://covidtracking.com/">COVID Tracking Project</a> in the US. One of my favorite things about R is the active development community: we don’t need to download any files or even access this data through the API, because someone’s already created a <code>covid19us</code> wrapper package to do this for us with a single line of code in R.</p>
 <div id="import" class="section level2">
 <h2>Import</h2>
 <p>Calling <code>library(tidyverse)</code> will load all the packages and functions we’ll need, including <code>magrittr</code>, which provides us with the pipe (<code>%&gt;%</code>) operator and some ‘aliases’ useful when using chaining syntax. Sometimes I have to load this explicitly (perhaps depending on version of R) so beware. Additionally, I always load the <a href="https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html">ggsci</a> and <a href="https://rpkgs.datanovia.com/ggpubr/index.html">ggpubr</a> packages for my plots.</p>
