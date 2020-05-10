@@ -68,9 +68,9 @@ What's even better, 99 times out of 100 any function in R that accepts a data fr
 class(as_tibble(mtcars))
 ```
 
-Importantly, **tibbles are _not_ equivalent to numeric matrices**, and need to undergo a few transformations before applying functions that require numeric matrices, which is frequently the case in my little biostatistics niche, and would probably be considered a downside for most (including former me).
+On a data structural level, what differentiates tibbles from data frames and a matrices is that **tibbles cannot have rownames.** That may seem silly, but it's actually really smart. Including e.g. "SampleID" and treating it as any other column doesn't really have downsides, but it has the huge upside of never having to call `rownames()` when coding. The rowname is after all just another variable describing the data - why not treat it as such structurally.
 
-On a data structural level, what differentiates a tibble from a data frame or a matrix is that **a tibble doesn't have rownames.** That may seem silly, but it's actually really smart. Including e.g. "SampleID" and treating it as any other column doesn't really have downsides, but it has the huge upside of never having to call `rownames()` when coding. The rowname is after all just another variable describing the data - why not treat it as such structurally.
+Importantly, as the code chunk above confirms,  **tibbles are _not_ equivalent to numeric matrices**, and need to undergo a few transformations before applying functions that require numeric matrices. This is frequently the case in my little biostatistics niche and would reasonably be considered a downside for most (including former me).
 
 The package is aware that many existing R functions work with rownames and/or matrices. There are two **key methods for interconverting between data frames/matrices and tibbles** that I use all the time: one for converting a data frame to a tibble so I can explore it (`rownames_to_column()`), and another for converting a tibble I've been working with to a data frame in order to apply an external function (`column_to_rownames()`). 
 
