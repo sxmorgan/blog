@@ -6,4 +6,4 @@
 <br/>
 {{ .Content }}
 
-{{ if .Params.tags }}tagged: {{ range .Params.tags }} /{{ . }}/ {{ end }} {{ else }} {{ i18n "postMetaNoTag" }} {{ end }} {{ end }}
+{{ if .Params.tags }}tagged: {{ range .Params.tags }} {{ . }} {{ end }} {{ else }} {{ i18n "postMetaNoTag" }} {{ end }} {{ end }}

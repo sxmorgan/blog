@@ -16,7 +16,7 @@ My academic background consists of a BSc in Pharmaceutical Sciences from Purdue 
 
 In the next two years I hope to (1) benchmark and advance the statistical methods being widely deployed in microbiome research in order to (2) determine more robust biomarkers of disease when exploring host-microbiome interactions from clinical collaborations. I plan to elaborate on this here for different audiences, but for now please check out the lab homepage to contextualize my work. 
 
-I built this site as a place to digest and document what I'm learning along the way. The name **("data and science")** reflects my fondness of semantics and expresses my intent to explore not only technical topics like statistical analysis in R (data), but also the resulting biological insight such analyses yield into the human microbiome (science). I feel these are slightly separate endeavors despite their dependence and overlap.
+I built this site as a place to digest and document what I'm learning along the way. The name **("data _and_ science")** expresses my fondness of semantics as well as my intent to explore not only technical topics like statistical analysis in R (data), but also the resulting biological insight such analyses yield into the human microbiome (science). I feel these are slightly separate endeavors despite their dependence and overlap.
 
 You can check out some of my [code](https://github.com/sxmorgan) on GitHub, my [publications](https://scholar.google.com/citations?user=bZuOHS8AAAAJ&hl=en) on Google Scholar, or my [photography](https://cargocollective.com/messex) on Cargo.
 

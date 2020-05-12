@@ -58,7 +58,7 @@
         
 <h1>A Case for the Tidyverse</h1>
 
-27 Apr 2020
+27 Apr 2020 // 13' read
 
 <br/>
 
@@ -66,31 +66,31 @@
 
 <div id="TOC">
 <ul>
-<li><a href="#inspiration-and-inception">Inspiration and Inception</a></li>
-<li><a href="#tidy-data">Tidy Data</a></li>
+<li><a href="#intro">Inspiration and Inception</a></li>
 <li><a href="#features-and-demo">Features and Demo</a><ul>
 <li><a href="#tibbles">Tibbles</a></li>
 <li><a href="#pipes">Pipes</a></li>
-<li><a href="#wrangling">Wrangling</a></li>
+<li><a href="#tidying-and-wrangling">Tidying and Wrangling</a></li>
 <li><a href="#strings-and-factors">Strings and Factors</a></li>
 </ul></li>
 <li><a href="#tldr">TL;DR</a></li>
 </ul>
 </div>
 
-<div id="inspiration-and-inception" class="section level2">
+<div id="intro" class="section level2">
 <h2>Inspiration and Inception</h2>
 <p>The <a href="https://www.tidyverse.org/packages/">tidyverse</a> is a set of actively developed and well-maintained R packages to facilitate the typical data analysis workflow. Most but not all of the core tidyverse packages (there are now 8) were designed by <a href="http://hadley.nz/">Hadley Wickham</a>, chief scientist at RStudio since 2013. His book <em><a href="https://r4ds.had.co.nz/">R for Data Science</a></em> is an incredible resource that is only roughly summarized in this tutorial. Plenty of his talks and interviews are available on YouTube as well; <a href="https://www.youtube.com/watch?v=9YTNYT1maa4">here’s</a> my favorite from the <a href="https://vizbi.org/">VIZBI</a> conference at EMBL last year.</p>
 <p>Many R programmers who don’t explicitly know what the tidyverse is have at least used <code>ggplot2</code>, and if they got their start in base R as I did, probably found it annoying because of the slightly different syntax. The inspiration behind it was to be the first open source implementation of <em><a href="https://towardsdatascience.com/a-comprehensive-guide-to-the-grammar-of-graphics-for-effective-visualization-of-multi-dimensional-1f92b4ed4149">The Grammar of Graphics</a></em> (hence <strong>gg</strong>plot), a statistical textbook from the 1980s that provided a concise way to describe a range of data visualizations. Grammar is simply an attribute of language that dictates how elements must be expressed in order to be understood, and where human languages predominately evolve the grammar that distinguishes them functionally, programming languages can be tailored and tweaked.</p>
-<p>The goal of <code>ggplot</code> - getting from data to visualization more intuitively - is what paved the way for the rest of the tidyverse. R users who have ever melted or reshaped a data frame might be curious to know that those packages were also Hadley’s work and key milestones of the <code>dplyr</code> and <code>tidyr</code> packages in the mature tidyverse. As he puts it, very often the key to creating a visualization is about getting the data in the right form, hence the emphasis on data manipulation.</p>
-<p><img src="data/data.science.process.png" alt="Figure 1 from R for Data Science" /> <br> The canonical data analysis workflow above also encapsulates my entire job as a researcher: regardless of discipline or motivating question, the work starts with data and ends with communicating something learned from the nonlinear process of exploring that data. The tidyverse attracted me because it offered complete workflow coverage and consistency throughout, which felt like the best way to attain fluency and proficiency. Once I got into it, I realized that the weird syntax that kept me from liking <code>ggplot2</code> a few years ago is exactly what gives it those attractive qualities.</p>
-</div>
-<div id="tidy-data" class="section level2">
-<h2>Tidy Data</h2>
+<p>The mission of <code>ggplot</code> - getting from data to visualization more intuitively by tweaking the grammar - is what paved the way for the rest of the tidyverse. R users who have ever melted or cast a data frame might be curious to know that those packages were also Hadley’s work and key milestones of the <code>dplyr</code> package in the mature tidyverse. As he puts it, very often the key to creating a visualization is about getting the data in the right form, hence the expansion into data manipulation.</p>
+<center>
+<img src="data/data.science.process.png" alt="Figure 1 from R for Data Science" /> Canonical data science workflow from <em>R for Data Science</em> <a href="https://r4ds.had.co.nz/tidy-data.html">chapter 1</a>
+</center>
+<p><br></p>
+<p>I like this representation because it contains all the tasks I do as a computational researcher. Regardless of the motivating question, my work starts with data and ends with communicating something learned from the nonlinear process of exploring that data. The tidyverse attracted me because it offered complete workflow coverage and consistency throughout, which felt like the best way to attain fluency and proficiency. Once I got into it, I realized that the weird syntax that kept me from liking <code>ggplot2</code> a few years ago is exactly what gives it those attractive qualities.</p>
 </div>
 <div id="features-and-demo" class="section level2">
 <h2>Features and Demo</h2>
-<p>To show my favorite features, let’s load everyone’s least favorite dataset: <strong>mtcars</strong>.</p>
+<p>To show my favorite features, let’s load everyone’s least favorite dataset: <strong>mtcars</strong>. It’s a data frame.</p>
 <pre class="r"><code>data(mtcars)
 head(mtcars)</code></pre>
 <pre><code>##                    mpg cyl disp  hp drat    wt  qsec vs am gear carb
@@ -100,9 +100,10 @@ head(mtcars)</code></pre>
 ## Hornet 4 Drive    21.4   6  258 110 3.08 3.215 19.44  1  0    3    1
 ## Hornet Sportabout 18.7   8  360 175 3.15 3.440 17.02  0  0    3    2
 ## Valiant           18.1   6  225 105 2.76 3.460 20.22  1  0    3    1</code></pre>
-<p>It’s a data frame. Let’s transform it to a <a href="https://tibble.tidyverse.org/">tibble</a> and see if you can spot the differences.</p>
-<pre class="r"><code>library(tibble)
-as_tibble(mtcars)</code></pre>
+<p>Let’s transform it to a <a href="https://tibble.tidyverse.org/">tibble</a> and see if you can spot the differences.</p>
+<pre class="r"><code>library(tibble)</code></pre>
+<pre><code>## Warning: package &#39;tibble&#39; was built under R version 3.6.2</code></pre>
+<pre class="r"><code>as_tibble(mtcars)</code></pre>
 <pre><code>## # A tibble: 32 x 11
 ##      mpg   cyl  disp    hp  drat    wt  qsec    vs    am  gear  carb
 ##    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
@@ -117,9 +118,9 @@ as_tibble(mtcars)</code></pre>
 ##  9  22.8     4  141.    95  3.92  3.15  22.9     1     0     4     2
 ## 10  19.2     6  168.   123  3.92  3.44  18.3     1     0     4     4
 ## # … with 22 more rows</code></pre>
-<p>Three things should stand out: our rownames are missing, the data type of each column is now displayed in the console, and the full dimensions of the data are printed. A bit subtler is that the first 10 rows were automatically displayed without us needing to call <code>head()</code>. If you’re following along in your own R console or R Notebook, there will be sylistic changes too.</p>
 <div id="tibbles" class="section level3">
 <h3>Tibbles</h3>
+<p>Three things should stand out: our rownames are missing, the data type of each column is now displayed in the console, and the full dimensions of the data are printed. A bit subtler is that the first 10 rows were automatically displayed without us needing to call <code>head()</code>. If you’re following along in your own R console or R Notebook, there will be stylistic changes too.</p>
 <p>Aside from the lack of rownames, which is a philosophy choice of the tidyverse I will get back to shortly, the other changes are upgrades to the data frame in my opinion. I frequently need to peek at my data structures in the console when I’m programming, and always hated having to type e.g. <code>head()</code> or <code>dim()</code> to get information I needed to proceed. I also frequently find out that a bug I’m having is because my column variables are encoded differently than I thought (e.g. an integer rather than a factor). Seeing these attributes of my variables in a tibble without needing to explicitly check for them forces me to confront potential issues early on.</p>
 <p>The best programmers are the laziest programmers. Someone said that to me once and it stuck; you can only be lazy if you’re good at what you do.</p>
 <p>What’s even better, 99 times out of 100 any function in R that accepts a data frame as an argument will accept a tibble as is without you needing to explicitly use <code>as.data.frame()</code> on it. That’s because a tibble is of class <code>data.frame</code> as well.</p>
@@ -194,9 +195,16 @@ cor.plot &lt;- mtcars %&gt;%
 </ul>
 <p>It even has a series of <a href="https://magrittr.tidyverse.org/reference/aliases.html">‘aliases’</a> to do common data frame calculations and manipulations (like accessing a specific column), and some that work for subsetting and inserting into lists, too (again, to come later with <code>purrr</code>). At this point, I’ll go ahead and admit that I employ <code>use_series()</code> instead of <code>$</code> and <code>extract2()</code> instead of <code>[[]]</code> 9 times out of 10 just because I find pipes so much better than typical R code. It’s a stylistic choice, and there are definitely times to use it and times it’s fine without.</p>
 </div>
-<div id="wrangling" class="section level3">
-<h3>Wrangling</h3>
-<!-- Where the pipe really shines is during the process of data wrangling or "munging" : after it's been imported, it's usually got some quirks or annoying features, or is in some -->
+<div id="tidying-and-wrangling" class="section level3">
+<h3>Tidying and Wrangling</h3>
+<p>Where the pipe really shines is during the process of data wrangling, i.e. manipulating the raw data into a format that invites further analysis. The two main packages for carrying this out are <a href="https://tidyr.tidyverse.org/">tidyr</a> and <a href="https://dplyr.tidyverse.org/">dplyr</a>.</p>
+<p>Now is finally the time to spell out what tidy data actually is.</p>
+<p>It’s a standard format that follows from the basic data structure of the tidyverse, a tibble, in which every column is a variable, every row is an observation, and every cell is a single value. Rownames, then, are not tidy. Aside from this, the <code>mtcars</code> data fulfills the other criteria.</p>
+<center>
+<img src="data/tidy.data.rep.png" /> from <em>R for Data Science</em> <a href="https://r4ds.had.co.nz/tidy-data.html">chapter 12</a>
+</center>
+<p><br></p>
+<!-- do a distance matrix? or copy some work from gespic -->
 <!-- - dplyr and tidyr -->
 <!-- - gather and spread -->
 <!-- - nesting and summarizing -->
@@ -213,8 +221,8 @@ cor.plot &lt;- mtcars %&gt;%
 <div id="tldr" class="section level2">
 <h2>TL;DR</h2>
 <p>The typical data analysis project is a set of interconnected steps - a workflow - and there are benefits to using programming as a tool throughout, including automation and reproducibility (it’s easy to save and rerun code), as well as the ability to handle more difficult problems later on.</p>
-<p>R is an open source programming language already tailored to statistical analysis. Its base implementation enables extensive modelling and visualization and thousands of specialized packages and niches have emerged on top of this (e.g. <code>phyloseq</code> for the microbiome community). The tidyverse is a large initiative to streamline the entire data analysis workflow by encompassing what comes before and after statistical analysis into a coherent set of packages.</p>
-<p>It involves learning some new syntax, and some lingo. For light R users, simply investing in tibbles and the pipe (<code>%&gt;%</code>) operator will allow you to interact with your raw data in a less frustrating and error-prone manner and generate more readable code. Similarly, understanding even a little bit how <code>ggplot2</code> was structured will make working with it more intuitive.</p>
+<p>R is an open source programming language already tailored to statistical analysis. Its base implementation enables extensive modelling and visualization, and thousands of specialized packages and niches have emerged on top of this (e.g. <code>phyloseq</code> for the microbiome community). The tidyverse is a large initiative to streamline the entire data analysis workflow by encompassing what comes before and after statistical analysis into a coherent set of packages.</p>
+<p>It involves learning some new syntax, and some lingo. For light R users, simply investing in <a href="#tibbles">tibbles</a> and the <a href="#pipes">pipe</a> (<code>%&gt;%</code>) operator will allow you to interact with your raw data in a less frustrating and error-prone manner and generate more readable code. Similarly, understanding even a little bit <a href="#intro">how</a> <code>ggplot2</code> was structured will make working with it more intuitive.</p>
 <p>For those working extensively in R, committing to that as well as tidy data structures will make you a better, more curious programmer. Especially if you are self-taught, the tidyverse provides the quickest path to proficiency for data analysis in R, not only because it’s clever but because it’s got the most resources. The <a href="https://tidyverse.tidyverse.org/">documentation</a> is immaculate, there are <a href="https://rstudio.com/resources/cheatsheets/">cheatsheets</a> as well as <a href="https://rstudio.com/resources/books/">deeper programming resources</a>, plus an active community on GitHub and Stack Overflow. Mastery of the basics opens up a wealth of more advanced tools that I will advocate for and explore myself in future posts, like nested list-columns and the <code>purrr</code> package.</p>
 <style type="text/css">
 img {
@@ -228,8 +236,7 @@ img {
 </div>
 
 
-
-
+tagged:  tidyverse  programming  r-stats  theory   
         <div class="footer">
     Powered by <a href="https://gohugo.io/">Hugo</a> and <a href="https://www.netlify.com/">Netlify</a>. 
 </div>
