@@ -39,45 +39,110 @@ library(covid19us)
 library(ggsci) 
 library(ggpubr)</code></pre>
 <p>Then, let’s load the complete longitudinal dataset and select the variables that will be relevant for our analysis.</p>
-<!-- ```{r load.data.1} -->
-<!-- states.data <- get_states_daily() %>% -->
-<!--     select(c('state','date','positive','negative','death','total_test_results')) -->
-<!-- states.data -->
-<!-- ``` -->
-<!-- Additionally, we're going to pull a csv file from https://worldpopulationreview.com/ that contains state-abbreviation pairs (e.g. CA, California) that we'll use later to 'beautify' our plots. -->
-<!-- ```{r load.data.2} -->
-<!-- states.abbrev <- read_csv('https://worldpopulationreview.com/static/states/abbr-name-list.csv') -->
-<!-- states.abbrev -->
-<!-- ``` -->
-<!-- Lastly, from that same website I have downloaded the (projected) 2020 census estimates, which we'll read in and use to standardize our data to tests per 100,000 residents. -->
-<!-- ```{r load.data.3} -->
-<!-- states.population <- 'data/covid.us.state.population.csv' %>% -->
-<!--     read_csv() %>% -->
-<!--     select(c('rank','State','Pop')) -->
-<!-- states.population -->
-<!-- ``` -->
+<pre class="r"><code>states.data &lt;- get_states_daily() %&gt;%
+    select(c(&#39;state&#39;,&#39;date&#39;,&#39;positive&#39;,&#39;negative&#39;,&#39;death&#39;,&#39;total_test_results&#39;))
+
+states.data</code></pre>
+<pre><code>## # A tibble: 3,881 x 6
+##    state date       positive negative death total_test_results
+##    &lt;chr&gt; &lt;date&gt;        &lt;int&gt;    &lt;int&gt; &lt;int&gt;              &lt;int&gt;
+##  1 AK    2020-05-13      383    30266    10              30649
+##  2 AL    2020-05-13    10617   125755   449             136372
+##  3 AR    2020-05-13     4164    69051    95              73215
+##  4 AS    2020-05-13        0      105     0                105
+##  5 AZ    2020-05-13    12176   115574   594             127750
+##  6 CA    2020-05-13    71141   994451  2934            1065592
+##  7 CO    2020-05-13    20157    91093  1009             111250
+##  8 CT    2020-05-13    34855   108088  3125             142943
+##  9 DC    2020-05-13     6584    25074   350              31658
+## 10 DE    2020-05-13     6952    27801   247              34753
+## # … with 3,871 more rows</code></pre>
+<p>Additionally, we’re going to pull a csv file from <a href="https://worldpopulationreview.com/" class="uri">https://worldpopulationreview.com/</a> that contains state-abbreviation pairs (e.g. CA, California) that we’ll use later to ‘beautify’ our plots.</p>
+<pre class="r"><code>states.abbrev &lt;- read_csv(&#39;https://worldpopulationreview.com/static/states/abbr-name-list.csv&#39;)
+
+states.abbrev</code></pre>
+<pre><code>## # A tibble: 51 x 2
+##    name                 abbreviation
+##    &lt;chr&gt;                &lt;chr&gt;       
+##  1 Alabama              AL          
+##  2 Alaska               AK          
+##  3 Arizona              AZ          
+##  4 Arkansas             AR          
+##  5 California           CA          
+##  6 Colorado             CO          
+##  7 Connecticut          CT          
+##  8 Delaware             DE          
+##  9 District Of Columbia DC          
+## 10 Florida              FL          
+## # … with 41 more rows</code></pre>
+<p>Lastly, from that same website I have downloaded the (projected) 2020 census estimates, which we’ll read in and use to standardize our data to tests per 100,000 residents.</p>
+<pre class="r"><code>states.population &lt;- &#39;data/covid.us.state.population.csv&#39; %&gt;%
+    read_csv() %&gt;%
+    select(c(&#39;rank&#39;,&#39;State&#39;,&#39;Pop&#39;))
+
+states.population</code></pre>
+<pre><code>## # A tibble: 52 x 3
+##     rank State               Pop
+##    &lt;dbl&gt; &lt;chr&gt;             &lt;dbl&gt;
+##  1     1 California     39937489
+##  2     2 Texas          29472295
+##  3     3 Florida        21992985
+##  4     4 New York       19440469
+##  5     5 Pennsylvania   12820878
+##  6     6 Illinois       12659682
+##  7     7 Ohio           11747694
+##  8     8 Georgia        10736059
+##  9     9 North Carolina 10611862
+## 10    10 Michigan       10045029
+## # … with 42 more rows</code></pre>
 </div>
 <div id="munge" class="section level2">
 <h2>Munge</h2>
 <p>To munge is to manipulate raw data. We’ll start by combining the three different datasets we have loaded to look at testing rates among the most populated states.</p>
-<!-- ```{r munge.1} -->
-<!-- testing.data <- states.data %>% -->
-<!--     left_join(states.abbrev, by = c('state' = 'abbreviation')) %>% -->
-<!--     left_join(states.population, by = c('name' = 'State')) -->
-<!-- # peeking at newly joined variables -->
-<!-- testing.data %>% -->
-<!--     select(c('state','date','name','rank','Pop')) -->
-<!-- ``` -->
-<!-- Then we'll use the lubridate package within the tidyverse to quickly split the dates into month and day components so we can look at data from the 9th of March. -->
-<!-- ```{r munge.2} -->
-<!-- testing.data %<>% -->
-<!--     mutate(month = lubridate::month(date)) %>% -->
-<!--     mutate(day = lubridate::day(date)) %>% -->
-<!--     filter(month >= 3) %>% -->
-<!--     filter(day >= 9) -->
-<!-- testing.data %>% -->
-<!--     select(c('state','date','total_test_results','month','day')) -->
-<!-- ``` -->
+<pre class="r"><code>testing.data &lt;- states.data %&gt;%
+    left_join(states.abbrev, by = c(&#39;state&#39; = &#39;abbreviation&#39;)) %&gt;%
+    left_join(states.population, by = c(&#39;name&#39; = &#39;State&#39;))
+
+# peeking at newly joined variables
+testing.data %&gt;%
+    select(c(&#39;state&#39;,&#39;date&#39;,&#39;name&#39;,&#39;rank&#39;,&#39;Pop&#39;))</code></pre>
+<pre><code>## # A tibble: 3,881 x 5
+##    state date       name                  rank      Pop
+##    &lt;chr&gt; &lt;date&gt;     &lt;chr&gt;                &lt;dbl&gt;    &lt;dbl&gt;
+##  1 AK    2020-05-13 Alaska                  49   734002
+##  2 AL    2020-05-13 Alabama                 24  4908621
+##  3 AR    2020-05-13 Arkansas                33  3038999
+##  4 AS    2020-05-13 &lt;NA&gt;                    NA       NA
+##  5 AZ    2020-05-13 Arizona                 14  7378494
+##  6 CA    2020-05-13 California               1 39937489
+##  7 CO    2020-05-13 Colorado                21  5845526
+##  8 CT    2020-05-13 Connecticut             29  3563077
+##  9 DC    2020-05-13 District Of Columbia    NA       NA
+## 10 DE    2020-05-13 Delaware                46   982895
+## # … with 3,871 more rows</code></pre>
+<p>Then we’ll use the lubridate package within the tidyverse to quickly split the dates into month and day components so we can look at data from the 9th of March.</p>
+<pre class="r"><code>testing.data %&lt;&gt;%
+    mutate(month = lubridate::month(date)) %&gt;%
+    mutate(day = lubridate::day(date)) %&gt;%
+    filter(month &gt;= 3) %&gt;%
+    filter(day &gt;= 9)
+
+testing.data %&gt;%
+    select(c(&#39;state&#39;,&#39;date&#39;,&#39;total_test_results&#39;,&#39;month&#39;,&#39;day&#39;))</code></pre>
+<pre><code>## # A tibble: 2,762 x 5
+##    state date       total_test_results month   day
+##    &lt;chr&gt; &lt;date&gt;                  &lt;int&gt; &lt;dbl&gt; &lt;int&gt;
+##  1 AK    2020-05-13              30649     5    13
+##  2 AL    2020-05-13             136372     5    13
+##  3 AR    2020-05-13              73215     5    13
+##  4 AS    2020-05-13                105     5    13
+##  5 AZ    2020-05-13             127750     5    13
+##  6 CA    2020-05-13            1065592     5    13
+##  7 CO    2020-05-13             111250     5    13
+##  8 CT    2020-05-13             142943     5    13
+##  9 DC    2020-05-13              31658     5    13
+## 10 DE    2020-05-13              34753     5    13
+## # … with 2,752 more rows</code></pre>
 </div>
 <div id="visualize" class="section level2">
 <h2>Visualize</h2>

@@ -39,58 +39,58 @@ library(ggpubr)
 
 Then, let's load the complete longitudinal dataset and select the variables that will be relevant for our analysis.
 
-<!-- ```{r load.data.1} -->
-<!-- states.data <- get_states_daily() %>% -->
-<!--     select(c('state','date','positive','negative','death','total_test_results')) -->
+```{r load.data.1}
+states.data <- get_states_daily() %>%
+    select(c('state','date','positive','negative','death','total_test_results'))
 
-<!-- states.data -->
-<!-- ``` -->
+states.data
+```
 
-<!-- Additionally, we're going to pull a csv file from https://worldpopulationreview.com/ that contains state-abbreviation pairs (e.g. CA, California) that we'll use later to 'beautify' our plots. -->
+Additionally, we're going to pull a csv file from https://worldpopulationreview.com/ that contains state-abbreviation pairs (e.g. CA, California) that we'll use later to 'beautify' our plots.
 
-<!-- ```{r load.data.2} -->
-<!-- states.abbrev <- read_csv('https://worldpopulationreview.com/static/states/abbr-name-list.csv') -->
+```{r load.data.2}
+states.abbrev <- read_csv('https://worldpopulationreview.com/static/states/abbr-name-list.csv')
 
-<!-- states.abbrev -->
-<!-- ``` -->
+states.abbrev
+```
 
-<!-- Lastly, from that same website I have downloaded the (projected) 2020 census estimates, which we'll read in and use to standardize our data to tests per 100,000 residents. -->
+Lastly, from that same website I have downloaded the (projected) 2020 census estimates, which we'll read in and use to standardize our data to tests per 100,000 residents.
 
-<!-- ```{r load.data.3} -->
-<!-- states.population <- 'data/covid.us.state.population.csv' %>% -->
-<!--     read_csv() %>% -->
-<!--     select(c('rank','State','Pop')) -->
+```{r load.data.3}
+states.population <- 'data/covid.us.state.population.csv' %>%
+    read_csv() %>%
+    select(c('rank','State','Pop'))
 
-<!-- states.population -->
-<!-- ``` -->
+states.population
+```
 
 
 ## Munge
 
 To munge is to manipulate raw data. We'll start by combining the three different datasets we have loaded to look at testing rates among the most populated states.
 
-<!-- ```{r munge.1} -->
-<!-- testing.data <- states.data %>% -->
-<!--     left_join(states.abbrev, by = c('state' = 'abbreviation')) %>% -->
-<!--     left_join(states.population, by = c('name' = 'State')) -->
+```{r munge.1}
+testing.data <- states.data %>%
+    left_join(states.abbrev, by = c('state' = 'abbreviation')) %>%
+    left_join(states.population, by = c('name' = 'State'))
 
-<!-- # peeking at newly joined variables -->
-<!-- testing.data %>% -->
-<!--     select(c('state','date','name','rank','Pop')) -->
-<!-- ``` -->
+# peeking at newly joined variables
+testing.data %>%
+    select(c('state','date','name','rank','Pop'))
+```
 
-<!-- Then we'll use the lubridate package within the tidyverse to quickly split the dates into month and day components so we can look at data from the 9th of March. -->
+Then we'll use the lubridate package within the tidyverse to quickly split the dates into month and day components so we can look at data from the 9th of March.
 
-<!-- ```{r munge.2} -->
-<!-- testing.data %<>% -->
-<!--     mutate(month = lubridate::month(date)) %>% -->
-<!--     mutate(day = lubridate::day(date)) %>% -->
-<!--     filter(month >= 3) %>% -->
-<!--     filter(day >= 9) -->
+```{r munge.2}
+testing.data %<>%
+    mutate(month = lubridate::month(date)) %>%
+    mutate(day = lubridate::day(date)) %>%
+    filter(month >= 3) %>%
+    filter(day >= 9)
 
-<!-- testing.data %>% -->
-<!--     select(c('state','date','total_test_results','month','day')) -->
-<!-- ``` -->
+testing.data %>%
+    select(c('state','date','total_test_results','month','day'))
+```
 
 
 ## Visualize
