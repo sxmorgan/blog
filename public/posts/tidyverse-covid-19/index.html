@@ -36,7 +36,7 @@
             <div class="logo terminal-prompt">
               
               
-              <a href="/" class="no-style site-name">data&#43;science</a>:~/ <a href='posts'></a> <a href='/'>posts</a>/<a href='tidyverse-covid'></a> <a href='//'>tidyverse-covid</a>/
+              <a href="/" class="no-style site-name">data&#43;science</a>:~/ <a href='posts'></a> <a href='/'>posts</a>/<a href='tidyverse-covid-19'></a> <a href='//'>tidyverse-covid-19</a>/
             </header>
           <nav class="terminal-menu">
             <ul vocab="https://schema.org/" typeof="BreadcrumbList">
@@ -197,6 +197,7 @@ testing.data %&gt;%
             as_date() }) %&gt;%
     filter(date &gt; &#39;2020-03-09&#39;)
 
+# check trimmed date range
 testing.data %&gt;%
     use_series(date) %&gt;%
     range()</code></pre>
@@ -207,11 +208,12 @@ testing.data %&gt;%
     mutate(date = as_date(date)) %&gt;%
     filter(date &gt; &#39;2020-03-09&#39;)
 
+# check trimmed date range
 testing.data %&gt;%
     use_series(date) %&gt;%
     range()</code></pre>
 <pre><code>## [1] &quot;2020-03-10&quot; &quot;2020-05-14&quot;</code></pre>
-<p>Now that we have our dates sorted out, we can standardize our testing counts per 100k residents. To do this, we’ll use <code>mutate()</code> to create a column called <code>pop.factor</code> which divides the population by 100,000 to get the number of “groups” of 100k residents in that population. We’ll <code>mutate()</code> each of our count columns, dividing by our <code>pop.factor</code>, to get our standardized values. We will select only these new columns and the other variables that we’ll need to create some basic longitudinal scatter plots, ignoring the intermediate variables like <code>pop.factor</code>.</p>
+<p>Now that we have our dates sorted out, we can standardize our testing counts per 100k residents. To do this, we’ll create a column called <code>pop.factor</code> which divides the population by 100,000 to get the number of “groups” of 100k residents in that population. We’ll <code>mutate()</code> each of our count columns, dividing by our <code>pop.factor</code>, to get our standardized values. We will select only these new columns and the other variables that we’ll need to create some basic longitudinal scatter plots, ignoring the intermediate variables like <code>pop.factor</code>.</p>
 <pre class="r"><code>testing.data %&lt;&gt;%
     mutate(pop.factor = Pop/100000) %&gt;%
     mutate(tests.std = total/pop.factor) %&gt;%
@@ -424,11 +426,10 @@ plot.data</code></pre>
     theme_pubclean()
 
 testing.plot</code></pre>
-<p><img src="/posts/tidyverse-covid/index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p><img src="/posts/tidyverse-covid-19/index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 </div>
 <div id="summarize" class="section level2">
 <h2>Summarize</h2>
-<p>There you have it.</p>
 <style type="text/css">
 img {
     display: block;

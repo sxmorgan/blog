@@ -95,7 +95,8 @@ pre {
   padding: 1em;
 }
 
-pre code {
+/* code is for ` ` snippets, pre for chunks */
+code {
   background-color: transparent;
   color: inherit;
   font-size: 100%;

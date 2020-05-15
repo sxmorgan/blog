@@ -129,6 +129,7 @@ testing.data <- raw.testing.data %>%
             as_date() }) %>%
     filter(date > '2020-03-09')
 
+# check trimmed date range
 testing.data %>%
     use_series(date) %>%
     range()
@@ -142,12 +143,13 @@ testing.data <- raw.testing.data %>%
     mutate(date = as_date(date)) %>%
     filter(date > '2020-03-09')
 
+# check trimmed date range
 testing.data %>%
     use_series(date) %>%
     range()
 ```
 
-Now that we have our dates sorted out, we can standardize our testing counts per 100k residents. To do this, we'll use `mutate()` to create a column called `pop.factor` which divides the population by 100,000 to get the number of "groups" of 100k residents in that population. We'll `mutate()` each of our count columns, dividing by our `pop.factor`, to get our standardized values. We will select only these new columns and the other variables that we'll need to create some basic longitudinal scatter plots, ignoring the intermediate variables like `pop.factor`.
+Now that we have our dates sorted out, we can standardize our testing counts per 100k residents. To do this, we'll create a column called `pop.factor` which divides the population by 100,000 to get the number of "groups" of 100k residents in that population. We'll `mutate()` each of our count columns, dividing by our `pop.factor`, to get our standardized values. We will select only these new columns and the other variables that we'll need to create some basic longitudinal scatter plots, ignoring the intermediate variables like `pop.factor`.
 
 ```{r standardized.trimmed}
 testing.data %<>%
@@ -282,7 +284,6 @@ testing.plot
 
 ## Summarize 
 
-There you have it. 
 
 ```{css, echo = FALSE}
 img {
