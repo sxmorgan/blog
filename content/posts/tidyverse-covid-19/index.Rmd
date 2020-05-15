@@ -262,9 +262,9 @@ plot.data
 
 We're finally ready to plot! 
 
-We'll use `geom_point()` so that each `std.value` is plotted individually, and use our ordered `std.metric` factor created above to dictate the color and shape. Because we used the `lubridate` package earlier to parse our dates, you might have noticed from the tibble outputs that our date column became a 'date' data type. `ggplot2` has nice built-in functions for date scales, so we'll use `scale_x_date()` and tell it that we want to tick every third week and display the dates in 'dd.mm' format. 
+We'll use `geom_point()` so that each `std.value` is plotted individually, and use our ordered `std.metric` factor created above to dictate the color and shape. Because we used the `lubridate` package earlier to parse our dates, you might have noticed from the tibble outputs that our date column became a <date> data type. `ggplot2` has nice built-in functions for date scales, so we'll use `scale_x_date()` and tell it that we want to tick every third week and display the dates in 'dd.mm' format. 
 
-If you haven't already I encourage you to explore the `ggsci` and `ggpubr` packages which offer a lot of functionality and style options. My go-to is the `scale_color_futurama()` color palette and the `theme_pubclean()` theme which really highlights the data trend of interest in my opinion, and also moves the legend to the top of the plot.
+If you haven't already I encourage you to explore the `ggsci` and `ggpubr` packages which offer a lot of functionality and style options. My go-to is the `scale_color_futurama()` color palette and the `theme_pubclean()` theme from each, respectively. The theme is a minimal one that helps highlight the data trend of interest and moves the legend to the top of the plot.
 
 ```{r, fig.height = 20}
 testing.plot <- plot.data %>%
