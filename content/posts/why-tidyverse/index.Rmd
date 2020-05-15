@@ -164,6 +164,8 @@ knitr::opts_chunk$set(message = FALSE, warning = FALSE)
 <!-- mutate -->
 
 ### Strings and Factors
+
+Coming soon
 <!-- mtuate_at -->
 <!-- - stringr - str_detect with filter -->
 <!-- - forcats for factors - useful before plotting -->
