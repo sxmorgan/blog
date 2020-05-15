@@ -35,13 +35,13 @@ summary:
 <div id="import" class="section level2">
 <h2>Import</h2>
 <p>Calling <code>library(tidyverse)</code> will load all the packages and functions we’ll need, including the pipe (<code>%&gt;%</code>) operator. I will explicitly load <code>magrittr</code> too so that I can use some aliases, as well as the debatable but economical <code>%&lt;&gt;%</code> operator, which saves a variable in place. I’m also going to load the <a href="https://lubridate.tidyverse.org/">lubridate</a> package for dealing with dates, and I always load the <a href="https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html">ggsci</a> and <a href="https://rpkgs.datanovia.com/ggpubr/index.html">ggpubr</a> packages for my plots.</p>
-<pre class="r"><code># library(covid19us) 
+<pre class="r"><code># library(covid19us) ;(
 library(tidyverse)
 library(magrittr)
 library(lubridate)
 library(ggsci) 
 library(ggpubr)</code></pre>
-<p>Then, let’s load the complete longitudinal dataset, which defaults to a tibble, and select the testing counts that will be relevant for our analysis: positive, negative, death, and total.</p>
+<p>Then, let’s call <code>read_csv()</code> on the complete longitudinal dataset url, which defaults to a tibble, and <code>select()</code> the testing counts that will be relevant for our analysis: positive, negative, death, and total.</p>
 <pre class="r"><code>states.data &lt;- &#39;https://covidtracking.com/api/v1/states/daily.csv&#39; %&gt;%
     read_csv() %&gt;%
     select(c(&#39;state&#39;,&#39;date&#39;,&#39;positive&#39;,&#39;negative&#39;,&#39;death&#39;,&#39;total&#39;)) 
@@ -81,7 +81,7 @@ states.pop</code></pre>
 ##  9     9 North Carolina 10611862
 ## 10    10 Michigan       10045029
 ## # … with 42 more rows</code></pre>
-<p>Lastly, we’re going to pull a .csv directly from that website which contains state-abbreviation pairs (e.g. CA, California) that we’ll use later to “beautify” our plots. The ‘of’ in District of Columbia in this list is capitalized incorrectly, so we’ll manually change this using the <code>str_replace()</code> function from the <a href="https://stringr.tidyverse.org/">stringr</a> package to avoid a mismatch later. We’ll also add a row for Puerto Rico, since that abbreviation is missing.</p>
+<p>Lastly, we’re going to pull another .csv directly from that website which contains state-abbreviation pairs (e.g. CA, California) that we’ll use later to “beautify” our plots. The ‘of’ in District of Columbia in this list is capitalized incorrectly, so we’ll manually <code>mutate()</code> this and apply the <code>str_replace()</code> function from the <a href="https://stringr.tidyverse.org/">stringr</a> package to avoid a mismatch later. We’ll also add a row for Puerto Rico, since that abbreviation is missing.</p>
 <pre class="r"><code>states.abbrev &lt;- &#39;https://worldpopulationreview.com/static/states/abbr-name-list.csv&#39; %&gt;%
     read_csv() %&gt;%
     mutate(name = stringr::str_replace(name, &#39;Of&#39;, &#39;of&#39;)) %&gt;%
@@ -106,14 +106,14 @@ states.abbrev</code></pre>
 <div id="tidy-and-wrangle" class="section level2">
 <h2>Tidy and Wrangle</h2>
 <p>We’ll start by joining the three different datasets we have loaded. Our <code>states.pop</code> and <code>states.abbrev</code> tibbles are both tidy and consist of 52 data points, but our <code>states.data</code> is longitudinal, so we have a lot more than 52 data points. It makes the most sense to start our pipe with that and use <code>left_join()</code> in succession to ensure that the population and abbreviation are duplicated for each date in our final joined tibble.</p>
-<p>The COVID Tracking Project has data on 56 states and territories in total, but since we’d have to go look up the populations and full names of those additional four, we will ignore them for now. We’ll rename our column with the full state names as <code>state.name</code>, and then filter out states for which we didn’t have a full name, i.e. the extra four.</p>
+<p>The COVID Tracking Project has data on 56 states and territories in total, but since we’d have to go look up the populations and full names of those additional four territories, we will ignore them for now. We’ll <code>rename()</code> our column with the full state names as <code>state.name</code>, and then filter out states for which we didn’t have a full name, i.e. the extra four territories.</p>
 <pre class="r"><code>raw.testing.data &lt;- states.data %&gt;%
     left_join(states.abbrev, by = c(&#39;state&#39; = &#39;abbreviation&#39;)) %&gt;%
     left_join(states.pop, by = c(&#39;name&#39; = &#39;State&#39;)) %&gt;%
     rename(state.name = &#39;name&#39;) %&gt;%
     filter(!is.na(state.name))
 
-# peeking at newly joined variables
+# peeking at newly joined tbl
 raw.testing.data %&gt;%
     select(c(&#39;state&#39;,&#39;date&#39;,&#39;state.name&#39;,&#39;Pop&#39;)) %&gt;%
     arrange(state.name)</code></pre>
@@ -131,13 +131,27 @@ raw.testing.data %&gt;%
 ##  9 AL    20200506 Alabama    4908621
 ## 10 AL    20200505 Alabama    4908621
 ## # … with 3,687 more rows</code></pre>
-<p>Our dates are in an ugly format, so we’ll use the <code>ymd()</code> command in the <code>lubridate</code> package to quickly parse it into a ‘year-month-day’ (ymd) format. To cut down on the size of our data of interest, let’s only look at dates after March 9th, just before many lockdown periods began.</p>
-<!-- EXPLAIN PURRR SYNTAX ! -->
+<p>Our dates are in an ugly format, so we’ll use the <code>ymd()</code> command in the <code>lubridate</code> package to quickly parse it into a prettier ‘year-month-day’ format. To cut down on the size of our data of interest, let’s only look at dates after March 9th, just before many lockdown periods began.</p>
 <pre class="r"><code>testing.data &lt;- raw.testing.data %&gt;%
     mutate_at(vars(date), ~ as_date(ymd(.))) %&gt;%
     filter(date &gt; &#39;2020-03-09&#39;)
 
 # check trimmed date range
+testing.data %&gt;%
+    use_series(date) %&gt;%
+    range()</code></pre>
+<pre><code>## [1] &quot;2020-03-10&quot; &quot;2020-05-14&quot;</code></pre>
+<p>I know the syntax of the mutate command above probably looks super weird. Firstly, I’ve opted for <code>mutate_at()</code> which doesn’t assign new values using an <code>=</code> sign like the standard <code>mutate()</code> does, but rather a <code>vars()</code> parameter which applies whatever function is specified as the second argument to the raw data in <code>vars()</code>. The function could be something simple, like <code>sum()</code>, an anonymous function similar to the <code>apply()</code> syntax (<code>function(x) {do something with x}</code>), or a shorthand as I’ve done.</p>
+<p>The shorthand is part of the <code>purrr</code> package I will dedicate a specific presentation/tutorial to because it’s a clever and elegant way to solve <strong>so</strong> many problems. For now, just know that since I used <code>mutate_at()</code> and <code>vars()</code> and got a vector, I can use a shorthand where the <code>~</code> stands for <code>function()</code> and the <code>.</code> stands for the first argument.</p>
+<p>Essentially in one line we’re saying “take the dates which were incorrectly read in as doubles <em>(the first argument from <code>vars()</code>)</em>, feed them to the functions we’ve specified: parse as ymd format with <code>ymd(.)</code>, and return formatted date objects in their place.”</p>
+<p>Here’s another way that could be done without the shorthand notation.</p>
+<pre class="r"><code>testing.data &lt;- raw.testing.data %&gt;%
+    mutate_at(vars(date), function(x) {
+        x %&gt;%
+            ymd() %&gt;%
+            as_date() }) %&gt;%
+    filter(date &gt; &#39;2020-03-09&#39;)
+
 testing.data %&gt;%
     use_series(date) %&gt;%
     range()</code></pre>

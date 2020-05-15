@@ -33,7 +33,7 @@ knitr::opts_chunk$set(message = FALSE, warning = FALSE)
 ```
 
 ```{r libraries}
-# library(covid19us) 
+# library(covid19us) ;(
 library(tidyverse)
 library(magrittr)
 library(lubridate)
@@ -41,7 +41,7 @@ library(ggsci)
 library(ggpubr)
 ```
 
-Then, let's load the complete longitudinal dataset, which defaults to a tibble, and select the testing counts that will be relevant for our analysis: positive, negative, death, and total.
+Then, let's call `read_csv()` on the complete longitudinal dataset url, which defaults to a tibble, and `select()` the testing counts that will be relevant for our analysis: positive, negative, death, and total.
 
 ```{r states.data}
 states.data <- 'https://covidtracking.com/api/v1/states/daily.csv' %>%
@@ -68,7 +68,7 @@ states.pop <- 'data/covid.us.state.population.csv' %>%
 states.pop
 ```
 
-Lastly, we're going to pull a .csv directly from that website which contains state-abbreviation pairs (e.g. CA, California) that we'll use later to "beautify" our plots. The 'of' in District of Columbia in this list is capitalized incorrectly, so we'll manually change this using the `str_replace()` function from the [stringr](https://stringr.tidyverse.org/) package to avoid a mismatch later. We'll also add a row for Puerto Rico, since that abbreviation is missing.
+Lastly, we're going to pull another .csv directly from that website which contains state-abbreviation pairs (e.g. CA, California) that we'll use later to "beautify" our plots. The 'of' in District of Columbia in this list is capitalized incorrectly, so we'll manually `mutate()` this and apply the `str_replace()` function from the [stringr](https://stringr.tidyverse.org/) package to avoid a mismatch later. We'll also add a row for Puerto Rico, since that abbreviation is missing.
 
 ```{r states.abbrev}
 states.abbrev <- 'https://worldpopulationreview.com/static/states/abbr-name-list.csv' %>%
@@ -83,7 +83,7 @@ states.abbrev
 
 We'll start by joining the three different datasets we have loaded. Our `states.pop` and `states.abbrev` tibbles are both tidy and consist of 52 data points, but our `states.data` is longitudinal, so we have a lot more than 52 data points. It makes the most sense to start our pipe with that and use `left_join()` in succession to ensure that the population and abbreviation are duplicated for each date in our final joined tibble. 
 
-The COVID Tracking Project has data on 56 states and territories in total, but since we'd have to go look up the populations and full names of those additional four, we will ignore them for now. We'll rename our column with the full state names as `state.name`, and then filter out states for which we didn't have a full name, i.e. the extra four.
+The COVID Tracking Project has data on 56 states and territories in total, but since we'd have to go look up the populations and full names of those additional four territories, we will ignore them for now. We'll `rename()` our column with the full state names as `state.name`, and then filter out states for which we didn't have a full name, i.e. the extra four territories.
 
 ```{r raw.joined}
 raw.testing.data <- states.data %>%
@@ -92,15 +92,13 @@ raw.testing.data <- states.data %>%
     rename(state.name = 'name') %>%
     filter(!is.na(state.name))
 
-# peeking at newly joined variables
+# peeking at newly joined tbl
 raw.testing.data %>%
     select(c('state','date','state.name','Pop')) %>%
     arrange(state.name)
 ```
 
-Our dates are in an ugly format, so we'll use the `ymd()` command in the `lubridate` package to quickly parse it into a 'year-month-day' (ymd) format. To cut down on the size of our data of interest, let's only look at dates after March 9th, just before many lockdown periods began.
-
-<!-- EXPLAIN PURRR SYNTAX ! -->
+Our dates are in an ugly format, so we'll use the `ymd()` command in the `lubridate` package to quickly parse it into a prettier 'year-month-day' format. To cut down on the size of our data of interest, let's only look at dates after March 9th, just before many lockdown periods began.
 
 ```{r date.filtered}
 testing.data <- raw.testing.data %>%
@@ -108,6 +106,27 @@ testing.data <- raw.testing.data %>%
     filter(date > '2020-03-09')
 
 # check trimmed date range
+testing.data %>%
+    use_series(date) %>%
+    range()
+```
+
+I know the syntax of the mutate command above probably looks super weird. Firstly, I've opted for `mutate_at()` which doesn't assign new values using an `=` sign like the standard `mutate()` does, but rather a `vars()` parameter which applies whatever function is specified as the second argument to the raw data in `vars()`. The function could be something simple, like `sum()`, an anonymous function similar to the `apply()` syntax (`function(x) {do something with x}`), or a shorthand as I've done.
+
+The shorthand is part of the `purrr` package I will dedicate a specific presentation/tutorial to because it's a  clever and elegant way to solve **so** many problems. For now, just know that since I used `mutate_at()` and `vars()` and got a vector, I can use a shorthand where the `~` stands for `function()` and the `.` stands for the first argument.
+
+Essentially in one line we're saying "take the dates which were incorrectly read in as doubles _(the first argument from `vars()`)_, feed them to the functions we've specified: parse as ymd format with `ymd(.)`, and return formatted date objects in their place."
+
+Here's another way that could be done without the shorthand notation.
+
+```{r date.sidebar}
+testing.data <- raw.testing.data %>%
+    mutate_at(vars(date), function(x) {
+        x %>%
+            ymd() %>%
+            as_date() }) %>%
+    filter(date > '2020-03-09')
+
 testing.data %>%
     use_series(date) %>%
     range()
