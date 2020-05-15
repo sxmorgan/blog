@@ -33,10 +33,10 @@ knitr::opts_chunk$set(message = FALSE, warning = FALSE)
 ```
 
 ```{r libraries}
+# library(covid19us) 
 library(tidyverse)
 library(magrittr)
 library(lubridate)
-# library(covid19us) 
 library(ggsci) 
 library(ggpubr)
 ```
@@ -159,12 +159,15 @@ Once I start making "plot tidy" manipulations I create a new `plot.data` tibble 
 <!-- https://stackoverflow.com/questions/41199496/order-of-factor-levels-in-facet-wrap -->
 ```{r}
 plot.data <- testing.data %>%
+    group_by(full_name) %>%
     arrange(desc(tests.std)) %>%
-    #mutate(ordered = paste0(date,',',std.metric))
-    mutate(ordered = 1:n())
+    nest() %>%
+    ungroup() %>%
+    mutate(ordered = 1:n()) %>%
+    unnest(data)
 
 plot.data %>%
-    select(c('tests.std','ordered'))
+    select(c('full_name','tests.std','ordered'))
 ```
 
 Now we have to collapse our four testing variables like we did earlier but didn't save. We'll use the same command we did above, except we will also include our new `ordered` column in the excluded variables parameter, and we'll be calling it on `plot.data` this time.
@@ -178,7 +181,7 @@ plot.data %<>%
 plot.data
 ```
 
-Finally, we'll order our `std.metric` variable and change the names to be a bit more intuitive.
+Finally, we'll beautify `plot.data` and order our `std.metric` variable and change the names to be a bit more intuitive for the final plots.
 
 ```{r plot.beauty}
 plot.data %<>%
@@ -188,7 +191,10 @@ plot.data %<>%
                                               `Total Test Results` = 'tests.std',
                                              `Negative Tests` = 'negative.std',
                                               `Positive Tests` = 'positive.std',
-                                              `Deaths` = 'deaths.std')) 
+                                              `Deaths` = 'deaths.std')) %>%
+    mutate_at(vars(full_name), ~ fct_reorder(., ordered))
+
+plot.data
 ```
 
 ```{r, fig.height = 20}
@@ -198,31 +204,23 @@ y.axis.max <- plot.data %>%
     max() %>%
     ceiling()
 
-# finally, plot our data
 testing.plot <- plot.data %>%
-    #filter(!is.na(full_name) & full_name != 'District Of Columbia') %>%
-    ggplot(aes(x = ordered, y = std.value)) +
+    ggplot(aes(x = date, y = std.value)) +
     geom_point(aes(color = std.metric, shape = std.metric)) +
-    # label every week on the major x axis and draw a line for each day
-    # scale_x_date(
-    #              date_breaks = '3 weeks',
-    #              #date_minor_breaks = '1 day',
-    #              date_labels = '%d.%m') +
-    # add custom y-axis breaks
-    # scale_y_continuous(breaks = seq(300, y.axis.max, 300), 
-    #                    minor_breaks = seq(100, y.axis.max, 100)) +
+    # label every 3 weeks on the major x axis
+    scale_x_date(date_breaks = '3 weeks',
+                 date_labels = '%d.%m') +
     # my personal favorite color palette
     scale_color_futurama() +
-    # make a grid; toggle scale = free on and off for different y-axes
-    facet_wrap(~ full_name, ncol = 4, scale = 'free_x') +
-    scale_x_discrete(labels = as.character(plot.data$date)) +
+    facet_wrap(~ full_name, ncol = 4) +
     # add title, remove x+y axis labels and legends
-    labs(title = 'COVID-19 Testing and Prognosis in Most Populous US States',
+    labs(title = 'COVID-19 Testing and Prognosis in US States',
          x = '', y = '', color = 'Per 100k Residents:', shape = 'Per 100k Residents:') +
     theme_pubclean()
 
 testing.plot
 ```
+
 ## Summarize 
 
 ```{css, echo = FALSE}
