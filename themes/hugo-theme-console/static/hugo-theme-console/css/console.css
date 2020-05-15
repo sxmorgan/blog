@@ -98,7 +98,8 @@ pre {
 /* code is for ` ` snippets, pre for chunks */
 code {
   background-color: transparent;
-  color: inherit;
+  /* color: inherit; */
+  color: #000080;
   font-size: 100%;
   padding: 0;
 }
