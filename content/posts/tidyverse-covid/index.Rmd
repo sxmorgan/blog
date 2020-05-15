@@ -20,13 +20,13 @@ summary:
 
 This post is intended to be a follow up resource from my presentation for members of the ECRC. If you haven't seen that or are new here, check out my other [post](../why-tidyverse) on why you should use the tidyverse.
 
-In later posts I will go through a more complete workflow in more fine-grained detail with microbiome-specific examples, but for this introductory demo we are going to be using data from the [COVID Tracking Project](https://covidtracking.com/) in the US. I have little experience teaching so this is an exercise for me as well, and using new data makes that easier to keep what it's like to be a learner in mind.
+In later posts I will go through a more complete workflow in more fine-grained detail with microbiome-specific examples, but for this introductory demo we are going to be using data from the [COVID Tracking Project](https://covidtracking.com/) in the US. I have little experience teaching so this is an exercise for me as well, and using data that's also unfamiliar to me makes it easier to keep in mind what it's like to be a learner.
 
-One of my favorite things about R is the active development community. In March I saw that someone had created a `covid19us` wrapper package to access the COVID Tracking Projects API directly from R; however, at the time of publication, this function sadly [isn't working](https://github.com/aedobbyn/covid19us/issues/17), so we'll use the API.
+One of my favorite things about R is the active development community. In March I saw that someone had created a `covid19us` wrapper package to access the COVID Tracking Project's API directly from R; however, at the time of writing, this function sadly [isn't working](https://github.com/aedobbyn/covid19us/issues/17), so we'll use the API.
 
 ## Import
 
-Calling `library(tidyverse)` will load all the packages and functions we'll need, including the pipe (`%>%`) operator, but I will explicitly load `magrittr` too so that I can use some aliases, as well as the debatable but economical `%<>%` operator, which saves a variable in place without making you typing the name twice. I'm also going to load the [lubridate](https://lubridate.tidyverse.org/) package for dealing with dates, and I always load the [ggsci](https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html) and [ggpubr](https://rpkgs.datanovia.com/ggpubr/index.html) packages for my plots.
+Calling `library(tidyverse)` will load all the packages and functions we'll need, including the pipe (`%>%`) operator. I will explicitly load `magrittr` too so that I can use some aliases, as well as the debatable but economical `%<>%` operator, which saves a variable in place. I'm also going to load the [lubridate](https://lubridate.tidyverse.org/) package for dealing with dates, and I always load the [ggsci](https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html) and [ggpubr](https://rpkgs.datanovia.com/ggpubr/index.html) packages for my plots.
 
 ```{r knitr, include = FALSE}
 knitr::opts_chunk$set(message = FALSE, warning = FALSE)
@@ -41,7 +41,7 @@ library(ggsci)
 library(ggpubr)
 ```
 
-Then, let's load the complete longitudinal dataset, which defaults to a tibble, and select the testing variables that will be relevant for our analysis.
+Then, let's load the complete longitudinal dataset, which defaults to a tibble, and select the testing counts that will be relevant for our analysis: positive, negative, death, and total.
 
 ```{r states.data}
 states.data <- 'https://covidtracking.com/api/v1/states/daily.csv' %>%
@@ -58,7 +58,7 @@ states.data
 # states.data
 ```
 
-Additionally, I have downloaded the (projected) 2020 census estimates of all 50 states + Washington DC and Puerto Rico from https://worldpopulationreview.com, which we'll read in and use to standardize our data to tests per 100,000 residents. 
+Additionally, I have downloaded the (projected) 2020 census estimates of all 50 states + Washington DC and Puerto Rico from https://worldpopulationreview.com, which we'll read in and use to standardize our tests per 100,000 residents. 
 
 ```{r states.pop}
 states.pop <- 'data/covid.us.state.population.csv' %>%
@@ -68,7 +68,7 @@ states.pop <- 'data/covid.us.state.population.csv' %>%
 states.pop
 ```
 
-Lastly, we're going to pull a .csv directly from that website which contains state-abbreviation pairs (e.g. CA, California) that we'll use later to 'beautify' our plots. The 'of' in District of Columbia in this list is capitalized incorrectly, so we'll manually change this using the `str_replace()` function from the [stringr](https://stringr.tidyverse.org/) package to avoid a mismatch later. We'll also add a row for Puerto Rico, since that abbreviation is missing.
+Lastly, we're going to pull a .csv directly from that website which contains state-abbreviation pairs (e.g. CA, California) that we'll use later to "beautify" our plots. The 'of' in District of Columbia in this list is capitalized incorrectly, so we'll manually change this using the `str_replace()` function from the [stringr](https://stringr.tidyverse.org/) package to avoid a mismatch later. We'll also add a row for Puerto Rico, since that abbreviation is missing.
 
 ```{r states.abbrev}
 states.abbrev <- 'https://worldpopulationreview.com/static/states/abbr-name-list.csv' %>%
@@ -81,7 +81,9 @@ states.abbrev
 
 ## Tidy and Wrangle
 
-We'll start by joining the three different datasets we have loaded. Our `states.pop` and `states.abbrev` tibbles are both tidy and consist of 52 data points, but our `states.data` is longitudinal, so we have a lot more than 52 data points. So starting our pipe with that and using `left_join()` in succession ensures the population and abbreviation are duplicated for each date in our final joined tibble.
+We'll start by joining the three different datasets we have loaded. Our `states.pop` and `states.abbrev` tibbles are both tidy and consist of 52 data points, but our `states.data` is longitudinal, so we have a lot more than 52 data points. It makes the most sense to start our pipe with that and use `left_join()` in succession to ensure that the population and abbreviation are duplicated for each date in our final joined tibble. 
+
+The COVID Tracking Project has data on 56 states and territories in total, but since we'd have to go look up the populations and full names of those additional four, we will ignore them for now. We'll rename our column with the full state names as `state.name`, and then filter out states for which we didn't have a full name, i.e. the extra four.
 
 ```{r raw.joined}
 raw.testing.data <- states.data %>%
@@ -97,6 +99,8 @@ raw.testing.data %>%
 ```
 
 Our dates are in an ugly format, so we'll use the `ymd()` command in the `lubridate` package to quickly parse it into a 'year-month-day' (ymd) format. To cut down on the size of our data of interest, let's only look at dates after March 9th, just before many lockdown periods began.
+
+<!-- EXPLAIN PURRR SYNTAX ! -->
 
 ```{r date.filtered}
 testing.data <- raw.testing.data %>%
@@ -123,31 +127,39 @@ testing.data %<>%
 testing.data
 ```
 
-By default, our states are sorted alphabetically, but what if we wanted to sort them according to their testing rates?
+By default, our states are sorted alphabetically, but what if we wanted to sort them according to their testing coverage?
 
-In a quick console sidebar, let's see which states have the highest testing rates.
+In a quick console sidebar, let's see which states are performing the most testing.
 
 ```{r sidebar.arrange}
 testing.data %>%
     arrange(desc(tests.std))
 ```
 
-In order to get a better overview, we can group our row observations by state and then nest the remaining data, which will collapse the dates and leave us with a `state.name` column where we can quickly see the ten states with the highest testing per 100k residents.
+In order to get a better overview, we can group our row observations by state and then nest the remaining data, which will collapse everything and leave us with a `state.name` column where we can quickly see the ten states with the highest testing per 100k residents.
 
 ```{r sidebar.nest}
-testing.data %>%
+temp <- testing.data %>%
     arrange(desc(tests.std)) %>%
     group_by(state.name) %>%
     nest()
+
+temp
+```
+
+The first item in our nested list-column contains a tibble for Rhode Island's data (shown below), the second item a tibble for New York, etc.  
+
+```{r sidebar.peek}
+temp$data[[1]]
 ```
 
 ## Visualize
 
-Our `testing.data` is now nice and tidy, but if you're familiar with `ggplot2` then you proabably already know that our data is not quite "plot tidy." This is not an official term, but I find it useful because it reminds me that data almost always needs to be additionally manipulated in specific ways to get a final plot. 
+Our `testing.data` is now nice and tidy, but if you're familiar with `ggplot2` then you proabably already know that our data is not quite "plot tidy." This is not an official term, but I find it useful because getting a decent plot almost always requires additional (and data-specific) manipulations. 
 
-Right now it is difficult to plot our four different testing variables on the same plot, since they're in four different columns, which would require four different `geom_point()` commands (each with a different y-axis variable). In order for us to have "plot tidy" data, we want to collapse these four columns into two 'key-value' pair columns instead: `std.metric` and `std.value`.
+Right now we have four different testing variables for each state, since they're in four different columns, which would translate into four different `geom_point()` commands (each with a different y-axis variable) in `ggplot2`. In order for us to have "plot tidy" data, we want to collapse these four columns into two 'key-value' pair columns instead: `std.metric` and `std.value`.
 
-For this the `dplyr::pivot_longer()` function [formerly `gather()`](https://github.com/tidyverse/tidyr/releases/tag/v1.0.0) will be essential. We'll tell it to ignore the state and date columns using the `cols` parameter. 
+For this the `dplyr::pivot_longer()` function, [formerly known as](https://github.com/tidyverse/tidyr/releases/tag/v1.0.0) `gather()` will be essential. We'll tell it to ignore the state and date columns by using the `cols` parameter. 
 
 ```{r plot.tidy}
 testing.data %>%
@@ -158,7 +170,11 @@ testing.data %>%
 
 Perfect. But if we want to sort our states by `tests.std` like we did above, we need to do that _before_ we collapse that variable to get everything plot tidy, hence why we didn't use `%<>%` above to save our new tibble. 
 
-We'll eventually use the `facet_wrap()` command to plot each state separately in a grid, and if we want those to be in the same order as our states, we have to make our `state.name` variable an ordered factor. Just like console sidebar above we'll first group our tibble by state and then nest and ungroup it, since nesting structurally groups the data for us. By using `mutate()` and populating our new `ordered` column from `1:n()`, each state has a unique rank.
+A side note, once I start making plot tidy manipulations I create a new `plot.data` tibble. That way, I have my `testing.data` tibble available for console sidebars to help me refine the information in `plot.data` according to what I want `ggplot2` to use and display. I've played with this enough to know that in advance so that this tutorial goes a little smoother, but it's just a suggestion/tip that's helped me.
+
+Eventually we will use the `facet_wrap()` command to plot each state separately in a grid. Just as a few code chunks ago, this will be alphabetical by default. If we rather want the grid to display states in descending order by their `tests.std` values, we have to make our `state.name` variable an _ordered_ factor, which requires a few steps that probably seem a little convuluted, but are the sort of little things that become second nature over time. 
+
+Just like console sidebar above we'll first group our tibble by state and then nest and ungroup it, since nesting "cements" and structurally groups the data for us, so we don't need it anymore and it can cause problems later. By using `mutate()` and populating our new `ordered` column from `1:n()`, each state has a unique rank.
 
 ```{r}
 plot.data <- testing.data %>%
@@ -171,9 +187,7 @@ plot.data <- testing.data %>%
 plot.data
 ```
 
-A side note, once I start making plot tidy manipulations I create a new `plot.data` tibble. That way, I have my `testing.data` tibble available for console sidebars to help me refine the information in `plot.data` according to what I want `ggplot2` to use and display. 
-
-Now that we have sorted the data and assigned each state a rank, we want to use `fct_reorder()` to reorder `state.name` by `ordered` to complete the transformation, and then unnest our tibble so we can keep going.
+The last step to prepare our grid order now that we have sorted the data and assigned each state a rank is to use `fct_reorder()` to mutate `state.name` by `ordered`. Then we can unnest our tibble in place with the `%<>%` operator and keep going. We don't need `ordered` any more so we can deselect it.
 
 ```{r}
 plot.data %<>%
@@ -184,7 +198,7 @@ plot.data %<>%
 plot.data
 ```
 
-Now that we've taken care of ordering our states, we have to collapse our four testing variables and save it this time. We'll use the same `pivot_longer()` command we did above, except on `plot.data` this time and with `%<>%`.
+Now that we've taken care of ordering, we have to collapse our four testing variables and save it this time. We'll use the same `pivot_longer()` command we did above.
 
 ```{r}
 plot.data %<>%
@@ -195,7 +209,7 @@ plot.data %<>%
 plot.data
 ```
 
-Finally, we'll beautify `plot.data` by reordering our `std.metric` variable to get the shapes and colors we want, and changing the names to be a bit more intuitive for the final plots.
+Finally, we'll beautify `plot.data` by reordering our `std.metric` variable to get the shapes and colors we want (I have prefigured to save time), and changing the names to be a bit more intuitive for the final plots.
 
 ```{r plot.beauty}
 plot.data %<>%
