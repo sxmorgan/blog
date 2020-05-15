@@ -113,11 +113,13 @@ testing.data %>%
 
 I know the syntax of the mutate command above probably looks super weird. Firstly, I've opted for `mutate_at()` which doesn't assign new values using an `=` sign like the standard `mutate()` does, but rather a `vars()` parameter which applies whatever function is specified as the second argument to the raw data in `vars()`. The function could be something simple, like `sum()`, an anonymous function similar to the `apply()` syntax (`function(x) {do something with x}`), or a shorthand as I've done.
 
-The shorthand is part of the `purrr` package I will dedicate a specific presentation/tutorial to because it's a  clever and elegant way to solve **so** many problems. For now, just know that since I used `mutate_at()` and `vars()` and got a vector, I can use a shorthand where the `~` stands for `function()` and the `.` stands for the first argument.
+The shorthand is part of the `purrr` package I will dedicate a specific presentation/tutorial to because it's a  clever and elegant way to solve **_so_** many problems. For now, just know that since I used `mutate_at()` and `vars()` and got a vector, I can use a shorthand where the `~` allows me to feed the first argument to the desired functions in the second argument using `.`.
 
-Essentially in one line we're saying "take the dates which were incorrectly read in as doubles _(the first argument from `vars()`)_, feed them to the functions we've specified: parse as ymd format with `ymd(.)`, and return formatted date objects in their place."
+Essentially in one line we're saying "take the dates which were incorrectly read in as doubles _(the first argument from `vars()`)_, parse as ymd format with `ymd(.)`, and return formatted date objects in their place."
 
-Here's another way that could be done without the shorthand notation.
+People who dislike `apply` functions for their lack of readability probably won't like the shorthand, but I'll readily admit that I use it whenever I can because a) I prefer concise code and b) it's an easy way to practice something that opens up tons of really advanced avenues. Using it has definitely made me a better programmer because I've been forced to think about _functions_.
+
+Here's another way that could be done without the shorthand notation, similar to `apply()`.
 
 ```{r date.sidebar}
 testing.data <- raw.testing.data %>%
@@ -125,6 +127,19 @@ testing.data <- raw.testing.data %>%
         x %>%
             ymd() %>%
             as_date() }) %>%
+    filter(date > '2020-03-09')
+
+testing.data %>%
+    use_series(date) %>%
+    range()
+```
+
+And lastly, here's how that would look if we used the standard `mutate()` command. Clearly I started here and played around _a lot_ to get to where the shorthand is natural. This code in two steps is more intuitively readable but less concise.
+
+```{r date.sidebar.mutate}
+testing.data <- raw.testing.data %>%
+    mutate(date = ymd(date)) %>%
+    mutate(date = as_date(date)) %>%
     filter(date > '2020-03-09')
 
 testing.data %>%

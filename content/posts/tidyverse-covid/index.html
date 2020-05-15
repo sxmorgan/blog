@@ -142,14 +142,25 @@ testing.data %&gt;%
     range()</code></pre>
 <pre><code>## [1] &quot;2020-03-10&quot; &quot;2020-05-14&quot;</code></pre>
 <p>I know the syntax of the mutate command above probably looks super weird. Firstly, I’ve opted for <code>mutate_at()</code> which doesn’t assign new values using an <code>=</code> sign like the standard <code>mutate()</code> does, but rather a <code>vars()</code> parameter which applies whatever function is specified as the second argument to the raw data in <code>vars()</code>. The function could be something simple, like <code>sum()</code>, an anonymous function similar to the <code>apply()</code> syntax (<code>function(x) {do something with x}</code>), or a shorthand as I’ve done.</p>
-<p>The shorthand is part of the <code>purrr</code> package I will dedicate a specific presentation/tutorial to because it’s a clever and elegant way to solve <strong>so</strong> many problems. For now, just know that since I used <code>mutate_at()</code> and <code>vars()</code> and got a vector, I can use a shorthand where the <code>~</code> stands for <code>function()</code> and the <code>.</code> stands for the first argument.</p>
-<p>Essentially in one line we’re saying “take the dates which were incorrectly read in as doubles <em>(the first argument from <code>vars()</code>)</em>, feed them to the functions we’ve specified: parse as ymd format with <code>ymd(.)</code>, and return formatted date objects in their place.”</p>
-<p>Here’s another way that could be done without the shorthand notation.</p>
+<p>The shorthand is part of the <code>purrr</code> package I will dedicate a specific presentation/tutorial to because it’s a clever and elegant way to solve <strong><em>so</em></strong> many problems. For now, just know that since I used <code>mutate_at()</code> and <code>vars()</code> and got a vector, I can use a shorthand where the <code>~</code> allows me to feed the first argument to the desired functions in the second argument using <code>.</code>.</p>
+<p>Essentially in one line we’re saying “take the dates which were incorrectly read in as doubles <em>(the first argument from <code>vars()</code>)</em>, parse as ymd format with <code>ymd(.)</code>, and return formatted date objects in their place.”</p>
+<p>People who dislike <code>apply</code> functions for their lack of readability probably won’t like the shorthand, but I’ll readily admit that I use it whenever I can because a) I prefer concise code and b) it’s an easy way to practice something that opens up tons of really advanced avenues. Using it has definitely made me a better programmer because I’ve been forced to think about <em>functions</em>.</p>
+<p>Here’s another way that could be done without the shorthand notation, similar to <code>apply()</code>.</p>
 <pre class="r"><code>testing.data &lt;- raw.testing.data %&gt;%
     mutate_at(vars(date), function(x) {
         x %&gt;%
             ymd() %&gt;%
             as_date() }) %&gt;%
+    filter(date &gt; &#39;2020-03-09&#39;)
+
+testing.data %&gt;%
+    use_series(date) %&gt;%
+    range()</code></pre>
+<pre><code>## [1] &quot;2020-03-10&quot; &quot;2020-05-14&quot;</code></pre>
+<p>And lastly, here’s how that would look if we used the standard <code>mutate()</code> command. Clearly I started here and played around <em>a lot</em> to get to where the shorthand is natural. This code in two steps is more intuitively readable but less concise.</p>
+<pre class="r"><code>testing.data &lt;- raw.testing.data %&gt;%
+    mutate(date = ymd(date)) %&gt;%
+    mutate(date = as_date(date)) %&gt;%
     filter(date &gt; &#39;2020-03-09&#39;)
 
 testing.data %&gt;%
