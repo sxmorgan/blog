@@ -173,7 +173,7 @@ Coming soon
 
 ## TL;DR
 
-The typical data analysis project is a set of interconnected steps - a workflow - and there are benefits to using programming as a tool throughout, including automation and reproducibility (it's easy to save and rerun code), as well as the ability to handle more difficult problems later on.
+The typical data analysis project is a set of interconnected steps - a workflow - and there are benefits to using programming as a tool throughout, including automation and reproducibility (it's easy to save and rerun code), as well as the ability to handle more difficult problems later on. For example, it can be a lot more efficient to use programming to solve plotting problems instead of Illustrator (with some practice).
 
 R is an open source programming language already tailored to statistical analysis. Its base implementation enables extensive modelling and visualization, and thousands of specialized packages and niches have emerged on top of this (e.g. `phyloseq` for the microbiome community). The tidyverse is a large initiative to streamline the entire data analysis workflow by encompassing what comes before and after statistical analysis into a coherent set of packages. 
 
