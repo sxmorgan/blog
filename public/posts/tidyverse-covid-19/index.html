@@ -58,7 +58,7 @@
         
 <h1>A Simple Tidyverse Workflow</h1>
 
-2 May 2020 // 4' read
+2 May 2020 // 11' read
 
 <br/>
 
@@ -69,60 +69,45 @@
 <li><a href="#import">Import</a></li>
 <li><a href="#munge">Munge</a></li>
 <li><a href="#visualize">Visualize</a></li>
-<li><a href="#summarize">Summarize</a></li>
 </ul>
 </div>
 
 <p>This post is intended to be a follow up resource from my presentation for members of the ECRC. If you haven’t seen those or are new here, check out my previous <a href="../why-tidyverse">post</a> on why you should use the tidyverse.</p>
-<p>In later posts I will go through a more complete workflow in more fine-grained detail with microbiome-specific examples, but for this introductory demo we are going to be using data from the <a href="https://covidtracking.com/">COVID Tracking Project</a> in the US. One of my favorite things about R is the active development community: we don’t need to download any files or even access this data through the API, because someone’s already created a <code>covid19us</code> wrapper package to do this for us with a single line of code in R.</p>
+<p>In later posts I will go through a more complete workflow in more fine-grained detail with microbiome-specific examples, but for this introductory demo we are going to be using data from the <a href="https://covidtracking.com/">COVID Tracking Project</a> in the US. I have little experience teaching so this is an exercise for me as well, and new data makes that easier to keep you in mind.</p>
+<p>One of my favorite things about R is the active development community: we don’t need to download any files or even access this data through the API, because someone’s already created a <code>covid19us</code> wrapper package to do this for us with a single line of code in R. However, at the time of publication, this function sadly <a href="https://github.com/aedobbyn/covid19us/issues/17">isn’t working</a>, so we’ll use the API.</p>
 <div id="import" class="section level2">
 <h2>Import</h2>
-<p>Calling <code>library(tidyverse)</code> will load all the packages and functions we’ll need, including <code>magrittr</code>, which provides us with the pipe (<code>%&gt;%</code>) operator and some ‘aliases’ useful when using chaining syntax. Sometimes I have to load this explicitly (perhaps depending on version of R) so beware. Additionally, I always load the <a href="https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html">ggsci</a> and <a href="https://rpkgs.datanovia.com/ggpubr/index.html">ggpubr</a> packages for my plots.</p>
+<p>Calling <code>library(tidyverse)</code> will load all the packages and functions we’ll need, including the pipe (<code>%&gt;%</code>) operator, but I will explicitly load <code>magrittr</code> so that I can use some aliases and the debatable but economical <code>%&lt;&gt;%</code> operator to save a variable in place without typing the name twice. I’m also going to load the <a href="https://lubridate.tidyverse.org/">lubridate</a> package for dealing with dates, and I always load the <a href="https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html">ggsci</a> and <a href="https://rpkgs.datanovia.com/ggpubr/index.html">ggpubr</a> packages for my plots.</p>
 <pre class="r"><code>library(tidyverse)
-library(covid19us) 
+library(magrittr)
+library(lubridate)
+# library(covid19us) 
 library(ggsci) 
 library(ggpubr)</code></pre>
-<p>Then, let’s load the complete longitudinal dataset and select the variables that will be relevant for our analysis.</p>
-<pre class="r"><code>states.data &lt;- get_states_daily() %&gt;%
-    select(c(&#39;state&#39;,&#39;date&#39;,&#39;positive&#39;,&#39;negative&#39;,&#39;death&#39;,&#39;total_test_results&#39;))
+<p>Then, let’s load the complete longitudinal dataset, which defaults to a tibble and select the testing variables that will be relevant for our analysis.</p>
+<pre class="r"><code>states.data &lt;- &#39;https://covidtracking.com/api/v1/states/daily.csv&#39; %&gt;%
+    read_csv() %&gt;%
+    select(c(&#39;state&#39;,&#39;date&#39;,&#39;positive&#39;,&#39;negative&#39;,&#39;death&#39;,&#39;total&#39;)) 
 
 states.data</code></pre>
-<pre><code>## # A tibble: 3,881 x 6
-##    state date       positive negative death total_test_results
-##    &lt;chr&gt; &lt;date&gt;        &lt;int&gt;    &lt;int&gt; &lt;int&gt;              &lt;int&gt;
-##  1 AK    2020-05-13      383    30266    10              30649
-##  2 AL    2020-05-13    10617   125755   449             136372
-##  3 AR    2020-05-13     4164    69051    95              73215
-##  4 AS    2020-05-13        0      105     0                105
-##  5 AZ    2020-05-13    12176   115574   594             127750
-##  6 CA    2020-05-13    71141   994451  2934            1065592
-##  7 CO    2020-05-13    20157    91093  1009             111250
-##  8 CT    2020-05-13    34855   108088  3125             142943
-##  9 DC    2020-05-13     6584    25074   350              31658
-## 10 DE    2020-05-13     6952    27801   247              34753
-## # … with 3,871 more rows</code></pre>
-<p>Additionally, we’re going to pull a csv file from <a href="https://worldpopulationreview.com/" class="uri">https://worldpopulationreview.com/</a> that contains state-abbreviation pairs (e.g. CA, California) that we’ll use later to ‘beautify’ our plots.</p>
-<pre class="r"><code>states.abbrev &lt;- read_csv(&#39;https://worldpopulationreview.com/static/states/abbr-name-list.csv&#39;)
-
-states.abbrev</code></pre>
-<pre><code>## # A tibble: 51 x 2
-##    name                 abbreviation
-##    &lt;chr&gt;                &lt;chr&gt;       
-##  1 Alabama              AL          
-##  2 Alaska               AK          
-##  3 Arizona              AZ          
-##  4 Arkansas             AR          
-##  5 California           CA          
-##  6 Colorado             CO          
-##  7 Connecticut          CT          
-##  8 Delaware             DE          
-##  9 District Of Columbia DC          
-## 10 Florida              FL          
-## # … with 41 more rows</code></pre>
-<p>Lastly, from that same website I have downloaded the (projected) 2020 census estimates, which we’ll read in and use to standardize our data to tests per 100,000 residents.</p>
+<pre><code>## # A tibble: 3,937 x 6
+##    state     date positive negative death   total
+##    &lt;chr&gt;    &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;
+##  1 AK    20200514      387    31375    10   31762
+##  2 AL    20200514    10968   131017   467  141985
+##  3 AR    20200514     4236    71582    97   75818
+##  4 AS    20200514        0      105     0     105
+##  5 AZ    20200514    12674   121664   624  134338
+##  6 CA    20200514    73164  1031487  3032 1104651
+##  7 CO    20200514    20475    94044  1062  114519
+##  8 CT    20200514    35464   114098  3219  149562
+##  9 DC    20200514     6736    26263   358   32999
+## 10 DE    20200514     7223    29634   260   36857
+## # … with 3,927 more rows</code></pre>
+<p>Additionally, I have downloaded the (projected) 2020 census estimates of all 50 states + DC and Puerto Rico from <a href="https://worldpopulationreview.com" class="uri">https://worldpopulationreview.com</a>, which we’ll read in and use to standardize our data to tests per 100,000 residents.</p>
 <pre class="r"><code>states.population &lt;- &#39;data/covid.us.state.population.csv&#39; %&gt;%
     read_csv() %&gt;%
-    select(c(&#39;rank&#39;,&#39;State&#39;,&#39;Pop&#39;))
+    select(c(&#39;rank&#39;,&#39;State&#39;,&#39;Pop&#39;)) 
 
 states.population</code></pre>
 <pre><code>## # A tibble: 52 x 3
@@ -139,60 +124,231 @@ states.population</code></pre>
 ##  9     9 North Carolina 10611862
 ## 10    10 Michigan       10045029
 ## # … with 42 more rows</code></pre>
+<p>Lastly, we’re going to pull a csv directly from that website which contains state-abbreviation pairs (e.g. CA, California) that we’ll use later to ‘beautify’ our plots. The ‘of’ in District of Columbia on this last is capitalized, so we’ll manually change this to avoid a mismatch later. We’ll also add a row for Puerto Rico, since that abbreviation is weirdly missing.</p>
+<pre class="r"><code>states.abbrev &lt;- &#39;https://worldpopulationreview.com/static/states/abbr-name-list.csv&#39; %&gt;%
+    read_csv() %&gt;%
+    mutate(name = stringr::str_replace(name, &#39;Of&#39;, &#39;of&#39;)) %&gt;%
+    add_row(name = &#39;Puerto Rico&#39;, abbreviation = &#39;PR&#39;)
+
+states.abbrev</code></pre>
+<pre><code>## # A tibble: 52 x 2
+##    name                 abbreviation
+##    &lt;chr&gt;                &lt;chr&gt;       
+##  1 Alabama              AL          
+##  2 Alaska               AK          
+##  3 Arizona              AZ          
+##  4 Arkansas             AR          
+##  5 California           CA          
+##  6 Colorado             CO          
+##  7 Connecticut          CT          
+##  8 Delaware             DE          
+##  9 District of Columbia DC          
+## 10 Florida              FL          
+## # … with 42 more rows</code></pre>
 </div>
 <div id="munge" class="section level2">
 <h2>Munge</h2>
 <p>To munge is to manipulate raw data. We’ll start by combining the three different datasets we have loaded to look at testing rates among the most populated states.</p>
-<pre class="r"><code>testing.data &lt;- states.data %&gt;%
+<pre class="r"><code>raw.testing.data &lt;- states.data %&gt;%
     left_join(states.abbrev, by = c(&#39;state&#39; = &#39;abbreviation&#39;)) %&gt;%
-    left_join(states.population, by = c(&#39;name&#39; = &#39;State&#39;))
+    left_join(states.population, by = c(&#39;name&#39; = &#39;State&#39;)) %&gt;%
+    rename(full_name = &#39;name&#39;) %&gt;%
+    filter(!is.na(full_name))
 
 # peeking at newly joined variables
-testing.data %&gt;%
-    select(c(&#39;state&#39;,&#39;date&#39;,&#39;name&#39;,&#39;rank&#39;,&#39;Pop&#39;))</code></pre>
-<pre><code>## # A tibble: 3,881 x 5
-##    state date       name                  rank      Pop
-##    &lt;chr&gt; &lt;date&gt;     &lt;chr&gt;                &lt;dbl&gt;    &lt;dbl&gt;
-##  1 AK    2020-05-13 Alaska                  49   734002
-##  2 AL    2020-05-13 Alabama                 24  4908621
-##  3 AR    2020-05-13 Arkansas                33  3038999
-##  4 AS    2020-05-13 &lt;NA&gt;                    NA       NA
-##  5 AZ    2020-05-13 Arizona                 14  7378494
-##  6 CA    2020-05-13 California               1 39937489
-##  7 CO    2020-05-13 Colorado                21  5845526
-##  8 CT    2020-05-13 Connecticut             29  3563077
-##  9 DC    2020-05-13 District Of Columbia    NA       NA
-## 10 DE    2020-05-13 Delaware                46   982895
-## # … with 3,871 more rows</code></pre>
-<p>Then we’ll use the lubridate package within the tidyverse to quickly split the dates into month and day components so we can look at data from the 9th of March.</p>
-<pre class="r"><code>testing.data %&lt;&gt;%
-    mutate(month = lubridate::month(date)) %&gt;%
-    mutate(day = lubridate::day(date)) %&gt;%
-    filter(month &gt;= 3) %&gt;%
-    filter(day &gt;= 9)
+raw.testing.data %&gt;%
+    select(c(&#39;state&#39;,&#39;date&#39;,&#39;full_name&#39;,&#39;rank&#39;,&#39;Pop&#39;))</code></pre>
+<pre><code>## # A tibble: 3,697 x 5
+##    state     date full_name             rank      Pop
+##    &lt;chr&gt;    &lt;dbl&gt; &lt;chr&gt;                &lt;dbl&gt;    &lt;dbl&gt;
+##  1 AK    20200514 Alaska                  49   734002
+##  2 AL    20200514 Alabama                 24  4908621
+##  3 AR    20200514 Arkansas                33  3038999
+##  4 AZ    20200514 Arizona                 14  7378494
+##  5 CA    20200514 California               1 39937489
+##  6 CO    20200514 Colorado                21  5845526
+##  7 CT    20200514 Connecticut             29  3563077
+##  8 DC    20200514 District of Columbia    50   720687
+##  9 DE    20200514 Delaware                46   982895
+## 10 FL    20200514 Florida                  3 21992985
+## # … with 3,687 more rows</code></pre>
+<p>Then we’ll use the <code>lubridate</code> package to quickly split the dates into month and day components so we can look at data from the 9th of March through the end of April. The <code>month()</code> and <code>day()</code> commands extract those elements respectively, while <code>ymd()</code> tells the package what the original date format is so it knows how to parse.</p>
+<pre class="r"><code>testing.data &lt;- raw.testing.data %&gt;%
+    mutate_at(vars(date), ~ as_date(ymd(.))) %&gt;%
+    filter(date &gt; &#39;2020-03-09&#39;)
 
+# peeking at new dates
 testing.data %&gt;%
-    select(c(&#39;state&#39;,&#39;date&#39;,&#39;total_test_results&#39;,&#39;month&#39;,&#39;day&#39;))</code></pre>
-<pre><code>## # A tibble: 2,762 x 5
-##    state date       total_test_results month   day
-##    &lt;chr&gt; &lt;date&gt;                  &lt;int&gt; &lt;dbl&gt; &lt;int&gt;
-##  1 AK    2020-05-13              30649     5    13
-##  2 AL    2020-05-13             136372     5    13
-##  3 AR    2020-05-13              73215     5    13
-##  4 AS    2020-05-13                105     5    13
-##  5 AZ    2020-05-13             127750     5    13
-##  6 CA    2020-05-13            1065592     5    13
-##  7 CO    2020-05-13             111250     5    13
-##  8 CT    2020-05-13             142943     5    13
-##  9 DC    2020-05-13              31658     5    13
-## 10 DE    2020-05-13              34753     5    13
-## # … with 2,752 more rows</code></pre>
+    select(c(&#39;state&#39;,&#39;date&#39;,&#39;total&#39;))</code></pre>
+<pre><code>## # A tibble: 3,424 x 3
+##    state date         total
+##    &lt;chr&gt; &lt;date&gt;       &lt;dbl&gt;
+##  1 AK    2020-05-14   31762
+##  2 AL    2020-05-14  141985
+##  3 AR    2020-05-14   75818
+##  4 AZ    2020-05-14  134338
+##  5 CA    2020-05-14 1104651
+##  6 CO    2020-05-14  114519
+##  7 CT    2020-05-14  149562
+##  8 DC    2020-05-14   32999
+##  9 DE    2020-05-14   36857
+## 10 FL    2020-05-14  610065
+## # … with 3,414 more rows</code></pre>
+<p>Now that we have our dates sorted out, we can standardize our data so that the cases reported are per 100k residents. We will select only these new columns and the other variables that we’ll need to create some basic longitudinal scatter plots.</p>
+<pre class="r"><code>testing.data %&lt;&gt;%
+    mutate(pop.factor = Pop/100000) %&gt;%
+    mutate(tests.std = total/pop.factor) %&gt;%
+    mutate(deaths.std = death/pop.factor) %&gt;%
+    mutate(positive.std = positive/pop.factor) %&gt;%
+    mutate(negative.std = negative/pop.factor) %&gt;%
+    select(c(&#39;full_name&#39;,&#39;date&#39;,&#39;tests.std&#39;,&#39;deaths.std&#39;,&#39;positive.std&#39;,&#39;negative.std&#39;))</code></pre>
+<p>By default, our states are sorted alphabetically, but what if we wanted to sort them according to their testing rates?</p>
+<p>As a quick console sidebar, let’s see which states have the highest testing rates.</p>
+<pre class="r"><code>testing.data %&gt;%
+    arrange(desc(tests.std))</code></pre>
+<pre><code>## # A tibble: 3,424 x 6
+##    full_name    date       tests.std deaths.std positive.std negative.std
+##    &lt;chr&gt;        &lt;date&gt;         &lt;dbl&gt;      &lt;dbl&gt;        &lt;dbl&gt;        &lt;dbl&gt;
+##  1 Rhode Island 2020-05-14     9620.       44.3        1138.        8482.
+##  2 Rhode Island 2020-05-13     9272.       43.7        1121.        8151.
+##  3 Rhode Island 2020-05-12     9017.       42.0        1100.        7918.
+##  4 Rhode Island 2020-05-11     8837.       40.7        1084.        7753.
+##  5 Rhode Island 2020-05-10     8636.       40.0        1067.        7569.
+##  6 Rhode Island 2020-05-09     8315.       39.6        1040.        7274.
+##  7 Rhode Island 2020-05-08     8073.       37.8        1021.        7053.
+##  8 Rhode Island 2020-05-07     7794.       36.7         997.        6797.
+##  9 Rhode Island 2020-05-06     7515.       35.0         966.        6549.
+## 10 Rhode Island 2020-05-05     7237.       33.6         940.        6297.
+## # … with 3,414 more rows</code></pre>
+<p>In order to get a better overview and ignore the date column, we can group our row observations by state and then nest the remaining data, which will leave us with a state column that is sorted by the standardized testing rate in descending order.</p>
+<pre class="r"><code>testing.data %&gt;%
+    arrange(desc(tests.std)) %&gt;%
+    group_by(full_name) %&gt;%
+    nest()</code></pre>
+<pre><code>## # A tibble: 52 x 2
+## # Groups:   full_name [52]
+##    full_name            data             
+##    &lt;chr&gt;                &lt;list&gt;           
+##  1 Rhode Island         &lt;tibble [66 × 5]&gt;
+##  2 New York             &lt;tibble [66 × 5]&gt;
+##  3 North Dakota         &lt;tibble [66 × 5]&gt;
+##  4 Massachusetts        &lt;tibble [64 × 5]&gt;
+##  5 New Mexico           &lt;tibble [66 × 5]&gt;
+##  6 Louisiana            &lt;tibble [66 × 5]&gt;
+##  7 New Jersey           &lt;tibble [66 × 5]&gt;
+##  8 Utah                 &lt;tibble [66 × 5]&gt;
+##  9 District of Columbia &lt;tibble [66 × 5]&gt;
+## 10 Tennessee            &lt;tibble [66 × 5]&gt;
+## # … with 42 more rows</code></pre>
 </div>
 <div id="visualize" class="section level2">
 <h2>Visualize</h2>
-</div>
-<div id="summarize" class="section level2">
-<h2>Summarize</h2>
+<p>Our <code>testing.data</code> is now nice and tidy, but if you’re familiar with <code>ggplot2</code> then you proabably already know that our data is not quite ‘plot’ tidy. This is not an official term, but I find it useful because it reminds me that data almost always needs to be tidied in specific ways before it can be easily plotted.</p>
+<p>Right now it is difficult to plot our four different testing variables on the same plot, since they’re in four different columns which would require four different <code>geom_point()</code> commands, each with a different y-axis variable. In order for us to have plot tidy data, we want to have a tibble with only three data columns: our independent (x) and dependent (y) variables, as well as time (date) since this is longitudinal.</p>
+<p>For this the <code>dplyr::pivot_longer()</code> function will be essential. We’ll tell it to ignore the state and date columns, while combining our four test rate columns into two new ones: <code>std.metric</code> and <code>std.value</code>.</p>
+<pre class="r"><code>testing.data %&gt;%
+    pivot_longer(cols = -c(&#39;date&#39;,&#39;full_name&#39;),
+                 names_to = &#39;std.metric&#39;,
+                 values_to = &#39;std.value&#39;)</code></pre>
+<pre><code>## # A tibble: 13,696 x 4
+##    full_name date       std.metric   std.value
+##    &lt;chr&gt;     &lt;date&gt;     &lt;chr&gt;            &lt;dbl&gt;
+##  1 Alaska    2020-05-14 tests.std      4327.  
+##  2 Alaska    2020-05-14 deaths.std        1.36
+##  3 Alaska    2020-05-14 positive.std     52.7 
+##  4 Alaska    2020-05-14 negative.std   4275.  
+##  5 Alabama   2020-05-14 tests.std      2893.  
+##  6 Alabama   2020-05-14 deaths.std        9.51
+##  7 Alabama   2020-05-14 positive.std    223.  
+##  8 Alabama   2020-05-14 negative.std   2669.  
+##  9 Arkansas  2020-05-14 tests.std      2495.  
+## 10 Arkansas  2020-05-14 deaths.std        3.19
+## # … with 13,686 more rows</code></pre>
+<p>Perfect. But if we want to sort our states by <code>tests.std</code> like we did above, we need to do that <em>before</em> we collapse that variable to get everything plot tidy, hence why we didn’t use <code>%&lt;&gt;%</code> above to save our new tibble. Because of a weird quirk in the <code>facet_wrap()</code> command we’ll use later, we’re going to add an explicit <code>ordered</code> column with a unique identifier for each row.</p>
+<p>Once I start making “plot tidy” manipulations I create a new <code>plot.data</code> tibble That way, I have my <code>testing.data</code> tibble available for console sidebars to help me refine the information in <code>plot.data</code> according to what I want <code>ggplot2</code> to use and display.</p>
+<!-- https://stackoverflow.com/questions/41199496/order-of-factor-levels-in-facet-wrap -->
+<pre class="r"><code>plot.data &lt;- testing.data %&gt;%
+    arrange(desc(tests.std)) %&gt;%
+    #mutate(ordered = paste0(date,&#39;,&#39;,std.metric))
+    mutate(ordered = 1:n())
+
+plot.data %&gt;%
+    select(c(&#39;tests.std&#39;,&#39;ordered&#39;))</code></pre>
+<pre><code>## # A tibble: 3,424 x 2
+##    tests.std ordered
+##        &lt;dbl&gt;   &lt;int&gt;
+##  1     9620.       1
+##  2     9272.       2
+##  3     9017.       3
+##  4     8837.       4
+##  5     8636.       5
+##  6     8315.       6
+##  7     8073.       7
+##  8     7794.       8
+##  9     7515.       9
+## 10     7237.      10
+## # … with 3,414 more rows</code></pre>
+<p>Now we have to collapse our four testing variables like we did earlier but didn’t save. We’ll use the same command we did above, except we will also include our new <code>ordered</code> column in the excluded variables parameter, and we’ll be calling it on <code>plot.data</code> this time.</p>
+<pre class="r"><code>plot.data %&lt;&gt;%
+    pivot_longer(cols = -c(&#39;date&#39;,&#39;full_name&#39;,&#39;ordered&#39;),
+                 names_to = &#39;std.metric&#39;,
+                 values_to = &#39;std.value&#39;)
+
+plot.data</code></pre>
+<pre><code>## # A tibble: 13,696 x 5
+##    full_name    date       ordered std.metric   std.value
+##    &lt;chr&gt;        &lt;date&gt;       &lt;int&gt; &lt;chr&gt;            &lt;dbl&gt;
+##  1 Rhode Island 2020-05-14       1 tests.std       9620. 
+##  2 Rhode Island 2020-05-14       1 deaths.std        44.3
+##  3 Rhode Island 2020-05-14       1 positive.std    1138. 
+##  4 Rhode Island 2020-05-14       1 negative.std    8482. 
+##  5 Rhode Island 2020-05-13       2 tests.std       9272. 
+##  6 Rhode Island 2020-05-13       2 deaths.std        43.7
+##  7 Rhode Island 2020-05-13       2 positive.std    1121. 
+##  8 Rhode Island 2020-05-13       2 negative.std    8151. 
+##  9 Rhode Island 2020-05-12       3 tests.std       9017. 
+## 10 Rhode Island 2020-05-12       3 deaths.std        42.0
+## # … with 13,686 more rows</code></pre>
+<p>Finally, we’ll order our <code>std.metric</code> variable and change the names to be a bit more intuitive.</p>
+<pre class="r"><code>plot.data %&lt;&gt;%
+    mutate_at(vars(std.metric), ~ fct_relevel(., &#39;tests.std&#39;,&#39;negative.std&#39;,
+                                              &#39;positive.std&#39;,&#39;deaths.std&#39;)) %&gt;%
+    mutate_at(vars(std.metric), ~ fct_recode(., 
+                                              `Total Test Results` = &#39;tests.std&#39;,
+                                             `Negative Tests` = &#39;negative.std&#39;,
+                                              `Positive Tests` = &#39;positive.std&#39;,
+                                              `Deaths` = &#39;deaths.std&#39;)) </code></pre>
+<pre class="r"><code>y.axis.max &lt;- plot.data %&gt;%
+    magrittr::use_series(std.value) %&gt;%
+    na.omit() %&gt;%
+    max() %&gt;%
+    ceiling()
+
+# finally, plot our data
+testing.plot &lt;- plot.data %&gt;%
+    #filter(!is.na(full_name) &amp; full_name != &#39;District Of Columbia&#39;) %&gt;%
+    ggplot(aes(x = ordered, y = std.value)) +
+    geom_point(aes(color = std.metric, shape = std.metric)) +
+    # label every week on the major x axis and draw a line for each day
+    # scale_x_date(
+    #              date_breaks = &#39;3 weeks&#39;,
+    #              #date_minor_breaks = &#39;1 day&#39;,
+    #              date_labels = &#39;%d.%m&#39;) +
+    # add custom y-axis breaks
+    # scale_y_continuous(breaks = seq(300, y.axis.max, 300), 
+    #                    minor_breaks = seq(100, y.axis.max, 100)) +
+    # my personal favorite color palette
+    scale_color_futurama() +
+    # make a grid; toggle scale = free on and off for different y-axes
+    facet_wrap(~ full_name, ncol = 4, scale = &#39;free_x&#39;) +
+    scale_x_discrete(labels = as.character(plot.data$date)) +
+    # add title, remove x+y axis labels and legends
+    labs(title = &#39;COVID-19 Testing and Prognosis in Most Populous US States&#39;,
+         x = &#39;&#39;, y = &#39;&#39;, color = &#39;Per 100k Residents:&#39;, shape = &#39;Per 100k Residents:&#39;) +
+    theme_pubclean()
+
+testing.plot</code></pre>
+<p><img src="/posts/tidyverse-covid/index_files/figure-html/unnamed-chunk-3-1.png" width="672" /> ## Summarize</p>
 <style type="text/css">
 img {
     display: block;

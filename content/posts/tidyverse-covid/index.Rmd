@@ -20,11 +20,13 @@ summary:
 
 This post is intended to be a follow up resource from my presentation for members of the ECRC. If you haven't seen those or are new here, check out my previous [post](../why-tidyverse) on why you should use the tidyverse.
 
-In later posts I will go through a more complete workflow in more fine-grained detail with microbiome-specific examples, but for this introductory demo we are going to be using data from the [COVID Tracking Project](https://covidtracking.com/) in the US. One of my favorite things about R is the active development community: we don't need to download any files or even access this data through the API, because someone's already created a `covid19us` wrapper package to do this for us with a single line of code in R.
+In later posts I will go through a more complete workflow in more fine-grained detail with microbiome-specific examples, but for this introductory demo we are going to be using data from the [COVID Tracking Project](https://covidtracking.com/) in the US. I have little experience teaching so this is an exercise for me as well, and new data makes that easier to keep you in mind.
+
+One of my favorite things about R is the active development community: we don't need to download any files or even access this data through the API, because someone's already created a `covid19us` wrapper package to do this for us with a single line of code in R. However, at the time of publication, this function sadly [isn't working](https://github.com/aedobbyn/covid19us/issues/17), so we'll use the API.
 
 ## Import
 
-Calling `library(tidyverse)` will load all the packages and functions we'll need, including `magrittr`, which provides us with the pipe (`%>%`) operator and some 'aliases' useful when using chaining syntax. Sometimes I have to load this explicitly (perhaps depending on version of R) so beware. Additionally, I always load the [ggsci](https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html) and [ggpubr](https://rpkgs.datanovia.com/ggpubr/index.html) packages for my plots.
+Calling `library(tidyverse)` will load all the packages and functions we'll need, including the pipe (`%>%`) operator, but I will explicitly load `magrittr` so that I can use some aliases and the debatable but economical `%<>%` operator to save a variable in place without typing the name twice. I'm also going to load the [lubridate](https://lubridate.tidyverse.org/) package for dealing with dates, and I always load the [ggsci](https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html) and [ggpubr](https://rpkgs.datanovia.com/ggpubr/index.html) packages for my plots.
 
 ```{r knitr, include = FALSE}
 knitr::opts_chunk$set(message = FALSE, warning = FALSE)
@@ -32,69 +34,195 @@ knitr::opts_chunk$set(message = FALSE, warning = FALSE)
 
 ```{r libraries}
 library(tidyverse)
-library(covid19us) 
+library(magrittr)
+library(lubridate)
+# library(covid19us) 
 library(ggsci) 
 library(ggpubr)
 ```
 
-Then, let's load the complete longitudinal dataset and select the variables that will be relevant for our analysis.
+Then, let's load the complete longitudinal dataset, which defaults to a tibble and select the testing variables that will be relevant for our analysis.
 
 ```{r load.data.1}
-states.data <- get_states_daily() %>%
-    select(c('state','date','positive','negative','death','total_test_results'))
+states.data <- 'https://covidtracking.com/api/v1/states/daily.csv' %>%
+    read_csv() %>%
+    select(c('state','date','positive','negative','death','total')) 
 
 states.data
 ```
 
-Additionally, we're going to pull a csv file from https://worldpopulationreview.com/ that contains state-abbreviation pairs (e.g. CA, California) that we'll use later to 'beautify' our plots.
+```{r load.data.pkg, include = FALSE}
+# states.data <- get_states_daily() %>%
+#     select(c('state','date','positive','negative','death','total_test_results'))
 
-```{r load.data.2}
-states.abbrev <- read_csv('https://worldpopulationreview.com/static/states/abbr-name-list.csv')
-
-states.abbrev
+# states.data
 ```
 
-Lastly, from that same website I have downloaded the (projected) 2020 census estimates, which we'll read in and use to standardize our data to tests per 100,000 residents.
+Additionally, I have downloaded the (projected) 2020 census estimates of all 50 states + DC and Puerto Rico from https://worldpopulationreview.com, which we'll read in and use to standardize our data to tests per 100,000 residents. 
 
 ```{r load.data.3}
 states.population <- 'data/covid.us.state.population.csv' %>%
     read_csv() %>%
-    select(c('rank','State','Pop'))
+    select(c('rank','State','Pop')) 
 
 states.population
 ```
 
+Lastly, we're going to pull a csv directly from that website which contains state-abbreviation pairs (e.g. CA, California) that we'll use later to 'beautify' our plots. The 'of' in District of Columbia on this last is capitalized, so we'll manually change this to avoid a mismatch later. We'll also add a row for Puerto Rico, since that abbreviation is weirdly missing.
+
+```{r load.data.2}
+states.abbrev <- 'https://worldpopulationreview.com/static/states/abbr-name-list.csv' %>%
+    read_csv() %>%
+    mutate(name = stringr::str_replace(name, 'Of', 'of')) %>%
+    add_row(name = 'Puerto Rico', abbreviation = 'PR')
+
+states.abbrev
+```
 
 ## Munge
 
 To munge is to manipulate raw data. We'll start by combining the three different datasets we have loaded to look at testing rates among the most populated states.
 
 ```{r munge.1}
-testing.data <- states.data %>%
+raw.testing.data <- states.data %>%
     left_join(states.abbrev, by = c('state' = 'abbreviation')) %>%
-    left_join(states.population, by = c('name' = 'State'))
+    left_join(states.population, by = c('name' = 'State')) %>%
+    rename(full_name = 'name') %>%
+    filter(!is.na(full_name))
 
 # peeking at newly joined variables
-testing.data %>%
-    select(c('state','date','name','rank','Pop'))
+raw.testing.data %>%
+    select(c('state','date','full_name','rank','Pop'))
 ```
 
-Then we'll use the lubridate package within the tidyverse to quickly split the dates into month and day components so we can look at data from the 9th of March.
+Then we'll use the `lubridate` package to quickly split the dates into month and day components so we can look at data from the 9th of March through the end of April. The `month()` and `day()` commands extract those elements respectively, while `ymd()` tells the package what the original date format is so it knows how to parse.
 
 ```{r munge.2}
-testing.data %<>%
-    mutate(month = lubridate::month(date)) %>%
-    mutate(day = lubridate::day(date)) %>%
-    filter(month >= 3) %>%
-    filter(day >= 9)
+testing.data <- raw.testing.data %>%
+    mutate_at(vars(date), ~ as_date(ymd(.))) %>%
+    filter(date > '2020-03-09')
 
+# peeking at new dates
 testing.data %>%
-    select(c('state','date','total_test_results','month','day'))
+    select(c('state','date','total'))
 ```
 
+Now that we have our dates sorted out, we can standardize our data so that the cases reported are per 100k residents. We will select only these new columns and the other variables that we'll need to create some basic longitudinal scatter plots.
+
+```{r standardize}
+testing.data %<>%
+    mutate(pop.factor = Pop/100000) %>%
+    mutate(tests.std = total/pop.factor) %>%
+    mutate(deaths.std = death/pop.factor) %>%
+    mutate(positive.std = positive/pop.factor) %>%
+    mutate(negative.std = negative/pop.factor) %>%
+    select(c('full_name','date','tests.std','deaths.std','positive.std','negative.std'))
+```
+
+By default, our states are sorted alphabetically, but what if we wanted to sort them according to their testing rates?
+
+As a quick console sidebar, let's see which states have the highest testing rates.
+
+```{r sidebar.testing}
+testing.data %>%
+    arrange(desc(tests.std))
+```
+
+In order to get a better overview and ignore the date column, we can group our row observations by state and then nest the remaining data, which will leave us with a state column that is sorted by the standardized testing rate in descending order.
+
+```{r sidebar.nest}
+testing.data %>%
+    arrange(desc(tests.std)) %>%
+    group_by(full_name) %>%
+    nest()
+```
 
 ## Visualize
 
+Our `testing.data` is now nice and tidy, but if you're familiar with `ggplot2` then you proabably already know that our data is not quite 'plot' tidy. This is not an official term, but I find it useful because it reminds me that data almost always needs to be tidied in specific ways before it can be easily plotted. 
+
+Right now it is difficult to plot our four different testing variables on the same plot, since they're in four different columns which would require four different `geom_point()` commands, each with a different y-axis variable. In order for us to have plot tidy data, we want to have a tibble with only three data columns: our independent (x) and dependent (y) variables, as well as time (date) since this is longitudinal.
+
+For this the `dplyr::pivot_longer()` function will be essential. We'll tell it to ignore the state and date columns, while combining our four test rate columns into two new ones: `std.metric` and `std.value`. 
+
+```{r plot.tidy}
+testing.data %>%
+    pivot_longer(cols = -c('date','full_name'),
+                 names_to = 'std.metric',
+                 values_to = 'std.value')
+```
+
+Perfect. But if we want to sort our states by `tests.std` like we did above, we need to do that _before_ we collapse that variable to get everything plot tidy, hence why we didn't use `%<>%` above to save our new tibble. Because of a weird quirk in the `facet_wrap()` command we'll use later, we're going to add an explicit `ordered` column with a unique identifier for each row. 
+
+Once I start making "plot tidy" manipulations I create a new `plot.data` tibble That way, I have my `testing.data` tibble available for console sidebars to help me refine the information in `plot.data` according to what I want `ggplot2` to use and display.
+
+<!-- https://stackoverflow.com/questions/41199496/order-of-factor-levels-in-facet-wrap -->
+```{r}
+plot.data <- testing.data %>%
+    arrange(desc(tests.std)) %>%
+    #mutate(ordered = paste0(date,',',std.metric))
+    mutate(ordered = 1:n())
+
+plot.data %>%
+    select(c('tests.std','ordered'))
+```
+
+Now we have to collapse our four testing variables like we did earlier but didn't save. We'll use the same command we did above, except we will also include our new `ordered` column in the excluded variables parameter, and we'll be calling it on `plot.data` this time.
+
+```{r}
+plot.data %<>%
+    pivot_longer(cols = -c('date','full_name','ordered'),
+                 names_to = 'std.metric',
+                 values_to = 'std.value')
+
+plot.data
+```
+
+Finally, we'll order our `std.metric` variable and change the names to be a bit more intuitive.
+
+```{r plot.beauty}
+plot.data %<>%
+    mutate_at(vars(std.metric), ~ fct_relevel(., 'tests.std','negative.std',
+                                              'positive.std','deaths.std')) %>%
+    mutate_at(vars(std.metric), ~ fct_recode(., 
+                                              `Total Test Results` = 'tests.std',
+                                             `Negative Tests` = 'negative.std',
+                                              `Positive Tests` = 'positive.std',
+                                              `Deaths` = 'deaths.std')) 
+```
+
+```{r, fig.height = 20}
+y.axis.max <- plot.data %>%
+    magrittr::use_series(std.value) %>%
+    na.omit() %>%
+    max() %>%
+    ceiling()
+
+# finally, plot our data
+testing.plot <- plot.data %>%
+    #filter(!is.na(full_name) & full_name != 'District Of Columbia') %>%
+    ggplot(aes(x = ordered, y = std.value)) +
+    geom_point(aes(color = std.metric, shape = std.metric)) +
+    # label every week on the major x axis and draw a line for each day
+    # scale_x_date(
+    #              date_breaks = '3 weeks',
+    #              #date_minor_breaks = '1 day',
+    #              date_labels = '%d.%m') +
+    # add custom y-axis breaks
+    # scale_y_continuous(breaks = seq(300, y.axis.max, 300), 
+    #                    minor_breaks = seq(100, y.axis.max, 100)) +
+    # my personal favorite color palette
+    scale_color_futurama() +
+    # make a grid; toggle scale = free on and off for different y-axes
+    facet_wrap(~ full_name, ncol = 4, scale = 'free_x') +
+    scale_x_discrete(labels = as.character(plot.data$date)) +
+    # add title, remove x+y axis labels and legends
+    labs(title = 'COVID-19 Testing and Prognosis in Most Populous US States',
+         x = '', y = '', color = 'Per 100k Residents:', shape = 'Per 100k Residents:') +
+    theme_pubclean()
+
+testing.plot
+```
 ## Summarize 
 
 ```{css, echo = FALSE}
