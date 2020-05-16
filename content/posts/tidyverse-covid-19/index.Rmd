@@ -18,9 +18,9 @@ summary:
     Exploratory data analysis with COVID-19 testing and prognosis in the US.
 ---
 
-This post is intended to be a follow up resource from my presentation for members of the ECRC. If you haven't seen that or are new here, check out my other [post](../why-tidyverse) on why you should use the tidyverse and get familiar with the syntax and functions I'll be using.
+This post is intended to be a follow up resource from my presentation for members of the ECRC. If you haven't seen that or are new here, check out my other [post](../why-tidyverse) on why you should use the tidyverse and get familiar with the syntax and functions I'll be using, and find the raw R script used to generate this tutorial in my [ecrc-data-science](https://github.com/sxmorgan/ecrc-data-science) repository on GitHub. 
 
-In later posts I will go through a more complete workflow in more fine-grained detail with microbiome-specific examples, but for this introductory demo we are going to be using data from the [COVID Tracking Project](https://covidtracking.com/) in the US. I have little experience teaching so this is an exercise for me as well, and using data that's also unfamiliar to me makes it easier to keep in mind what it's like to be a learner.
+In later posts I will go through a more complete workflow in more fine-grained detail with microbiome-specific examples, but for this introductory demo we are going to be using data from the [COVID Tracking Project](https://covidtracking.com/) in the US. I have basically no experience teaching so this is an exercise for me too, and data that's also unfamiliar to me makes it easier to keep in mind what it's like to be a learner.
 
 One of my favorite things about R is the active development community. In March I saw that someone had created a `covid19us` wrapper package to access the COVID Tracking Project's API directly from R; however, at the time of writing, this function sadly [isn't working](https://github.com/aedobbyn/covid19us/issues/17), so we'll use the API.
 

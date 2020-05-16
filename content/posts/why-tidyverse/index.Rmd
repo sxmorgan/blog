@@ -90,6 +90,8 @@ The intent of the pipe is to **make code more readable,** almost like a recipe. 
 From our above example interconverting between data frames and tibbles, here's how the pipe operator would execute the same command:
 
 ```{r, }
+library(magrittr)
+
 mtcars.tbl <- mtcars %>%
     rownames_to_column(var = 'model') %>%
     as_tibble()
@@ -162,6 +164,9 @@ knitr::opts_chunk$set(message = FALSE, warning = FALSE)
 <!-- - gather and spread -->
 <!-- - nesting and summarizing -->
 <!-- mutate -->
+
+### Functional Programming
+
 
 ### Strings and Factors
 

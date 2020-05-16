@@ -36,7 +36,12 @@
             <div class="logo terminal-prompt">
               
               
-              <a href="/" class="no-style site-name">data&#43;science</a>:~/ <a href='posts'></a> <a href='/'>posts</a>/<a href='why-tidyverse'></a> <a href='//'>why-tidyverse</a>/
+              <a href="/" class="no-style site-name">data&#43;science</a>:~/ 
+              
+              <a href='posts'></a> <a href='/'>posts</a>/
+              
+              <a href='why-tidyverse'></a> <a href='//'>why-tidyverse</a>/
+              </div>
             </header>
           <nav class="terminal-menu">
             <ul vocab="https://schema.org/" typeof="BreadcrumbList">
@@ -71,6 +76,7 @@
 <li><a href="#tibbles">Tibbles</a></li>
 <li><a href="#pipes">Pipes</a></li>
 <li><a href="#tidying-and-wrangling">Tidying and Wrangling</a></li>
+<li><a href="#functional-programming">Functional Programming</a></li>
 <li><a href="#strings-and-factors">Strings and Factors</a></li>
 </ul></li>
 <li><a href="#tldr">TL;DR</a></li>
@@ -162,7 +168,9 @@ head(as.matrix(column_to_rownames(mtcars.tbl, var = &#39;model&#39;)))</code></p
 <p>One of the weirdest things about the tidyverse that probably deters beginners, as it did me, is its use of the <strong>pipe</strong> <code>%&gt;%</code> operator. Bioinformaticians coming from other scripting and shell languages might be more comfortable thinking flexibly about operators, but it was pretty foreign to me, even as someone with a formal (albeit distantly so) programming background. I didn’t know any off the top of my head except <code>&lt;-</code> and <code>=</code>.</p>
 <p>The intent of the pipe is to <strong>make code more readable,</strong> almost like a recipe. Remember, the whole idea of <em>The Grammar of Graphics</em> was to break a data visualization down into raw ingredients, and this same recipe mentality is present in the <code>ggplot2</code> implementation that combines these ingredients in a structured, stepwise way using the <code>+</code> operator. The pipe however comes from the <a href="https://magrittr.tidyverse.org/">magrittr</a> package, but it functions much the same by ‘piping’ the product of a function or calculation forward to another one.</p>
 <p>From our above example interconverting between data frames and tibbles, here’s how the pipe operator would execute the same command:</p>
-<pre class="r"><code>mtcars.tbl &lt;- mtcars %&gt;%
+<pre class="r"><code>library(magrittr)
+
+mtcars.tbl &lt;- mtcars %&gt;%
     rownames_to_column(var = &#39;model&#39;) %&gt;%
     as_tibble()</code></pre>
 <p>This is the most general way the pipe is used (but not the only one); the first line is always the variable you wish to create followed by what you’re starting with followed by the <code>%&gt;%</code> operator. In our example, <code>mtcars</code> is fed into <code>rownames_to_column()</code> which doesn’t need us to explicitly give <code>mtcars</code> as a first argument anymore - same with <code>as_tibble()</code>.</p>
@@ -209,6 +217,9 @@ cor.plot &lt;- mtcars %&gt;%
 <!-- - gather and spread -->
 <!-- - nesting and summarizing -->
 <!-- mutate -->
+</div>
+<div id="functional-programming" class="section level3">
+<h3>Functional Programming</h3>
 </div>
 <div id="strings-and-factors" class="section level3">
 <h3>Strings and Factors</h3>
