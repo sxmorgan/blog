@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>data&#43;science/posts/tidyverse-gut-diversity/</title>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="all,follow">
+    <meta name="googlebot" content="index,follow,snippet,archive">
+    <link rel="stylesheet" href='/hugo-theme-console/css/terminal-0.7.1.min.css'>
+    <link rel="stylesheet" href='/hugo-theme-console/css/animate-3.7.2.min.css'>
+    <link rel="stylesheet" href='/hugo-theme-console/css/console.css'>
+    
+      <!--[if lt IE 9]>
+          <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+          <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+      <![endif]-->
+    <link rel="icon" 
+      type="image/png" 
+      href="/favicon-comp.png"><meta property="og:title" content="Gut Microbiome Diversity Analysis" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/posts/tidyverse-gut-diversity/" /><meta property="article:published_time" content="2020-05-10T00:00:00+00:00" />
+
+
+
+<meta name="twitter:title" content="Gut Microbiome Diversity Analysis"/>
+<meta name="twitter:description" content="A short workflow for alpha and beta diversity analysis using autoimmune gut microbiome data."/>
+
+</head>
+<body class="terminal">
+    <div class="container">
+        <div class="terminal-nav">
+          <header class="terminal-logo">
+            <div class="logo terminal-prompt">
+              
+              
+              <a href="/" class="no-style site-name">data&#43;science</a>:~/ 
+              
+              <a href='posts'></a> <a href='/'>posts</a>/
+              
+              <a href='tidyverse-gut-diversity'></a> <a href='//'>tidyverse-gut-diversity</a>/
+              </div>
+            </header>
+          <nav class="terminal-menu">
+            <ul vocab="https://schema.org/" typeof="BreadcrumbList">
+                
+                <li><a href="/about/" typeof="ListItem">about/</a></li>
+                
+                <li><a href="/posts/" typeof="ListItem">posts/</a></li>
+                
+                <li><a href="/resources/" typeof="ListItem">resources/</a></li>
+                
+                <li><a href="/tags/" typeof="ListItem">tags/</a></li>
+                
+            </ul>
+          </nav>
+        </div>
+    </div>
+
+    <div class="container animated zoomIn fast">
+        
+<h1>Gut Microbiome Diversity Analysis</h1>
+
+10 May 2020 // 8' read
+
+<br/>
+
+  <link rel="stylesheet" href="tomorrow.css" type="text/css" />
+
+<div id="TOC">
+<ul>
+<li><a href="#alpha-diversity">Alpha Diversity</a></li>
+<li><a href="#beta-diversity">Beta Diversity</a></li>
+</ul>
+</div>
+
+<p>For this analysis I’m going to use some actual, anonymized data that I’m working with for one of projects. It’s a composite dataset of 16S stool samples from anti-TNFa therapy naive autoimmune patients presenting with any combination of Crohn’s disease (IBD), ankylosing spondyloarthritis (SpA), or uveitis (AAU), pooled with a subset of the Collect control samples from a study recently published in our group. The 16S V3-V4 region was mapped to bacterial genera using LoTuS and we’ll be working with the genus-level rarefied reads.</p>
+<p>First, libraries.</p>
+<pre class="r"><code>library(tidyverse)
+library(magrittr)
+library(ggsci) 
+library(ggrepel)
+library(ggpubr)</code></pre>
+<div id="alpha-diversity" class="section level2">
+<h2>Alpha Diversity</h2>
+<p>Then, I’ll read in the data.</p>
+<pre class="r"><code>meta.tbl &lt;- readRDS(file = &#39;data/meta.tbl.rds&#39;)
+
+meta.tbl</code></pre>
+<pre><code>## # A tibble: 329 x 3
+##    Shannon Cohort  Phenotype
+##      &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;    
+##  1    3.53 Collect Control  
+##  2    3.87 Collect Control  
+##  3    3.35 Collect Control  
+##  4    3.73 Collect Control  
+##  5    2.99 Collect Control  
+##  6    2.92 Collect Control  
+##  7    2.93 Collect Control  
+##  8    3.00 Collect Control  
+##  9    3.60 Collect Control  
+## 10    3.78 Collect Control  
+## # … with 319 more rows</code></pre>
+<pre class="r"><code>plot.data &lt;- meta.tbl %&gt;%
+    mutate_at(vars(Cohort), ~ forcats::fct_recode(., 
+                                                  `Collect` = &#39;Collect&#39;,
+                                                  `Crohn&#39;s\nDisease` = &#39;IBD&#39;,
+                                                  `Spondyloarthritis` = &#39;SpA&#39;,
+                                                  `Uveitis` = &#39;AAU&#39;)) %&gt;%
+    mutate_at(vars(Cohort), ~ fct_relevel(., 
+                                          &#39;Collect&#39;,
+                                          &#39;Spondyloarthritis&#39;,
+                                          &quot;Crohn&#39;s\nDisease&quot;,
+                                          &#39;Uveitis&#39;)) %&gt;%
+    mutate_at(vars(Phenotype), ~ fct_relevel(., 
+                                             &#39;Control&#39;,
+                                             &#39;IBD&#39;,&#39;IBD+SpA&#39;,&#39;IBD+AAU&#39;,
+                                             &#39;IBD+SpA+AAU&#39;,&#39;SpA&#39;,&#39;SpA+AAU&#39;,
+                                             &#39;AAU&#39;))
+
+plot.data</code></pre>
+<pre><code>## # A tibble: 329 x 3
+##    Shannon Cohort  Phenotype
+##      &lt;dbl&gt; &lt;fct&gt;   &lt;fct&gt;    
+##  1    3.53 Collect Control  
+##  2    3.87 Collect Control  
+##  3    3.35 Collect Control  
+##  4    3.73 Collect Control  
+##  5    2.99 Collect Control  
+##  6    2.92 Collect Control  
+##  7    2.93 Collect Control  
+##  8    3.00 Collect Control  
+##  9    3.60 Collect Control  
+## 10    3.78 Collect Control  
+## # … with 319 more rows</code></pre>
+<pre class="r"><code>div.stats &lt;- list(c(&#39;Collect&#39;,&#39;Spondyloarthritis&#39;),
+                  c(&#39;Collect&#39;,&quot;Crohn&#39;s\nDisease&quot;),
+                  c(&#39;Collect&#39;,&#39;Uveitis&#39;))
+
+plot.data %&gt;%
+    ggplot(aes(x = Cohort, 
+               y = Shannon, 
+               fill = Cohort)) +
+    geom_boxplot(alpha = 0.5) +
+    geom_jitter(aes(shape = Cohort), 
+                alpha = 0.7, size = 2, width = 0.2) +
+    ggsci::scale_fill_futurama() +
+    labs(title = &#39;Alpha Diversity by Cohort&#39;, 
+         y = &#39;Shannon Entropy&#39;, x = &#39;&#39;) +
+    ggpubr::stat_compare_means(comparisons = div.stats, size = 4, 
+                       tip.length = 0, step.increase = 0.15,
+                       aes(label = ..p.signif..)) +
+    ggpubr::theme_pubr(legend = &#39;none&#39;)</code></pre>
+<p><img src="/posts/tidyverse-gut-diversity/index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<pre class="r"><code>div.stats &lt;- list(c(&#39;Control&#39;,&#39;IBD&#39;), c(&#39;Control&#39;,&#39;IBD+SpA&#39;), c(&#39;Control&#39;,&#39;IBD+AAU&#39;),
+                  c(&#39;Control&#39;,&#39;IBD+SpA+AAU&#39;), c(&#39;Control&#39;,&#39;SpA&#39;), c(&#39;Control&#39;,&#39;SpA+AAU&#39;), 
+                  c(&#39;Control&#39;,&#39;AAU&#39;))
+
+plot.data %&gt;%
+    ggplot(aes(x = Phenotype, 
+               y = Shannon, 
+               fill = Phenotype)) +
+    geom_boxplot(alpha = 0.5, outlier.alpha = 0) +
+    geom_jitter(aes(shape = Cohort), 
+                alpha = 0.5, size = 2, width = 0.2) +
+    ggsci::scale_fill_d3() +
+    labs(title = &#39;Alpha Diversity by Phenotype&#39;, 
+         y = &#39;Shannon Entropy&#39;, x = &#39;&#39;) +
+    guides(fill = &#39;none&#39;,
+           shape = guide_legend(override.aes = list(size = 3))) +
+    ggpubr::stat_compare_means(comparisons = div.stats, size = 3, 
+                       tip.length = 0.03, step.increase = 0.15,
+                       aes(label = ..p.signif..)) +
+    theme_bw() +
+    theme(legend.position = &#39;top&#39;,
+          legend.justification = &#39;left&#39;,
+          panel.grid = element_blank(),
+          panel.border = element_blank(),
+          axis.line = element_line(color = &#39;black&#39;))</code></pre>
+<p><img src="/posts/tidyverse-gut-diversity/index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<pre class="r"><code>plot.data %&gt;%
+    filter(Phenotype != &#39;Control&#39;) %&gt;%
+    ggplot(aes(x = Phenotype, 
+               y = Shannon, 
+               fill = Phenotype)) +
+    geom_boxplot(alpha = 0.5) +
+    geom_jitter(aes(shape = Cohort), 
+                alpha = 0.7, size = 2, width = 0.2) +
+    ggsci::scale_fill_uchicago() +
+    facet_wrap(~ Cohort, scales = &#39;free_x&#39;) +
+    labs(title = &#39;Alpha Diversity by Cohort and Phenotype&#39;, 
+         y = &#39;Shannon Entropy&#39;, x = &#39;&#39;, shape = &#39;Cohort&#39;) +
+    guides(fill = &#39;none&#39;,
+           shape = guide_legend(override.aes = list(size = 3))) +
+    theme_bw() +
+    theme(legend.position = &#39;top&#39;,
+          legend.justification = &#39;left&#39;,
+          axis.text.x = element_text (angle = -45, hjust = 0)) </code></pre>
+<p><img src="/posts/tidyverse-gut-diversity/index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+</div>
+<div id="beta-diversity" class="section level2">
+<h2>Beta Diversity</h2>
+<pre class="r"><code>taxa.tbl &lt;- readRDS(file = &#39;data/taxa.tbl.rds&#39;)
+
+taxa.tbl</code></pre>
+<pre><code>## # A tibble: 329 x 160
+##    Cohort `A2 (genus)` `Acidaminococcu… `Actinomyces (g… `Agathobacter (…
+##    &lt;chr&gt;         &lt;dbl&gt;            &lt;dbl&gt;            &lt;dbl&gt;            &lt;dbl&gt;
+##  1 AAU        0                  0                     0                0
+##  2 AAU        0                  0                     0                0
+##  3 AAU        0                  0                     0                0
+##  4 AAU        0                  0                     0                0
+##  5 AAU        0                  0                     0                0
+##  6 AAU        0                  0                     0                0
+##  7 AAU        0.000432           0                     0                0
+##  8 AAU        0                  0.0233                0                0
+##  9 AAU        0.000432           0                     0                0
+## 10 AAU        0                  0                     0                0
+## # … with 319 more rows, and 155 more variables: `Akkermansia (genus)` &lt;dbl&gt;,
+## #   `Alistipes (genus)` &lt;dbl&gt;, `Allisonella (genus)` &lt;dbl&gt;, `Allobacillus
+## #   (genus)` &lt;dbl&gt;, `Alloprevotella (genus)` &lt;dbl&gt;, `Anaerofilum
+## #   (genus)` &lt;dbl&gt;, `Anaeroplasma (genus)` &lt;dbl&gt;, `Anaerostipes (genus)` &lt;dbl&gt;,
+## #   `Anaerotruncus (genus)` &lt;dbl&gt;, `Atopobium (genus)` &lt;dbl&gt;, `Bacteroides
+## #   (genus)` &lt;dbl&gt;, `Barnesiella (genus)` &lt;dbl&gt;, `Bifidobacterium
+## #   (genus)` &lt;dbl&gt;, `Bilophila (genus)` &lt;dbl&gt;, `Blautia (genus)` &lt;dbl&gt;, `Bosea
+## #   (genus)` &lt;dbl&gt;, `Butyricicoccus (genus)` &lt;dbl&gt;, `Butyricimonas
+## #   (genus)` &lt;dbl&gt;, `Butyrivibrio (genus)` &lt;dbl&gt;, `CAG-352 (genus)` &lt;dbl&gt;,
+## #   `CAG-56 (genus)` &lt;dbl&gt;, `Campylobacter (genus)` &lt;dbl&gt;,
+## #   `Candidatus_Soleaferrea (genus)` &lt;dbl&gt;, `Catenibacterium (genus)` &lt;dbl&gt;,
+## #   `Cloacibacillus (genus)` &lt;dbl&gt;, `Collinsella (genus)` &lt;dbl&gt;, `Coprobacter
+## #   (genus)` &lt;dbl&gt;, `Defluviitaleaceae_UCG-011 (genus)` &lt;dbl&gt;, `Desulfovibrio
+## #   (genus)` &lt;dbl&gt;, `Dialister (genus)` &lt;dbl&gt;, `Dorea (genus)` &lt;dbl&gt;, `DTU089
+## #   (genus)` &lt;dbl&gt;, `Eggerthella (genus)` &lt;dbl&gt;, `Eisenbergiella
+## #   (genus)` &lt;dbl&gt;, `Enorma (genus)` &lt;dbl&gt;, `Enterococcus (genus)` &lt;dbl&gt;,
+## #   `Enterorhabdus (genus)` &lt;dbl&gt;, `Erysipelatoclostridium (genus)` &lt;dbl&gt;,
+## #   `Erysipelotrichaceae_UCG-003 (genus)` &lt;dbl&gt;, `Erysipelotrichaceae_UCG-004
+## #   (genus)` &lt;dbl&gt;, `Escherichia-Shigella (genus)` &lt;dbl&gt;, `Faecalibacterium
+## #   (genus)` &lt;dbl&gt;, `Faecalibaculum (genus)` &lt;dbl&gt;, `Faecalitalea
+## #   (genus)` &lt;dbl&gt;, `Family_XIII_UCG-001 (genus)` &lt;dbl&gt;,
+## #   `Firmicutes_bacterium_CAG:345 (genus)` &lt;dbl&gt;, `Flavonifractor
+## #   (genus)` &lt;dbl&gt;, `Fournierella (genus)` &lt;dbl&gt;, `Fusicatenibacter
+## #   (genus)` &lt;dbl&gt;, `Fusobacterium (genus)` &lt;dbl&gt;, `GCA-900066575
+## #   (genus)` &lt;dbl&gt;, `Gordonibacter (genus)` &lt;dbl&gt;, `Haemophilus (genus)` &lt;dbl&gt;,
+## #   `Helicobacter (genus)` &lt;dbl&gt;, `Holdemanella (genus)` &lt;dbl&gt;, `Holdemania
+## #   (genus)` &lt;dbl&gt;, `Howardella (genus)` &lt;dbl&gt;, `Hungatella (genus)` &lt;dbl&gt;,
+## #   `Hydrogenoanaerobacterium (genus)` &lt;dbl&gt;, `Imtechella (genus)` &lt;dbl&gt;,
+## #   `Intestinibacter (genus)` &lt;dbl&gt;, `Intestinimonas (genus)` &lt;dbl&gt;,
+## #   `Lachnoclostridium (genus)` &lt;dbl&gt;, `Lachnospira (genus)` &lt;dbl&gt;,
+## #   `Lachnospiraceae_UCG-001 (genus)` &lt;dbl&gt;, `Lachnospiraceae_UCG-003
+## #   (genus)` &lt;dbl&gt;, `Lachnospiraceae_UCG-004 (genus)` &lt;dbl&gt;,
+## #   `Lachnospiraceae_UCG-008 (genus)` &lt;dbl&gt;, `Lachnospiraceae_UCG-010
+## #   (genus)` &lt;dbl&gt;, `Lactobacillus (genus)` &lt;dbl&gt;, `Lactococcus (genus)` &lt;dbl&gt;,
+## #   `Libanicoccus (genus)` &lt;dbl&gt;, `Marvinbryantia (genus)` &lt;dbl&gt;, `Megamonas
+## #   (genus)` &lt;dbl&gt;, `Megasphaera (genus)` &lt;dbl&gt;, `Merdibacter (genus)` &lt;dbl&gt;,
+## #   `Methanobrevibacter (genus)` &lt;dbl&gt;, `Methylococcus (genus)` &lt;dbl&gt;,
+## #   `Mitsuokella (genus)` &lt;dbl&gt;, `Moryella (genus)` &lt;dbl&gt;, `Negativibacillus
+## #   (genus)` &lt;dbl&gt;, `Odoribacter (genus)` &lt;dbl&gt;, `Olsenella (genus)` &lt;dbl&gt;,
+## #   `Oscillibacter (genus)` &lt;dbl&gt;, `Oscillospira (genus)` &lt;dbl&gt;, `Oxalobacter
+## #   (genus)` &lt;dbl&gt;, `Papillibacter (genus)` &lt;dbl&gt;, `Parabacteroides
+## #   (genus)` &lt;dbl&gt;, `Paraprevotella (genus)` &lt;dbl&gt;, `Parasutterella
+## #   (genus)` &lt;dbl&gt;, `Peptococcus (genus)` &lt;dbl&gt;, `Phascolarctobacterium
+## #   (genus)` &lt;dbl&gt;, `Phocea (genus)` &lt;dbl&gt;, `Prevotella (genus)` &lt;dbl&gt;,
+## #   `Prevotellaceae_UCG-001 (genus)` &lt;dbl&gt;, `Pseudoflavonifractor
+## #   (genus)` &lt;dbl&gt;, `Romboutsia (genus)` &lt;dbl&gt;, `Roseburia (genus)` &lt;dbl&gt;,
+## #   `Rothia (genus)` &lt;dbl&gt;, `Ruminiclostridium (genus)` &lt;dbl&gt;, …</code></pre>
+<pre class="r"><code>taxa.dist &lt;- taxa.tbl %&gt;%
+    select_if(is.double) %&gt;%
+    vegan::vegdist(method = &#39;bray&#39;,
+                   diag = TRUE, upper = TRUE)
+
+head(taxa.dist)</code></pre>
+<pre><code>## [1] 0.4824903 0.2733564 0.3601383 0.3484652 0.3290071 0.4796713</code></pre>
+<pre class="r"><code>taxa.pcoa &lt;- taxa.dist %&gt;%
+    cmdscale(k = 2) %&gt;%
+    as_tibble(names_repair = &#39;check_unique&#39;) %&gt;%
+    add_column(Cohort = taxa.tbl$Cohort,
+               .before = 1)
+
+taxa.pcoa</code></pre>
+<pre><code>## # A tibble: 329 x 3
+##    Cohort      V1       V2
+##    &lt;chr&gt;    &lt;dbl&gt;    &lt;dbl&gt;
+##  1 AAU    -0.0769  0.125  
+##  2 AAU     0.173  -0.0779 
+##  3 AAU    -0.216   0.0348 
+##  4 AAU    -0.0196  0.0102 
+##  5 AAU    -0.219   0.0796 
+##  6 AAU    -0.204  -0.00534
+##  7 AAU    -0.0754 -0.184  
+##  8 AAU     0.0589  0.00364
+##  9 AAU    -0.141  -0.0421 
+## 10 AAU    -0.245   0.188  
+## # … with 319 more rows</code></pre>
+<pre class="r"><code>pcoa.centroids &lt;- taxa.pcoa %&gt;%
+    group_by(Cohort) %&gt;%
+    nest() %&gt;%
+    mutate(V1 = map_dbl(data, ~ mean(.$V1))) %&gt;%
+    mutate(V2 = map_dbl(data, ~ mean(.$V2))) %&gt;%
+    select(-data) %&gt;%
+    add_column(Pt.Type = &#39;Group Mean&#39;)
+
+pcoa.centroids</code></pre>
+<pre><code>## # A tibble: 4 x 4
+## # Groups:   Cohort [4]
+##   Cohort       V1       V2 Pt.Type   
+##   &lt;chr&gt;     &lt;dbl&gt;    &lt;dbl&gt; &lt;chr&gt;     
+## 1 AAU     -0.0678 -0.0655  Group Mean
+## 2 IBD     -0.194  -0.00140 Group Mean
+## 3 SpA     -0.0979 -0.0423  Group Mean
+## 4 Collect  0.224   0.0865  Group Mean</code></pre>
+<pre class="r"><code>plot.data &lt;- taxa.pcoa %&gt;%
+    add_column(Pt.Type = &#39;Individual&#39;) %&gt;%
+    bind_rows(pcoa.centroids) %&gt;%
+    mutate_at(vars(Cohort), ~ fct_relevel(., &#39;SpA&#39;,&#39;IBD&#39;,&#39;AAU&#39;,&#39;Collect&#39;)) 
+
+plot.data</code></pre>
+<pre><code>## # A tibble: 333 x 4
+##    Cohort      V1       V2 Pt.Type   
+##    &lt;fct&gt;    &lt;dbl&gt;    &lt;dbl&gt; &lt;chr&gt;     
+##  1 AAU    -0.0769  0.125   Individual
+##  2 AAU     0.173  -0.0779  Individual
+##  3 AAU    -0.216   0.0348  Individual
+##  4 AAU    -0.0196  0.0102  Individual
+##  5 AAU    -0.219   0.0796  Individual
+##  6 AAU    -0.204  -0.00534 Individual
+##  7 AAU    -0.0754 -0.184   Individual
+##  8 AAU     0.0589  0.00364 Individual
+##  9 AAU    -0.141  -0.0421  Individual
+## 10 AAU    -0.245   0.188   Individual
+## # … with 323 more rows</code></pre>
+<pre class="r"><code>plot.data %&gt;%
+    ggplot(aes(x = V1, y = V2)) +
+    geom_point(aes(shape = Pt.Type, size = Pt.Type,
+                   color = Cohort, fill = Cohort)) +
+    scale_shape_manual(values = c(22,4)) +
+    scale_size_manual(values = c(4,2)) +
+    ggsci::scale_color_futurama() +
+    ggsci::scale_fill_futurama() +
+    labs(title = &#39;Beta Diversity between Cohorts, genus-level&#39;,
+         shape = &#39;Point Type&#39;, size = &#39;Point Type&#39;,
+         x = &#39;PCoA Axis 1&#39;, y = &#39;PCoA Axis 2&#39;) + 
+    ggrepel::geom_label_repel(dplyr::filter(plot.data, Pt.Type == &#39;Group Mean&#39;),
+                     mapping = aes(label = Cohort), size = 9/.pt,
+                     min.segment.length = unit(0, &#39;lines&#39;), force = 5) +
+    theme_bw()</code></pre>
+<p><img src="/posts/tidyverse-gut-diversity/index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<pre class="r"><code>plot.data %&gt;%
+    ggplot(aes(x = V1, y = V2)) +
+    stat_ellipse(geom = &#39;polygon&#39;, alpha = 0.2, 
+                 aes(color = Cohort, fill = Cohort)) +
+    geom_point(aes(shape = Pt.Type, size = Pt.Type,
+                   color = Cohort, fill = Cohort)) +
+    scale_shape_manual(values = c(22,4)) +
+    scale_size_manual(values = c(4,2)) +
+    ggsci::scale_color_futurama() +
+    ggsci::scale_fill_futurama() +
+    labs(title = &#39;Beta Diversity between Cohorts, genus-level&#39;,
+         shape = &#39;Point Type&#39;, size = &#39;Point Type&#39;, 
+         x = &#39;PCoA Axis 1&#39;, y = &#39;PCoA Axis 2&#39;) + 
+    geom_label_repel(dplyr::filter(plot.data, Pt.Type == &#39;Group Mean&#39;),
+                     mapping = aes(label = Cohort), size = 9/.pt,
+                     min.segment.length = unit(0, &#39;lines&#39;), force = 5) +
+    theme_bw()</code></pre>
+<p><img src="/posts/tidyverse-gut-diversity/index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<style type="text/css">
+img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 80%;
+    padding: 10px
+}
+</style>
+</div>
+
+
+tagged:  tutorial  tidyverse  r-stats  forslund-lab  microbiome  ggplot   
+        <div class="footer">
+    Powered by <a href="https://gohugo.io/">Hugo</a> and <a href="https://www.netlify.com/">Netlify</a>. 
+</div>
+    </div>
+  </body>
+</html>

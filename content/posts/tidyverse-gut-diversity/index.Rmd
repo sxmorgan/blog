@@ -1,0 +1,246 @@
+---
+title: Gut Microbiome Diversity Analysis
+author: Morgan Essex
+date: '2020-05-10'
+slug: tidyverse-gut-diversity
+output:
+  blogdown::html_page:
+    fig_caption: true
+    css: tomorrow.css
+    toc: true
+categories: 
+    - tutorial
+    - microbiome
+tags: 
+    - tutorial
+    - tidyverse
+    - r-stats
+    - forslund-lab
+    - microbiome
+    - ggplot
+summary:
+    A short workflow for alpha and beta diversity analysis using autoimmune gut microbiome data.
+---
+
+For this analysis I'm going to use some actual, anonymized data that I'm working with for one of projects. It's a composite dataset of 16S stool samples from anti-TNFa therapy naive autoimmune patients presenting with any combination of Crohn's disease (IBD), ankylosing spondyloarthritis (SpA), or uveitis (AAU), pooled with a subset of the Collect control samples from a study recently published in our group. The 16S V3-V4 region was mapped to bacterial genera using LoTuS and we'll be working with the genus-level rarefied reads.
+
+
+```{r knitr, include = FALSE}
+knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+```
+
+First, libraries.
+
+```{r libraries}
+library(tidyverse)
+library(magrittr)
+library(ggsci) 
+library(ggrepel)
+library(ggpubr)
+```
+
+## Alpha Diversity
+
+Then, I'll read in the data.
+
+```{r readin.alpha}
+meta.tbl <- readRDS(file = 'data/meta.tbl.rds')
+
+meta.tbl
+
+```
+
+```{r}
+plot.data <- meta.tbl %>%
+    mutate_at(vars(Cohort), ~ forcats::fct_recode(., 
+                                                  `Collect` = 'Collect',
+                                                  `Crohn's\nDisease` = 'IBD',
+                                                  `Spondyloarthritis` = 'SpA',
+                                                  `Uveitis` = 'AAU')) %>%
+    mutate_at(vars(Cohort), ~ fct_relevel(., 
+                                          'Collect',
+                                          'Spondyloarthritis',
+                                          "Crohn's\nDisease",
+                                          'Uveitis')) %>%
+    mutate_at(vars(Phenotype), ~ fct_relevel(., 
+                                             'Control',
+                                             'IBD','IBD+SpA','IBD+AAU',
+                                             'IBD+SpA+AAU','SpA','SpA+AAU',
+                                             'AAU'))
+
+plot.data
+```
+
+```{r}
+div.stats <- list(c('Collect','Spondyloarthritis'),
+                  c('Collect',"Crohn's\nDisease"),
+                  c('Collect','Uveitis'))
+
+plot.data %>%
+    ggplot(aes(x = Cohort, 
+               y = Shannon, 
+               fill = Cohort)) +
+    geom_boxplot(alpha = 0.5) +
+    geom_jitter(aes(shape = Cohort), 
+                alpha = 0.7, size = 2, width = 0.2) +
+    ggsci::scale_fill_futurama() +
+    labs(title = 'Alpha Diversity by Cohort', 
+         y = 'Shannon Entropy', x = '') +
+    ggpubr::stat_compare_means(comparisons = div.stats, size = 4, 
+                       tip.length = 0, step.increase = 0.15,
+                       aes(label = ..p.signif..)) +
+    ggpubr::theme_pubr(legend = 'none')
+```
+
+```{r}
+
+div.stats <- list(c('Control','IBD'), c('Control','IBD+SpA'), c('Control','IBD+AAU'),
+                  c('Control','IBD+SpA+AAU'), c('Control','SpA'), c('Control','SpA+AAU'), 
+                  c('Control','AAU'))
+
+plot.data %>%
+    ggplot(aes(x = Phenotype, 
+               y = Shannon, 
+               fill = Phenotype)) +
+    geom_boxplot(alpha = 0.5, outlier.alpha = 0) +
+    geom_jitter(aes(shape = Cohort), 
+                alpha = 0.5, size = 2, width = 0.2) +
+    ggsci::scale_fill_d3() +
+    labs(title = 'Alpha Diversity by Phenotype', 
+         y = 'Shannon Entropy', x = '') +
+    guides(fill = 'none',
+           shape = guide_legend(override.aes = list(size = 3))) +
+    ggpubr::stat_compare_means(comparisons = div.stats, size = 3, 
+                       tip.length = 0.03, step.increase = 0.15,
+                       aes(label = ..p.signif..)) +
+    theme_bw() +
+    theme(legend.position = 'top',
+          legend.justification = 'left',
+          panel.grid = element_blank(),
+          panel.border = element_blank(),
+          axis.line = element_line(color = 'black'))
+
+```
+
+```{r}
+plot.data %>%
+    filter(Phenotype != 'Control') %>%
+    ggplot(aes(x = Phenotype, 
+               y = Shannon, 
+               fill = Phenotype)) +
+    geom_boxplot(alpha = 0.5) +
+    geom_jitter(aes(shape = Cohort), 
+                alpha = 0.7, size = 2, width = 0.2) +
+    ggsci::scale_fill_uchicago() +
+    facet_wrap(~ Cohort, scales = 'free_x') +
+    labs(title = 'Alpha Diversity by Cohort and Phenotype', 
+         y = 'Shannon Entropy', x = '', shape = 'Cohort') +
+    guides(fill = 'none',
+           shape = guide_legend(override.aes = list(size = 3))) +
+    theme_bw() +
+    theme(legend.position = 'top',
+          legend.justification = 'left',
+          axis.text.x = element_text (angle = -45, hjust = 0)) 
+```
+
+
+## Beta Diversity
+
+```{r readin}
+taxa.tbl <- readRDS(file = 'data/taxa.tbl.rds')
+
+taxa.tbl
+```
+
+
+```{r dist}
+taxa.dist <- taxa.tbl %>%
+    select_if(is.double) %>%
+    vegan::vegdist(method = 'bray',
+                   diag = TRUE, upper = TRUE)
+
+head(taxa.dist)
+```
+
+
+```{r pcoa}
+taxa.pcoa <- taxa.dist %>%
+    cmdscale(k = 2) %>%
+    as_tibble(names_repair = 'check_unique') %>%
+    add_column(Cohort = taxa.tbl$Cohort,
+               .before = 1)
+
+taxa.pcoa
+```
+
+
+```{r}
+pcoa.centroids <- taxa.pcoa %>%
+    group_by(Cohort) %>%
+    nest() %>%
+    mutate(V1 = map_dbl(data, ~ mean(.$V1))) %>%
+    mutate(V2 = map_dbl(data, ~ mean(.$V2))) %>%
+    select(-data) %>%
+    add_column(Pt.Type = 'Group Mean')
+
+pcoa.centroids
+```
+
+```{r}
+plot.data <- taxa.pcoa %>%
+    add_column(Pt.Type = 'Individual') %>%
+    bind_rows(pcoa.centroids) %>%
+    mutate_at(vars(Cohort), ~ fct_relevel(., 'SpA','IBD','AAU','Collect')) 
+
+plot.data
+```
+
+
+```{r}
+plot.data %>%
+    ggplot(aes(x = V1, y = V2)) +
+    geom_point(aes(shape = Pt.Type, size = Pt.Type,
+                   color = Cohort, fill = Cohort)) +
+    scale_shape_manual(values = c(22,4)) +
+    scale_size_manual(values = c(4,2)) +
+    ggsci::scale_color_futurama() +
+    ggsci::scale_fill_futurama() +
+    labs(title = 'Beta Diversity between Cohorts, genus-level',
+         shape = 'Point Type', size = 'Point Type',
+         x = 'PCoA Axis 1', y = 'PCoA Axis 2') + 
+    ggrepel::geom_label_repel(dplyr::filter(plot.data, Pt.Type == 'Group Mean'),
+                     mapping = aes(label = Cohort), size = 9/.pt,
+                     min.segment.length = unit(0, 'lines'), force = 5) +
+    theme_bw()
+```
+
+
+```{r}
+plot.data %>%
+    ggplot(aes(x = V1, y = V2)) +
+    stat_ellipse(geom = 'polygon', alpha = 0.2, 
+                 aes(color = Cohort, fill = Cohort)) +
+    geom_point(aes(shape = Pt.Type, size = Pt.Type,
+                   color = Cohort, fill = Cohort)) +
+    scale_shape_manual(values = c(22,4)) +
+    scale_size_manual(values = c(4,2)) +
+    ggsci::scale_color_futurama() +
+    ggsci::scale_fill_futurama() +
+    labs(title = 'Beta Diversity between Cohorts, genus-level',
+         shape = 'Point Type', size = 'Point Type', 
+         x = 'PCoA Axis 1', y = 'PCoA Axis 2') + 
+    geom_label_repel(dplyr::filter(plot.data, Pt.Type == 'Group Mean'),
+                     mapping = aes(label = Cohort), size = 9/.pt,
+                     min.segment.length = unit(0, 'lines'), force = 5) +
+    theme_bw()
+```
+
+```{css, echo = FALSE}
+img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 80%;
+    padding: 10px
+}
+```

@@ -6,7 +6,7 @@
     <description>Recent content in Tags on data&#43;science</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 05 May 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 10 May 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
     
@@ -14,16 +14,34 @@
     <item>
       <title>forslund-lab</title>
       <link>/tags/forslund-lab/</link>
-      <pubDate>Tue, 05 May 2020 00:00:00 +0000</pubDate>
+      <pubDate>Sun, 10 May 2020 00:00:00 +0000</pubDate>
       
       <guid>/tags/forslund-lab/</guid>
       <description></description>
     </item>
     
     <item>
+      <title>ggplot</title>
+      <link>/tags/ggplot/</link>
+      <pubDate>Sun, 10 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/ggplot/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>microbiome</title>
+      <link>/tags/microbiome/</link>
+      <pubDate>Sun, 10 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/microbiome/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>r-stats</title>
       <link>/tags/r-stats/</link>
-      <pubDate>Tue, 05 May 2020 00:00:00 +0000</pubDate>
+      <pubDate>Sun, 10 May 2020 00:00:00 +0000</pubDate>
       
       <guid>/tags/r-stats/</guid>
       <description></description>
@@ -32,7 +50,7 @@
     <item>
       <title>tidyverse</title>
       <link>/tags/tidyverse/</link>
-      <pubDate>Tue, 05 May 2020 00:00:00 +0000</pubDate>
+      <pubDate>Sun, 10 May 2020 00:00:00 +0000</pubDate>
       
       <guid>/tags/tidyverse/</guid>
       <description></description>
@@ -41,7 +59,7 @@
     <item>
       <title>tutorial</title>
       <link>/tags/tutorial/</link>
-      <pubDate>Tue, 05 May 2020 00:00:00 +0000</pubDate>
+      <pubDate>Sun, 10 May 2020 00:00:00 +0000</pubDate>
       
       <guid>/tags/tutorial/</guid>
       <description></description>
