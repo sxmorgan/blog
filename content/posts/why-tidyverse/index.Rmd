@@ -21,7 +21,9 @@ summary:
 
 ## Inspiration and Inception {#intro}
 
-The [tidyverse](https://www.tidyverse.org/packages/) is a set of actively developed and well-maintained R packages to facilitate the typical data analysis workflow. Most but not all of the core tidyverse packages (there are now 8) were designed by [Hadley Wickham](http://hadley.nz/), chief scientist at RStudio since 2013. His book _[R for Data Science](https://r4ds.had.co.nz/)_ is an incredible resource that is only roughly summarized in this tutorial. Plenty of his talks and interviews are available on YouTube as well; [here's](https://www.youtube.com/watch?v=9YTNYT1maa4) my favorite from the [VIZBI](https://vizbi.org/) conference at EMBL last year. 
+The [tidyverse](https://www.tidyverse.org/packages/) is a set of actively developed and well-maintained R packages to facilitate the typical data analysis workflow. Most but not all of the core tidyverse packages (there are now 8) were designed by [Hadley Wickham](http://hadley.nz/), chief scientist at RStudio since 2013. His book _[R for Data Science](https://r4ds.had.co.nz/)_ is an incredible resource that is only roughly summarized in this tutorial. 
+
+<!-- Plenty of his talks and interviews are available on YouTube as well; [here's](https://www.youtube.com/watch?v=9YTNYT1maa4) my favorite from the [VIZBI](https://vizbi.org/) conference at EMBL last year.  -->
 
 Many R programmers who don't explicitly know what the tidyverse is have at least used `ggplot2`, and if they got their start in base R as I did, probably found it annoying because of the slightly different syntax. The inspiration behind it was to be the first open source implementation of _[The Grammar of Graphics](https://towardsdatascience.com/a-comprehensive-guide-to-the-grammar-of-graphics-for-effective-visualization-of-multi-dimensional-1f92b4ed4149)_ (hence **gg**plot), a statistical textbook from the 1980s that provided a concise way to describe a range of data visualizations. Grammar is simply an attribute of language that dictates how elements must be expressed in order to be understood, and where human languages predominately evolve the grammar that distinguishes them functionally, programming languages can be tailored and tweaked. 
 
@@ -32,7 +34,7 @@ The mission of `ggplot` - getting from data to visualization more intuitively by
 Canonical data science workflow from _R for Data Science_ [chapter 1](https://r4ds.had.co.nz/tidy-data.html)
 </center><br>
 
-I like this representation because it contains all the tasks I do as a computational researcher. Regardless of the motivating question, my work starts with data and ends with communicating something learned from the nonlinear process of exploring that data. The tidyverse attracted me because it offered complete workflow coverage and consistency throughout, which felt like the best way to attain fluency and proficiency. Once I got into it, I realized that the weird syntax that kept me from liking `ggplot2` a few years ago is exactly what gives it those attractive qualities.
+I like this representation because it contains all the tasks I do as a computational researcher. Regardless of the motivating question, my work starts with data and ends with communicating something learned from the nonlinear process of exploring that data. The tidyverse attracted me because it offered complete workflow coverage and consistency throughout, which felt like the best way to attain fluency and proficiency. The documentation and community helps, too. Once I got into it, I realized that the weird syntax that kept me from liking `ggplot2` a few years ago is exactly what gives it those attractive qualities.
 
 ## Features and Demo
 
@@ -101,7 +103,7 @@ mtcars.tbl <- mtcars %>%
     as_tibble()
 ```
 
-This is the most general way the pipe is used (but not the only one); the first line is always the variable you wish to create followed by what you're starting with followed by the `%>%` operator. In our example, `mtcars` is fed into `rownames_to_column()` which doesn't need us to explicitly give `mtcars` as a first argument anymore - same with `as_tibble()`. 
+This is the most general way the pipe is used (but not the only one); the first line is always the variable you wish to create, followed by the variable you're starting with, followed by the `%>%` operator. In our example, `mtcars` is fed into `rownames_to_column()` which doesn't need us to explicitly give `mtcars` as a first argument anymore - same with `as_tibble()`. 
 
 In my opinion, this is not only easier to read but also a lot less frustrating when working in the console. I suspect the tidyverse developers work on Macs and aren't used to having a home/end/insert key, because cursoring around to add parentheses and whatnot without those three keys was the bane of my R existence before I started using pipes.
 
@@ -143,13 +145,11 @@ Straight from the documentation, it makes code more readable by:
 - minimizing the need for local variables and function definitions, and
 - making it easy to add steps anywhere in the sequence of operations.
 
-It even has a series of ['aliases'](https://magrittr.tidyverse.org/reference/aliases.html) to do common data frame calculations and manipulations (like accessing a specific column), and some that work for subsetting and inserting into lists, too (again, to come later with `purrr`). At this point, I'll go ahead and admit that I employ `use_series()` instead of `$` and `extract2()` instead of `[[]]` 9 times out of 10 just because I find pipes so much better than typical R code. It's a stylistic choice, and there are definitely times to use it and times it's fine without.
+It even has a series of ['aliases'](https://magrittr.tidyverse.org/reference/aliases.html) to do common data frame calculations and manipulations (like accessing a specific column), and some that work for subsetting and inserting into lists, too (again, to come later with `purrr`). 
 
 ### Tidying and Wrangling
 
-Where the pipe really shines is during the process of data wrangling, i.e. manipulating the raw data into a format that invites further analysis. The two main packages for carrying this out are [tidyr](https://tidyr.tidyverse.org/) and [dplyr](https://dplyr.tidyverse.org/). 
-
-So what does tidy data refer to, exactly?
+Where the pipe really shines is during the process of data wrangling, i.e. manipulating the raw data into a format that invites further analysis. The two main packages for carrying this out are [tidyr](https://tidyr.tidyverse.org/) and [dplyr](https://dplyr.tidyverse.org/). So what does tidy data refer to, exactly?
 
 It's a standard format that follows from the basic data structure of the tidyverse, a tibble, in which **1)** every column is a variable, **2)** every row is an observation, and **3)** every cell is a single value. Rownames, then, are not tidy; aside from that, the `mtcars` data fulfills the other criteria. Here is a visual representation of tidy data.
 
@@ -158,7 +158,7 @@ It's a standard format that follows from the basic data structure of the tidyver
 from _R for Data Science_ [chapter 12](https://r4ds.had.co.nz/tidy-data.html)
 </center><br>
 
-The [gapminder data](https://www.gapminder.org/data/), which contains several per-country longitudinal metrics, by default displays this data in an untidy format. There are three variables in the table pictured below: country name (rownames), year (column names), and inflation-adjusted GDP per capita (the values). 
+I'm going to switch gears now and look at the [gapminder data](https://www.gapminder.org/data/), which contains several per-country longitudinal metrics, shown below in an untidy format. There are three variables contained in the table pictured below: country name (rownames), year (column names), and inflation-adjusted GDP per capita (the values). 
 
 <center>
 ![](data/gapminder.png)
@@ -176,7 +176,7 @@ gapminder %>%
 
 How can we get our data to look like this?
 
-Tidyr has **two workhorse functions when it comes to tidying data**: `pivot_longer()` and `pivot_wider()`, [formerly known as](https://github.com/tidyverse/tidyr/releases/tag/v1.0.0) as `gather()` and `spread()` respectively. Don't get too caught up in the syntax yet, but here's an animation of these functions in action from the [tidyexplain](https://github.com/gadenbuie/tidyexplain) package.
+Tidyr has **two workhorse functions when it comes to tidying data**: `pivot_longer()` and `pivot_wider()`, [formerly known as](https://github.com/tidyverse/tidyr/releases/tag/v1.0.0) as `gather()` and `spread()` respectively, or, as I mentioned earlier, `melt()` and `cast()` to some. Don't get too caught up in the syntax yet, but here's an animation of these functions in action from the [tidyexplain](https://github.com/gadenbuie/tidyexplain) package.
 
 <center>
 ![](data/spread.gather.gif)
@@ -219,6 +219,8 @@ The basic function are as follows:
 - `arrange()` changes the ordering of the rows
 
 Since these are the _most common_ data manipulations, they have [base R equivalents](https://tavareshugo.github.io/data_carpentry_extras/base-r_tidyverse_equivalents/base-r_tidyverse_equivalents.html) just like much of the `dplyr` package. To be totally honest, aside from `subset()` (equivalent to `filter()`) and `sort()`/`order()` (equivalent to `arrange()`), I never used any of these. `subset()` has the exact same syntax as `filter()`, and I'm not going to argue that there are specific advantages to using `dplyr` if you're already a pro at base R manipulations.
+
+
 
 <!-- talk about variants -->
 

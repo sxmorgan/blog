@@ -37,14 +37,15 @@ summary:
 
 <div id="intro" class="section level2">
 <h2>Inspiration and Inception</h2>
-<p>The <a href="https://www.tidyverse.org/packages/">tidyverse</a> is a set of actively developed and well-maintained R packages to facilitate the typical data analysis workflow. Most but not all of the core tidyverse packages (there are now 8) were designed by <a href="http://hadley.nz/">Hadley Wickham</a>, chief scientist at RStudio since 2013. His book <em><a href="https://r4ds.had.co.nz/">R for Data Science</a></em> is an incredible resource that is only roughly summarized in this tutorial. Plenty of his talks and interviews are available on YouTube as well; <a href="https://www.youtube.com/watch?v=9YTNYT1maa4">here’s</a> my favorite from the <a href="https://vizbi.org/">VIZBI</a> conference at EMBL last year.</p>
+<p>The <a href="https://www.tidyverse.org/packages/">tidyverse</a> is a set of actively developed and well-maintained R packages to facilitate the typical data analysis workflow. Most but not all of the core tidyverse packages (there are now 8) were designed by <a href="http://hadley.nz/">Hadley Wickham</a>, chief scientist at RStudio since 2013. His book <em><a href="https://r4ds.had.co.nz/">R for Data Science</a></em> is an incredible resource that is only roughly summarized in this tutorial.</p>
+<!-- Plenty of his talks and interviews are available on YouTube as well; [here's](https://www.youtube.com/watch?v=9YTNYT1maa4) my favorite from the [VIZBI](https://vizbi.org/) conference at EMBL last year.  -->
 <p>Many R programmers who don’t explicitly know what the tidyverse is have at least used <code>ggplot2</code>, and if they got their start in base R as I did, probably found it annoying because of the slightly different syntax. The inspiration behind it was to be the first open source implementation of <em><a href="https://towardsdatascience.com/a-comprehensive-guide-to-the-grammar-of-graphics-for-effective-visualization-of-multi-dimensional-1f92b4ed4149">The Grammar of Graphics</a></em> (hence <strong>gg</strong>plot), a statistical textbook from the 1980s that provided a concise way to describe a range of data visualizations. Grammar is simply an attribute of language that dictates how elements must be expressed in order to be understood, and where human languages predominately evolve the grammar that distinguishes them functionally, programming languages can be tailored and tweaked.</p>
 <p>The mission of <code>ggplot</code> - getting from data to visualization more intuitively by tweaking the grammar - is what paved the way for the rest of the tidyverse. R users who have ever melted or cast a data frame might be curious to know that those packages were also Hadley’s work and key milestones of the <code>dplyr</code> package in the mature tidyverse. As he puts it, very often the key to creating a visualization is about getting the data in the right form, hence the expansion into data manipulation.</p>
 <center>
 <img src="data/data.science.process.png" alt="Figure 1 from R for Data Science" /> Canonical data science workflow from <em>R for Data Science</em> <a href="https://r4ds.had.co.nz/tidy-data.html">chapter 1</a>
 </center>
 <p><br></p>
-<p>I like this representation because it contains all the tasks I do as a computational researcher. Regardless of the motivating question, my work starts with data and ends with communicating something learned from the nonlinear process of exploring that data. The tidyverse attracted me because it offered complete workflow coverage and consistency throughout, which felt like the best way to attain fluency and proficiency. Once I got into it, I realized that the weird syntax that kept me from liking <code>ggplot2</code> a few years ago is exactly what gives it those attractive qualities.</p>
+<p>I like this representation because it contains all the tasks I do as a computational researcher. Regardless of the motivating question, my work starts with data and ends with communicating something learned from the nonlinear process of exploring that data. The tidyverse attracted me because it offered complete workflow coverage and consistency throughout, which felt like the best way to attain fluency and proficiency. The documentation and community helps, too. Once I got into it, I realized that the weird syntax that kept me from liking <code>ggplot2</code> a few years ago is exactly what gives it those attractive qualities.</p>
 </div>
 <div id="features-and-demo" class="section level2">
 <h2>Features and Demo</h2>
@@ -124,7 +125,7 @@ head(as.matrix(column_to_rownames(mtcars.tbl, var = &#39;model&#39;)))</code></p
 mtcars.tbl &lt;- mtcars %&gt;%
     rownames_to_column(var = &#39;model&#39;) %&gt;%
     as_tibble()</code></pre>
-<p>This is the most general way the pipe is used (but not the only one); the first line is always the variable you wish to create followed by what you’re starting with followed by the <code>%&gt;%</code> operator. In our example, <code>mtcars</code> is fed into <code>rownames_to_column()</code> which doesn’t need us to explicitly give <code>mtcars</code> as a first argument anymore - same with <code>as_tibble()</code>.</p>
+<p>This is the most general way the pipe is used (but not the only one); the first line is always the variable you wish to create, followed by the variable you’re starting with, followed by the <code>%&gt;%</code> operator. In our example, <code>mtcars</code> is fed into <code>rownames_to_column()</code> which doesn’t need us to explicitly give <code>mtcars</code> as a first argument anymore - same with <code>as_tibble()</code>.</p>
 <p>In my opinion, this is not only easier to read but also a lot less frustrating when working in the console. I suspect the tidyverse developers work on Macs and aren’t used to having a home/end/insert key, because cursoring around to add parentheses and whatnot without those three keys was the bane of my R existence before I started using pipes.</p>
 <p>Importantly, <strong>the pipe only works with tibbles and data frames</strong>, not matrices (hence why we did have to call <code>as.matrix()</code> a few code chunks ago), but its use extends far beyond the tidyverse: the pipe operator and ‘piping’ works for base R commands (like <code>nrow()</code>, provided it’s the end command in your pipe) and functions from specialized packages that read data frames, too.</p>
 <p>Here are two equivalent expressions calculating a Spearman correlation matrix from <code>mtcars</code>.</p>
@@ -152,18 +153,17 @@ cor.plot &lt;- mtcars %&gt;%
 <li>minimizing the need for local variables and function definitions, and</li>
 <li>making it easy to add steps anywhere in the sequence of operations.</li>
 </ul>
-<p>It even has a series of <a href="https://magrittr.tidyverse.org/reference/aliases.html">‘aliases’</a> to do common data frame calculations and manipulations (like accessing a specific column), and some that work for subsetting and inserting into lists, too (again, to come later with <code>purrr</code>). At this point, I’ll go ahead and admit that I employ <code>use_series()</code> instead of <code>$</code> and <code>extract2()</code> instead of <code>[[]]</code> 9 times out of 10 just because I find pipes so much better than typical R code. It’s a stylistic choice, and there are definitely times to use it and times it’s fine without.</p>
+<p>It even has a series of <a href="https://magrittr.tidyverse.org/reference/aliases.html">‘aliases’</a> to do common data frame calculations and manipulations (like accessing a specific column), and some that work for subsetting and inserting into lists, too (again, to come later with <code>purrr</code>).</p>
 </div>
 <div id="tidying-and-wrangling" class="section level3">
 <h3>Tidying and Wrangling</h3>
-<p>Where the pipe really shines is during the process of data wrangling, i.e. manipulating the raw data into a format that invites further analysis. The two main packages for carrying this out are <a href="https://tidyr.tidyverse.org/">tidyr</a> and <a href="https://dplyr.tidyverse.org/">dplyr</a>.</p>
-<p>So what does tidy data refer to, exactly?</p>
+<p>Where the pipe really shines is during the process of data wrangling, i.e. manipulating the raw data into a format that invites further analysis. The two main packages for carrying this out are <a href="https://tidyr.tidyverse.org/">tidyr</a> and <a href="https://dplyr.tidyverse.org/">dplyr</a>. So what does tidy data refer to, exactly?</p>
 <p>It’s a standard format that follows from the basic data structure of the tidyverse, a tibble, in which <strong>1)</strong> every column is a variable, <strong>2)</strong> every row is an observation, and <strong>3)</strong> every cell is a single value. Rownames, then, are not tidy; aside from that, the <code>mtcars</code> data fulfills the other criteria. Here is a visual representation of tidy data.</p>
 <center>
 <img src="data/tidy.data.rep.png" /> from <em>R for Data Science</em> <a href="https://r4ds.had.co.nz/tidy-data.html">chapter 12</a>
 </center>
 <p><br></p>
-<p>The <a href="https://www.gapminder.org/data/">gapminder data</a>, which contains several per-country longitudinal metrics, by default displays this data in an untidy format. There are three variables in the table pictured below: country name (rownames), year (column names), and inflation-adjusted GDP per capita (the values).</p>
+<p>I’m going to switch gears now and look at the <a href="https://www.gapminder.org/data/">gapminder data</a>, which contains several per-country longitudinal metrics, shown below in an untidy format. There are three variables contained in the table pictured below: country name (rownames), year (column names), and inflation-adjusted GDP per capita (the values).</p>
 <center>
 <img src="data/gapminder.png" />
 </center>
@@ -189,7 +189,7 @@ gapminder %&gt;%
 ## 10 Afghanistan  1997      635.
 ## # … with 1,694 more rows</code></pre>
 <p>How can we get our data to look like this?</p>
-<p>Tidyr has <strong>two workhorse functions when it comes to tidying data</strong>: <code>pivot_longer()</code> and <code>pivot_wider()</code>, <a href="https://github.com/tidyverse/tidyr/releases/tag/v1.0.0">formerly known as</a> as <code>gather()</code> and <code>spread()</code> respectively. Don’t get too caught up in the syntax yet, but here’s an animation of these functions in action from the <a href="https://github.com/gadenbuie/tidyexplain">tidyexplain</a> package.</p>
+<p>Tidyr has <strong>two workhorse functions when it comes to tidying data</strong>: <code>pivot_longer()</code> and <code>pivot_wider()</code>, <a href="https://github.com/tidyverse/tidyr/releases/tag/v1.0.0">formerly known as</a> as <code>gather()</code> and <code>spread()</code> respectively, or, as I mentioned earlier, <code>melt()</code> and <code>cast()</code> to some. Don’t get too caught up in the syntax yet, but here’s an animation of these functions in action from the <a href="https://github.com/gadenbuie/tidyexplain">tidyexplain</a> package.</p>
 <center>
 <img src="data/spread.gather.gif" />
 </center>

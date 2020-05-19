@@ -24,7 +24,7 @@ summary:
 
 Alpha and beta diversity are ecological metrics frequently part of exploratory microbiome analysis. The former measures the taxonomic variance _within_ a sample, while the latter measures how samples vary _between_ one another. There are different ways to measure both indices.
 
-I'm going to use some actual (anonymized) 16S taxonomic data that I'm working with. It's a composite dataset of anti-TNFa therapy naive autoimmune patients (N = 222) presenting with any combination of Crohn's disease (IBD), ankylosing spondyloarthritis (SpA), or acute anterior uveitis (AAU), pooled with a subset (N = 107) of healthy control samples from the [recently published](https://academic.oup.com/cardiovascres/advance-article-abstract/doi/10.1093/cvr/cvaa128/5831292?redirectedFrom=fulltext) Collect study. We'll be working with the genus-level rarefied data that has been transformed to relative abundances and filtered for prevalence in > 5% of samples.
+I'm going to use some actual (anonymized) 16S taxonomic data that I'm working with. It's a composite dataset of anti-TNFa therapy naive autoimmune patients (N = 222) presenting with any combination of Crohn's disease (IBD), ankylosing spondylitis (SpA), or acute anterior uveitis (AAU), pooled with a subset (N = 107) of healthy control samples from the [recently published](https://academic.oup.com/cardiovascres/advance-article-abstract/doi/10.1093/cvr/cvaa128/5831292?redirectedFrom=fulltext) Collect study. We'll be working with the genus-level rarefied data that has been transformed to relative abundances and filtered for prevalence in > 5% of samples.
 
 
 ```{r knitr, include = FALSE}
@@ -49,7 +49,7 @@ The abundance tables I'm going to work with were generated from raw 16S reads us
 
 There are packages for calculating diversity indices in R from an abundance table too if that's needed, for example `phyloseq` or `microbiome`. 
 
-The richness is an OTU count (how many genera in a sample), while the [Shannon entropy](https://en.wiktionary.org/wiki/Shannon_entropy) is also informed by abundances and yields a measure of how evenly OTUs are distributed across a sample; a high Shannon entropy implies that some OTUs have similar abundance levels, while a low entropy indicates that OTUs dominate over others. A lower Shannon diversity is frequently associated with chronic disease.
+The richness is an OTU count (how many OTUs, here genera, in a sample), while the [Shannon entropy](https://en.wiktionary.org/wiki/Shannon_entropy) is also informed by abundances and yields a measure of how evenly OTUs are distributed across a sample; a high Shannon entropy implies that some OTUs have similar abundance levels, while a low entropy indicates that some OTUs dominate over others. A lower Shannon diversity is frequently associated with chronic disease.
 
 ```{r readin.alpha}
 meta.tbl <- readRDS(file = 'data/meta.tbl.rds')
@@ -127,7 +127,7 @@ plot.data %>%
     ggpubr::theme_pubr(legend = 'none')
 ```
 
-As I mentioned at the beginning, this is a composite dataset, and the Cohort variable refers to the _primary_ disease from which a patient is suffering/the cohort they were recruited from. Let's switch to looking at the alpha diversity across different _phenotypes_ rather than cohorts, since many patients are suffering from multiple diseases.
+As I mentioned at the beginning, this is a composite dataset, and the Cohort variable refers to the _primary_ disease a patient has been diagnosed with/the cohort they were recruited from. Let's switch to looking at the alpha diversity across different _phenotypes_ rather than cohorts, since many patients are suffering from two or more autoimmune diseases.
 
 Here I'm going to use a lot more custom code that I can dive into after, which will hopefully illuminate `ggplot2` syntax a little bit or perhaps serve as a skeleton for your own boxplots.
 
@@ -165,7 +165,7 @@ plot.data %>%
 
 ```
 
-There's not a ton of additional information in this plot and the statistical significance is probably overkill at this point, but you get the picture. It's a nice way to embed additional information.
+There's not a ton of additional biological information in this plot and the statistical significance is probably overkill at this point, but you get the picture. It's a nice way to embed additional information if needed.
 
 Aesthetically, instead of using the `theme_pubr()` from `ggpubr`, I've opted for the built-in `theme_bw()` and customized it to look a lot like the pubr theme by using the [theme](https://ggplot2.tidyverse.org/reference/theme.html) command - one really worth exploring the potential of on your own. I've also used it to put the legend horizontally at the top of the figure instead of off to the right. Using the `guides()` command, I've increased the size of the display points for ease of reading, and removed the color/fill legend which would just be superfluous since that corresponds to Phenotype which is already printed on the x-axis.
 
