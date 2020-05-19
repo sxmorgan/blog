@@ -24,7 +24,7 @@ summary:
 
 Alpha and beta diversity are ecological metrics frequently part of exploratory microbiome analysis. The former measures the taxonomic variance _within_ a sample, while the latter measures how samples vary _between_ one another. There are different ways to measure both indices.
 
-I'm going to use some actual (anonymized) 16S taxonomic data that I'm working with. It's a composite dataset of anti-TNFa therapy naive autoimmune patients (N = 222) presenting with any combination of Crohn's disease (IBD), ankylosing spondylitis (SpA), or acute anterior uveitis (AAU), pooled with a subset (N = 107) of healthy control samples from the [recently published](https://academic.oup.com/cardiovascres/advance-article-abstract/doi/10.1093/cvr/cvaa128/5831292?redirectedFrom=fulltext) Collect study. We'll be working with the genus-level rarefied data that has been transformed to relative abundances and filtered for prevalence in > 5% of samples.
+I'm going to use some actual (anonymized) 16S taxonomic data that I'm working with. It's a composite dataset of patients (N = 222) presenting with any combination of Crohn's disease (IBD), ankylosing spondylitis (SpA), or acute anterior uveitis (AAU), pooled with a subset (N = 107) of healthy control samples from the [recently published](https://academic.oup.com/cardiovascres/advance-article-abstract/doi/10.1093/cvr/cvaa128/5831292?redirectedFrom=fulltext) Collect study. We'll be working with the genus-level rarefied data that has been transformed to relative abundances and filtered for prevalence in > 5% of samples.
 
 
 ```{r knitr, include = FALSE}
