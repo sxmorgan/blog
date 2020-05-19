@@ -24,7 +24,7 @@ summary:
 
 Alpha and beta diversity are ecological metrics frequently part of exploratory microbiome analysis. The former measures the taxonomic variance _within_ a sample, while the latter measures how samples vary _between_ one another. There are different ways to measure both indices.
 
-I'm going to use some actual (anonymized) 16S taxonomic data that I'm working with. It's a composite dataset of 222 anti-TNFa therapy naive autoimmune patients presenting with any combination of Crohn's disease (IBD), ankylosing spondyloarthritis (SpA), or acute anterior uveitis (AAU), pooled with a subset of healthy control samples from the [recently published](https://academic.oup.com/cardiovascres/advance-article-abstract/doi/10.1093/cvr/cvaa128/5831292?redirectedFrom=fulltext) Collect study. We'll be working with the genus-level rarefied data that has been transformed to relative abundances and filtered for prevalence in > 5% of samples.
+I'm going to use some actual (anonymized) 16S taxonomic data that I'm working with. It's a composite dataset of anti-TNFa therapy naive autoimmune patients (N = 222) presenting with any combination of Crohn's disease (IBD), ankylosing spondyloarthritis (SpA), or acute anterior uveitis (AAU), pooled with a subset (N = 107) of healthy control samples from the [recently published](https://academic.oup.com/cardiovascres/advance-article-abstract/doi/10.1093/cvr/cvaa128/5831292?redirectedFrom=fulltext) Collect study. We'll be working with the genus-level rarefied data that has been transformed to relative abundances and filtered for prevalence in > 5% of samples.
 
 
 ```{r knitr, include = FALSE}
@@ -321,7 +321,7 @@ There are really two kinds of visual data analysis: that which is for your eyes 
 
 My motivation to get good at `ggplot2` grew out of a dislike of Illustrator/Inkscape work on a laptop. It's the worst. I spent a lot of time playing around and reading the [documentation](https://ggplot2.tidyverse.org/reference/index.html) website to get here (even before this I had only used the `theme()` option a few times without really understanding the capability), but I hope the code above serves as a more complete skeleton for your own exploration.
 
-Mostly I hope you feel a little more comfortable in `ggplot2` now and can see the benefits of using a graphical toolkit embedded in a programming as a visualization tool.
+Mostly I hope you feel a little more comfortable in `ggplot2` now and can see the benefits of outsourcing more of the labor involved in data visualization to code.
 
 ```{css, echo = FALSE}
 img {

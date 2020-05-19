@@ -78,7 +78,7 @@
 </div>
 
 <p>Alpha and beta diversity are ecological metrics frequently part of exploratory microbiome analysis. The former measures the taxonomic variance <em>within</em> a sample, while the latter measures how samples vary <em>between</em> one another. There are different ways to measure both indices.</p>
-<p>I’m going to use some actual (anonymized) 16S taxonomic data that I’m working with. It’s a composite dataset of 222 anti-TNFa therapy naive autoimmune patients presenting with any combination of Crohn’s disease (IBD), ankylosing spondyloarthritis (SpA), or acute anterior uveitis (AAU), pooled with a subset of healthy control samples from the <a href="https://academic.oup.com/cardiovascres/advance-article-abstract/doi/10.1093/cvr/cvaa128/5831292?redirectedFrom=fulltext">recently published</a> Collect study. We’ll be working with the genus-level rarefied data that has been transformed to relative abundances and filtered for prevalence in &gt; 5% of samples.</p>
+<p>I’m going to use some actual (anonymized) 16S taxonomic data that I’m working with. It’s a composite dataset of anti-TNFa therapy naive autoimmune patients (N = 222) presenting with any combination of Crohn’s disease (IBD), ankylosing spondyloarthritis (SpA), or acute anterior uveitis (AAU), pooled with a subset (N = 107) of healthy control samples from the <a href="https://academic.oup.com/cardiovascres/advance-article-abstract/doi/10.1093/cvr/cvaa128/5831292?redirectedFrom=fulltext">recently published</a> Collect study. We’ll be working with the genus-level rarefied data that has been transformed to relative abundances and filtered for prevalence in &gt; 5% of samples.</p>
 <p>First, libraries. Like <code>ggsci</code> and <code>ggpubr</code>, <a href="https://github.com/slowkow/ggrepel">ggrepel</a> is another plotting package using <code>ggplot2</code> syntax that’s excellent for adding customizable labels to plots, which we’ll do later.</p>
 <pre class="r"><code>library(tidyverse)
 library(magrittr)
@@ -414,7 +414,7 @@ plot.data</code></pre>
 <h2>Summary</h2>
 <p>There are really two kinds of visual data analysis: that which is for your eyes only while you’re figuring stuff out, and that which is intended to communicate something once you’ve arrived at a conclusion. Though this was an exploratory analysis (for you), my actual first plots of this data were <em>much</em> simpler and uglier. However, the cool thing about <code>ggplot2</code>’s approach of using layered commands is that it can facilitate both the quick-and-dirty visualization <em>and</em> generate really elegant, customizable plots.</p>
 <p>My motivation to get good at <code>ggplot2</code> grew out of a dislike of Illustrator/Inkscape work on a laptop. It’s the worst. I spent a lot of time playing around and reading the <a href="https://ggplot2.tidyverse.org/reference/index.html">documentation</a> website to get here (even before this I had only used the <code>theme()</code> option a few times without really understanding the capability), but I hope the code above serves as a more complete skeleton for your own exploration.</p>
-<p>Mostly I hope you feel a little more comfortable in <code>ggplot2</code> now and can see the benefits of using a graphical toolkit embedded in a programming as a visualization tool.</p>
+<p>Mostly I hope you feel a little more comfortable in <code>ggplot2</code> now and can see the benefits of outsourcing more of the labor involved in data visualization to code.</p>
 <style type="text/css">
 img {
     display: block;
