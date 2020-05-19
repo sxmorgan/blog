@@ -22,9 +22,9 @@ summary:
     A short workflow for generating alpha and beta diversity plots using autoimmune gut microbiome data.
 ---
 
-Alpha and beta diversity are ecological metrics for exploratory microbiome analyses. The former measures the taxonomic variance _within_ a sample, while the latter measures how samples vary _between_ one another. 
+Alpha and beta diversity are ecological metrics frequently part of exploratory microbiome analysis. The former measures the taxonomic variance _within_ a sample, while the latter measures how samples vary _between_ one another. There are different ways to measure both indices.
 
-I'm going to use some actual, anonymized 16S taxonomic data. It's a composite dataset of 222 anti-TNFa therapy naive autoimmune patients presenting with any combination of Crohn's disease (IBD), ankylosing spondyloarthritis (SpA), or acute anterior uveitis (AAU), pooled with a subset of healthy control samples from the [recently published](https://academic.oup.com/cardiovascres/advance-article-abstract/doi/10.1093/cvr/cvaa128/5831292?redirectedFrom=fulltext) Collect study. We'll be working with the genus-level rarefied data as relative abundances.
+I'm going to use some actual (anonymized) 16S taxonomic data that I'm working with. It's a composite dataset of 222 anti-TNFa therapy naive autoimmune patients presenting with any combination of Crohn's disease (IBD), ankylosing spondyloarthritis (SpA), or acute anterior uveitis (AAU), pooled with a subset of healthy control samples from the [recently published](https://academic.oup.com/cardiovascres/advance-article-abstract/doi/10.1093/cvr/cvaa128/5831292?redirectedFrom=fulltext) Collect study. We'll be working with the genus-level rarefied data that has been transformed to relative abundances and filtered for prevalence in > 5% of samples.
 
 
 ```{r knitr, include = FALSE}
@@ -41,13 +41,15 @@ library(ggrepel)
 library(ggpubr)
 ```
 
+<br>
+
 ## Alpha Diversity Boxplots
 
 The abundance tables I'm going to work with were generated from raw 16S reads using [LoTuS](https://microbiomejournal.biomedcentral.com/articles/10.1186/2049-2618-2-30) and rarefied using the [rarefaction toolkit](https://academic.oup.com/bioinformatics/article/33/16/2594/3111845) (rtk), which calculates per-sample diversity metrics so we don't have to do that, and I'll just be reading in the anonymized metadata table instead. 
 
 There are packages for calculating diversity indices in R from an abundance table too if that's needed, for example `phyloseq` or `microbiome`. 
 
-The richness is an OTU count (how many genera in a sample), while the [Shannon entropy](https://en.wiktionary.org/wiki/Shannon_entropy) is also informed by abundances and yields a measure of how evenly OTUs are distributed across a sample; a high Shannon entropy implies that OTUs have similar abundance levels, while a low entropy indicates that OTUs dominate over others.
+The richness is an OTU count (how many genera in a sample), while the [Shannon entropy](https://en.wiktionary.org/wiki/Shannon_entropy) is also informed by abundances and yields a measure of how evenly OTUs are distributed across a sample; a high Shannon entropy implies that some OTUs have similar abundance levels, while a low entropy indicates that OTUs dominate over others. A lower Shannon diversity is frequently associated with chronic disease.
 
 ```{r readin.alpha}
 meta.tbl <- readRDS(file = 'data/meta.tbl.rds')
@@ -58,7 +60,7 @@ meta.tbl
 
 That's actually all we need to generate a quick plot for ourselves. 
 
-```{r}
+```{r alpha.cohort.1}
 meta.tbl %>%
     ggplot(aes(x = Cohort, 
                y = Shannon, 
@@ -71,21 +73,21 @@ meta.tbl %>%
     ggpubr::theme_pubr(legend = 'none')
 ```
 
-I've opted to for `geom_boxplot()` with a `geom_point()` overlay to get a better idea of comparison sizes. This is a perfectly nice plot that already confirms an important hypothesis about this data: patients suffering from immune-mediated inflammatory diseases have lower microbial diversity than controls with the proximity of the inflammation to the gut microbiota likely playing a role.
+I've opted to for `geom_boxplot()` with a `geom_point()` overlay to get a better idea of comparison sizes. This is a perfectly nice plot that already confirms an important hypothesis about this data: patients suffering from immune-mediated inflammatory diseases have lower microbial diversity than controls, with the proximity of the inflammation to the gut microbiota likely playing a role (hence why IBD samples are less diverse than SpA samples).
 
 If we wanted to publish this plot or use it in a presentation, there are a few things we can do to make it even nicer, like making the labels more informative and adding statistics. 
 
 I'll create a new `plot.data` object and use my favorite `mutate_at()` + the [forcats](https://forcats.tidyverse.org/) package **for** dealing with **cat**egorical variables to do this. First I want to change the Cohort names, so I'll use `fct_recode()` to supply the new names, and then `fct_relevel()` to order them how I want them to appear on the plot from left to right. Lastly, I'll order the Phenotype names as well, since we'll eventually plot those on the x-axis too. 
 
-```{r}
+```{r plot.data}
 plot.data <- meta.tbl %>%
-    # `new` = 'old' ; note difference in `` and '' !
+    # `new` = 'old' ; note difference between `` and '' !
     mutate_at(vars(Cohort), ~ fct_recode(., 
                                          Collect = 'Collect',
                                          `Crohn's\nDisease` = 'IBD',
                                          Spondyloarthritis = 'SpA',
                                          Uveitis = 'AAU')) %>%
-    # takes strings, first var will be leftmost
+    # takes strings, first var will be leftmost boxplot
     mutate_at(vars(Cohort), ~ fct_relevel(., 
                                           'Collect',
                                           'Spondyloarthritis',
@@ -104,7 +106,7 @@ The next thing we want to do is add statistical significance between the cohorts
 
 For statistical significance, we'll want to specify a list of comparisons to make, which we'll give as the `comparisons` argument to the `stat_compare_means()` function. I've elected to print the stars, but replacing ..p.signif.. with ..p.val.. in `aes(label = ....)` will add the actual values. I've added a shape aesthetic `aes(shape = Cohort)` as well.
 
-```{r}
+```{r alpha.cohort.2}
 to.compare <- list(c('Collect','Spondyloarthritis'),
                   c('Collect',"Crohn's\nDisease"),
                   c('Collect','Uveitis'))
@@ -129,7 +131,7 @@ As I mentioned at the beginning, this is a composite dataset, and the Cohort var
 
 Here I'm going to use a lot more custom code that I can dive into after, which will hopefully illuminate `ggplot2` syntax a little bit or perhaps serve as a skeleton for your own boxplots.
 
-```{r}
+```{r alpha.facet}
 
 to.compare <- list(c('Control','IBD'), c('Control','IBD+SpA'), c('Control','IBD+AAU'),
                   c('Control','IBD+SpA+AAU'), c('Control','SpA'), c('Control','SpA+AAU'), 
@@ -169,7 +171,7 @@ Aesthetically, instead of using the `theme_pubr()` from `ggpubr`, I've opted for
 
 Lastly, what if we wanted to look at both of these variables in a slightly different way? Facetting is a really useful `ggplot2` feature that would allow us to do just that. For this plot, I want to filter out the controls so that we're just looking at the autoimmune diseases, and I want to display Phenotype on the x-axis facetted by Cohort. Using the `scales = 'free_x'` parameter in the `facet_wrap()` command allows the x-axis labels to differ between facets, which they obviously will for this sort of analysis. I've tilted the x-axis text as well using the `axis.text.x` parameter of `theme()`.
 
-```{r}
+```{r alpha.phenotype}
 plot.data %>%
     # remove controls from this visualization
     filter(Phenotype != 'Control') %>%
@@ -195,10 +197,11 @@ plot.data %>%
           # axis.text.x = element_text(angle = 45, hjust = 1)) 
 ```
 
+<br>
 
 ## Beta Diversity + PCoA
 
-The [beta diversity](https://en.wikipedia.org/wiki/Beta_diversity) is a measure of species diversity between different ecosystems, here different patient microbiota. The Bray-Curtis dissimilarity is a semimetric statistic bounded between 0 and 1 (0 = same species in same abundances, 1 = samples do not share any species) quantifying the pairwise compositional overlap between samples.
+The [beta diversity](https://en.wikipedia.org/wiki/Beta_diversity) is a measurement of OTU diversity between different ecosystems, here different patient microbiota. The Bray-Curtis dissimilarity is a semimetric statistic bounded between 0 and 1 (0 = same OTUs in same abundances, 1 = samples do not share any OTUs) quantifying the pairwise compositional overlap between samples.
 
 Once dissimilarities have been computed, a PCoA ordination creates an n-dimensional (usually n = 2) mapping of the dissimilarities between samples such that the calculated dissimilarity between samples is preserved and able to be visualized in a lower-dimensional space. 
 
@@ -208,7 +211,7 @@ For this, I'll read in the actual abundance table which has the Cohort variable 
 
 <!-- **NOTE:** the PERMANOVA test does not distinguish between diffferences among groups which are the result of location (a "true" difference in multivariate space) or dispersion (variance homogeneity), and significance values should be interpreted with caution. See the Assumptions section of the original method [linked here](https://onlinelibrary.wiley.com/doi/full/10.1111/j.1442-9993.2001.01070.pp.x). -->
 
-```{r readin}
+```{r readin.taxa}
 taxa.tbl <- readRDS(file = 'data/taxa.tbl.rds')
 
 taxa.tbl
@@ -237,12 +240,13 @@ taxa.pcoa <- taxa.dist %>%
 taxa.pcoa
 ```
 
-Something useful I got in the habit of doing for my PCoA plots is adding the centroid of each group, i.e. the mean. I'm going to calculate those and save them in a separate `pcoa.centroids` variable. I've added a Pt.Type column that we'll also use in our visualization to distinguish centroid points from the other data points (patient samples) in our plot.
+Something useful I got in the habit of doing for my PCoA plots is adding the **centroid** of each group, i.e. the mean. I'm going to calculate those and save them in a separate `pcoa.centroids` variable. I've added a Pt.Type column that we'll also use in our visualization to distinguish centroid points from the other data points (patient samples) in our plot.
 
-```{r}
+```{r centroids}
 pcoa.centroids <- taxa.pcoa %>%
     group_by(Cohort) %>%
     nest() %>%
+    ungroup() %>%
     # calculate centroids for each Cohort
     mutate(V1 = map_dbl(data, ~ mean(.$V1))) %>%
     mutate(V2 = map_dbl(data, ~ mean(.$V2))) %>%
@@ -253,9 +257,9 @@ pcoa.centroids <- taxa.pcoa %>%
 pcoa.centroids
 ```
 
-There isn't much to do to prepare this data for plotting, but we do want to add the centroids above to the `taxa.pcoa` values we got earlier. Additionally, since we added a Pt.Type variable to the centroids tibble, we'll want to do the same for our individual coordinates before we can use the `bind_rows()` command. Just as with the alpha diversity plots, I'm using `fct_relevel()` to order the Cohort variable how I want it to appear in the final legend.
+There isn't much to do to prepare this data for plotting, but we do want to add the centroids above to the `taxa.pcoa` values we got earlier. Additionally, since we added a Pt.Type variable to the centroids tibble, we'll want to do the same for our individual coordinates before we can use the `bind_rows()` command. Just as with the alpha diversity plots, I'm using `fct_relevel()` to order the Cohort variable how we want it to appear in the final legend from top to bottom.
 
-```{r}
+```{r pcoa.plot.data}
 plot.data <- taxa.pcoa %>%
     add_column(Pt.Type = 'Individual') %>%
     bind_rows(pcoa.centroids) %>%
@@ -264,14 +268,16 @@ plot.data <- taxa.pcoa %>%
 plot.data
 ```
 
+Now our data is plot ready and we can use `geom_point()` again, this time to create a scatter plot of our PCoA coordinates. For visual appeal, I want to color these by cohort and use different shapes to represent the data points and the centroids, and make the centroids bigger. I also want to update the axis and legend titles with `labs()`, which I also used earlier, and finally use the `geom_label_repel()` function to label our centroids. This function takes a data frame or tibble as the first argument, and obtains the labels from a column in it as specified in the `mapping = aes(label = ...)` argument.
 
-
-```{r}
+```{r pcoa.1}
 plot.data %>%
     ggplot(aes(x = V1, y = V2)) +
     geom_point(aes(shape = Pt.Type, size = Pt.Type,
                    color = Cohort, fill = Cohort)) +
+    # 22 = filled square, 4 = x
     scale_shape_manual(values = c(22,4)) +
+    # make centroids 2x larger
     scale_size_manual(values = c(4,2)) +
     ggsci::scale_color_futurama() +
     ggsci::scale_fill_futurama() +
@@ -284,10 +290,14 @@ plot.data %>%
     theme_bw()
 ```
 
+Our beta diversity analysis confirms another biological hypothesis: patients with autoimmune diseases have more similar microbiota to one another than they do to healthy controls, which is why we see the largest separation on the x-axis and the Collect samples in their own little cloud.
 
-```{r}
+Another visual appeal thing I got used to doing on my PCoAs when possible is including a `stat_ellipse()` around the groupings in my PCoA. All we need to do is add two lines of code and our group separation becomes a lot clearer.
+
+```{r pcoa.2}
 plot.data %>%
     ggplot(aes(x = V1, y = V2)) +
+    # add ellipse around cohort groups
     stat_ellipse(geom = 'polygon', alpha = 0.2, 
                  aes(color = Cohort, fill = Cohort)) +
     geom_point(aes(shape = Pt.Type, size = Pt.Type,
@@ -305,12 +315,20 @@ plot.data %>%
     theme_bw()
 ```
 
+## Summary
+
+There are really two kinds of visual data analysis: that which is for your eyes only while you're figuring stuff out, and that which is intended to communicate something once you've arrived at a conclusion. Though this was an exploratory analysis (for you), my actual first plots of this data were _much_ simpler and uglier. However, the cool thing about `ggplot2`'s approach of using layered commands is that it can facilitate both the quick-and-dirty visualization _and_ generate really elegant, customizable plots. 
+
+My motivation to get good at `ggplot2` grew out of a dislike of Illustrator/Inkscape work on a laptop. It's the worst. I spent a lot of time playing around and reading the [documentation](https://ggplot2.tidyverse.org/reference/index.html) website to get here (even before this I had only used the `theme()` option a few times without really understanding the capability), but I hope the code above serves as a more complete skeleton for your own exploration.
+
+Mostly I hope you feel a little more comfortable in `ggplot2` now and can see the benefits of using a graphical toolkit embedded in a programming as a visualization tool.
+
 ```{css, echo = FALSE}
 img {
     display: block;
     margin-left: auto;
     margin-right: auto;
-    width: 80%;
+    width: 85%;
     padding: 10px
 }
 ```

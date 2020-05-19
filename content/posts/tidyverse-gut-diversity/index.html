@@ -28,22 +28,24 @@ summary:
 <ul>
 <li><a href="#alpha-diversity-boxplots">Alpha Diversity Boxplots</a></li>
 <li><a href="#beta-diversity-pcoa">Beta Diversity + PCoA</a></li>
+<li><a href="#summary">Summary</a></li>
 </ul>
 </div>
 
-<p>Alpha and beta diversity are ecological metrics for exploratory microbiome analyses. The former measures the taxonomic variance <em>within</em> a sample, while the latter measures how samples vary <em>between</em> one another.</p>
-<p>I’m going to use some actual, anonymized 16S taxonomic data. It’s a composite dataset of 222 anti-TNFa therapy naive autoimmune patients presenting with any combination of Crohn’s disease (IBD), ankylosing spondyloarthritis (SpA), or acute anterior uveitis (AAU), pooled with a subset of healthy control samples from the <a href="https://academic.oup.com/cardiovascres/advance-article-abstract/doi/10.1093/cvr/cvaa128/5831292?redirectedFrom=fulltext">recently published</a> Collect study. We’ll be working with the genus-level rarefied data as relative abundances.</p>
+<p>Alpha and beta diversity are ecological metrics frequently part of exploratory microbiome analysis. The former measures the taxonomic variance <em>within</em> a sample, while the latter measures how samples vary <em>between</em> one another. There are different ways to measure both indices.</p>
+<p>I’m going to use some actual (anonymized) 16S taxonomic data that I’m working with. It’s a composite dataset of 222 anti-TNFa therapy naive autoimmune patients presenting with any combination of Crohn’s disease (IBD), ankylosing spondyloarthritis (SpA), or acute anterior uveitis (AAU), pooled with a subset of healthy control samples from the <a href="https://academic.oup.com/cardiovascres/advance-article-abstract/doi/10.1093/cvr/cvaa128/5831292?redirectedFrom=fulltext">recently published</a> Collect study. We’ll be working with the genus-level rarefied data that has been transformed to relative abundances and filtered for prevalence in &gt; 5% of samples.</p>
 <p>First, libraries. Like <code>ggsci</code> and <code>ggpubr</code>, <a href="https://github.com/slowkow/ggrepel">ggrepel</a> is another plotting package using <code>ggplot2</code> syntax that’s excellent for adding customizable labels to plots, which we’ll do later.</p>
 <pre class="r"><code>library(tidyverse)
 library(magrittr)
 library(ggsci) 
 library(ggrepel)
 library(ggpubr)</code></pre>
+<p><br></p>
 <div id="alpha-diversity-boxplots" class="section level2">
 <h2>Alpha Diversity Boxplots</h2>
 <p>The abundance tables I’m going to work with were generated from raw 16S reads using <a href="https://microbiomejournal.biomedcentral.com/articles/10.1186/2049-2618-2-30">LoTuS</a> and rarefied using the <a href="https://academic.oup.com/bioinformatics/article/33/16/2594/3111845">rarefaction toolkit</a> (rtk), which calculates per-sample diversity metrics so we don’t have to do that, and I’ll just be reading in the anonymized metadata table instead.</p>
 <p>There are packages for calculating diversity indices in R from an abundance table too if that’s needed, for example <code>phyloseq</code> or <code>microbiome</code>.</p>
-<p>The richness is an OTU count (how many genera in a sample), while the <a href="https://en.wiktionary.org/wiki/Shannon_entropy">Shannon entropy</a> is also informed by abundances and yields a measure of how evenly OTUs are distributed across a sample; a high Shannon entropy implies that OTUs have similar abundance levels, while a low entropy indicates that OTUs dominate over others.</p>
+<p>The richness is an OTU count (how many genera in a sample), while the <a href="https://en.wiktionary.org/wiki/Shannon_entropy">Shannon entropy</a> is also informed by abundances and yields a measure of how evenly OTUs are distributed across a sample; a high Shannon entropy implies that some OTUs have similar abundance levels, while a low entropy indicates that OTUs dominate over others. A lower Shannon diversity is frequently associated with chronic disease.</p>
 <pre class="r"><code>meta.tbl &lt;- readRDS(file = &#39;data/meta.tbl.rds&#39;)
 
 meta.tbl</code></pre>
@@ -72,18 +74,18 @@ meta.tbl</code></pre>
          y = &#39;Shannon Entropy&#39;, x = &#39;&#39;) +
     ggsci::scale_fill_futurama() +
     ggpubr::theme_pubr(legend = &#39;none&#39;)</code></pre>
-<p><img src="/posts/tidyverse-gut-diversity/index_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
-<p>I’ve opted to for <code>geom_boxplot()</code> with a <code>geom_point()</code> overlay to get a better idea of comparison sizes. This is a perfectly nice plot that already confirms an important hypothesis about this data: patients suffering from immune-mediated inflammatory diseases have lower microbial diversity than controls with the proximity of the inflammation to the gut microbiota likely playing a role.</p>
+<p><img src="/posts/tidyverse-gut-diversity/index_files/figure-html/alpha.cohort.1-1.png" width="672" /></p>
+<p>I’ve opted to for <code>geom_boxplot()</code> with a <code>geom_point()</code> overlay to get a better idea of comparison sizes. This is a perfectly nice plot that already confirms an important hypothesis about this data: patients suffering from immune-mediated inflammatory diseases have lower microbial diversity than controls, with the proximity of the inflammation to the gut microbiota likely playing a role (hence why IBD samples are less diverse than SpA samples).</p>
 <p>If we wanted to publish this plot or use it in a presentation, there are a few things we can do to make it even nicer, like making the labels more informative and adding statistics.</p>
 <p>I’ll create a new <code>plot.data</code> object and use my favorite <code>mutate_at()</code> + the <a href="https://forcats.tidyverse.org/">forcats</a> package <strong>for</strong> dealing with <strong>cat</strong>egorical variables to do this. First I want to change the Cohort names, so I’ll use <code>fct_recode()</code> to supply the new names, and then <code>fct_relevel()</code> to order them how I want them to appear on the plot from left to right. Lastly, I’ll order the Phenotype names as well, since we’ll eventually plot those on the x-axis too.</p>
 <pre class="r"><code>plot.data &lt;- meta.tbl %&gt;%
-    # `new` = &#39;old&#39; ; note difference in `` and &#39;&#39; !
+    # `new` = &#39;old&#39; ; note difference between `` and &#39;&#39; !
     mutate_at(vars(Cohort), ~ fct_recode(., 
                                          Collect = &#39;Collect&#39;,
                                          `Crohn&#39;s\nDisease` = &#39;IBD&#39;,
                                          Spondyloarthritis = &#39;SpA&#39;,
                                          Uveitis = &#39;AAU&#39;)) %&gt;%
-    # takes strings, first var will be leftmost
+    # takes strings, first var will be leftmost boxplot
     mutate_at(vars(Cohort), ~ fct_relevel(., 
                                           &#39;Collect&#39;,
                                           &#39;Spondyloarthritis&#39;,
@@ -130,7 +132,7 @@ plot.data %&gt;%
                                tip.length = 0, step.increase = 0.15,
                                aes(label = ..p.signif..)) +
     ggpubr::theme_pubr(legend = &#39;none&#39;)</code></pre>
-<p><img src="/posts/tidyverse-gut-diversity/index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p><img src="/posts/tidyverse-gut-diversity/index_files/figure-html/alpha.cohort.2-1.png" width="672" /></p>
 <p>As I mentioned at the beginning, this is a composite dataset, and the Cohort variable refers to the <em>primary</em> disease from which a patient is suffering/the cohort they were recruited from. Let’s switch to looking at the alpha diversity across different <em>phenotypes</em> rather than cohorts, since many patients are suffering from multiple diseases.</p>
 <p>Here I’m going to use a lot more custom code that I can dive into after, which will hopefully illuminate <code>ggplot2</code> syntax a little bit or perhaps serve as a skeleton for your own boxplots.</p>
 <pre class="r"><code>to.compare &lt;- list(c(&#39;Control&#39;,&#39;IBD&#39;), c(&#39;Control&#39;,&#39;IBD+SpA&#39;), c(&#39;Control&#39;,&#39;IBD+AAU&#39;),
@@ -162,7 +164,7 @@ plot.data %&gt;%
           panel.border = element_blank(), 
           # add x+y axes back
           axis.line = element_line(color = &#39;black&#39;)) </code></pre>
-<p><img src="/posts/tidyverse-gut-diversity/index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p><img src="/posts/tidyverse-gut-diversity/index_files/figure-html/alpha.facet-1.png" width="672" /></p>
 <p>There’s not a ton of additional information in this plot and the statistical significance is probably overkill at this point, but you get the picture. It’s a nice way to embed additional information.</p>
 <p>Aesthetically, instead of using the <code>theme_pubr()</code> from <code>ggpubr</code>, I’ve opted for the built-in <code>theme_bw()</code> and customized it to look a lot like the pubr theme by using the <a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a> command - one really worth exploring the potential of on your own. I’ve also used it to put the legend horizontally at the top of the figure instead of off to the right. Using the <code>guides()</code> command, I’ve increased the size of the display points for ease of reading, and removed the color/fill legend which would just be superfluous since that corresponds to Phenotype which is already printed on the x-axis.</p>
 <p>Lastly, what if we wanted to look at both of these variables in a slightly different way? Facetting is a really useful <code>ggplot2</code> feature that would allow us to do just that. For this plot, I want to filter out the controls so that we’re just looking at the autoimmune diseases, and I want to display Phenotype on the x-axis facetted by Cohort. Using the <code>scales = 'free_x'</code> parameter in the <code>facet_wrap()</code> command allows the x-axis labels to differ between facets, which they obviously will for this sort of analysis. I’ve tilted the x-axis text as well using the <code>axis.text.x</code> parameter of <code>theme()</code>.</p>
@@ -187,13 +189,14 @@ plot.data %&gt;%
           legend.justification = &#39;left&#39;,
           # tilt the x-axis text 
           axis.text.x = element_text(angle = -45, hjust = 0)) </code></pre>
-<p><img src="/posts/tidyverse-gut-diversity/index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p><img src="/posts/tidyverse-gut-diversity/index_files/figure-html/alpha.phenotype-1.png" width="672" /></p>
 <pre class="r"><code>          # tilt it the other way
           # axis.text.x = element_text(angle = 45, hjust = 1)) </code></pre>
+<p><br></p>
 </div>
 <div id="beta-diversity-pcoa" class="section level2">
 <h2>Beta Diversity + PCoA</h2>
-<p>The <a href="https://en.wikipedia.org/wiki/Beta_diversity">beta diversity</a> is a measure of species diversity between different ecosystems, here different patient microbiota. The Bray-Curtis dissimilarity is a semimetric statistic bounded between 0 and 1 (0 = same species in same abundances, 1 = samples do not share any species) quantifying the pairwise compositional overlap between samples.</p>
+<p>The <a href="https://en.wikipedia.org/wiki/Beta_diversity">beta diversity</a> is a measurement of OTU diversity between different ecosystems, here different patient microbiota. The Bray-Curtis dissimilarity is a semimetric statistic bounded between 0 and 1 (0 = same OTUs in same abundances, 1 = samples do not share any OTUs) quantifying the pairwise compositional overlap between samples.</p>
 <p>Once dissimilarities have been computed, a PCoA ordination creates an n-dimensional (usually n = 2) mapping of the dissimilarities between samples such that the calculated dissimilarity between samples is preserved and able to be visualized in a lower-dimensional space.</p>
 <p>For this, I’ll read in the actual abundance table which has the Cohort variable as a label in the first column.</p>
 <!-- Additionally, a **permutational multivariate analysis of variance (PERMANOVA)** significance test can be carried out on the distance matrix to assess whether the variance explained by a given predictor (e.g. the disease phenotype) is significant or not. -->
@@ -201,66 +204,55 @@ plot.data %&gt;%
 <pre class="r"><code>taxa.tbl &lt;- readRDS(file = &#39;data/taxa.tbl.rds&#39;)
 
 taxa.tbl</code></pre>
-<pre><code>## # A tibble: 329 x 160
-##    Cohort `A2 (genus)` `Acidaminococcu… `Actinomyces (g… `Agathobacter (…
-##    &lt;chr&gt;         &lt;dbl&gt;            &lt;dbl&gt;            &lt;dbl&gt;            &lt;dbl&gt;
-##  1 AAU        0                  0                     0                0
-##  2 AAU        0                  0                     0                0
-##  3 AAU        0                  0                     0                0
-##  4 AAU        0                  0                     0                0
-##  5 AAU        0                  0                     0                0
-##  6 AAU        0                  0                     0                0
-##  7 AAU        0.000432           0                     0                0
-##  8 AAU        0                  0.0233                0                0
-##  9 AAU        0.000432           0                     0                0
-## 10 AAU        0                  0                     0                0
-## # … with 319 more rows, and 155 more variables: `Akkermansia (genus)` &lt;dbl&gt;,
-## #   `Alistipes (genus)` &lt;dbl&gt;, `Allisonella (genus)` &lt;dbl&gt;, `Allobacillus
-## #   (genus)` &lt;dbl&gt;, `Alloprevotella (genus)` &lt;dbl&gt;, `Anaerofilum
-## #   (genus)` &lt;dbl&gt;, `Anaeroplasma (genus)` &lt;dbl&gt;, `Anaerostipes (genus)` &lt;dbl&gt;,
-## #   `Anaerotruncus (genus)` &lt;dbl&gt;, `Atopobium (genus)` &lt;dbl&gt;, `Bacteroides
-## #   (genus)` &lt;dbl&gt;, `Barnesiella (genus)` &lt;dbl&gt;, `Bifidobacterium
-## #   (genus)` &lt;dbl&gt;, `Bilophila (genus)` &lt;dbl&gt;, `Blautia (genus)` &lt;dbl&gt;, `Bosea
-## #   (genus)` &lt;dbl&gt;, `Butyricicoccus (genus)` &lt;dbl&gt;, `Butyricimonas
-## #   (genus)` &lt;dbl&gt;, `Butyrivibrio (genus)` &lt;dbl&gt;, `CAG-352 (genus)` &lt;dbl&gt;,
-## #   `CAG-56 (genus)` &lt;dbl&gt;, `Campylobacter (genus)` &lt;dbl&gt;,
-## #   `Candidatus_Soleaferrea (genus)` &lt;dbl&gt;, `Catenibacterium (genus)` &lt;dbl&gt;,
-## #   `Cloacibacillus (genus)` &lt;dbl&gt;, `Collinsella (genus)` &lt;dbl&gt;, `Coprobacter
-## #   (genus)` &lt;dbl&gt;, `Defluviitaleaceae_UCG-011 (genus)` &lt;dbl&gt;, `Desulfovibrio
-## #   (genus)` &lt;dbl&gt;, `Dialister (genus)` &lt;dbl&gt;, `Dorea (genus)` &lt;dbl&gt;, `DTU089
-## #   (genus)` &lt;dbl&gt;, `Eggerthella (genus)` &lt;dbl&gt;, `Eisenbergiella
-## #   (genus)` &lt;dbl&gt;, `Enorma (genus)` &lt;dbl&gt;, `Enterococcus (genus)` &lt;dbl&gt;,
-## #   `Enterorhabdus (genus)` &lt;dbl&gt;, `Erysipelatoclostridium (genus)` &lt;dbl&gt;,
-## #   `Erysipelotrichaceae_UCG-003 (genus)` &lt;dbl&gt;, `Erysipelotrichaceae_UCG-004
-## #   (genus)` &lt;dbl&gt;, `Escherichia-Shigella (genus)` &lt;dbl&gt;, `Faecalibacterium
-## #   (genus)` &lt;dbl&gt;, `Faecalibaculum (genus)` &lt;dbl&gt;, `Faecalitalea
-## #   (genus)` &lt;dbl&gt;, `Family_XIII_UCG-001 (genus)` &lt;dbl&gt;,
-## #   `Firmicutes_bacterium_CAG:345 (genus)` &lt;dbl&gt;, `Flavonifractor
-## #   (genus)` &lt;dbl&gt;, `Fournierella (genus)` &lt;dbl&gt;, `Fusicatenibacter
-## #   (genus)` &lt;dbl&gt;, `Fusobacterium (genus)` &lt;dbl&gt;, `GCA-900066575
-## #   (genus)` &lt;dbl&gt;, `Gordonibacter (genus)` &lt;dbl&gt;, `Haemophilus (genus)` &lt;dbl&gt;,
-## #   `Helicobacter (genus)` &lt;dbl&gt;, `Holdemanella (genus)` &lt;dbl&gt;, `Holdemania
-## #   (genus)` &lt;dbl&gt;, `Howardella (genus)` &lt;dbl&gt;, `Hungatella (genus)` &lt;dbl&gt;,
-## #   `Hydrogenoanaerobacterium (genus)` &lt;dbl&gt;, `Imtechella (genus)` &lt;dbl&gt;,
-## #   `Intestinibacter (genus)` &lt;dbl&gt;, `Intestinimonas (genus)` &lt;dbl&gt;,
-## #   `Lachnoclostridium (genus)` &lt;dbl&gt;, `Lachnospira (genus)` &lt;dbl&gt;,
-## #   `Lachnospiraceae_UCG-001 (genus)` &lt;dbl&gt;, `Lachnospiraceae_UCG-003
-## #   (genus)` &lt;dbl&gt;, `Lachnospiraceae_UCG-004 (genus)` &lt;dbl&gt;,
-## #   `Lachnospiraceae_UCG-008 (genus)` &lt;dbl&gt;, `Lachnospiraceae_UCG-010
-## #   (genus)` &lt;dbl&gt;, `Lactobacillus (genus)` &lt;dbl&gt;, `Lactococcus (genus)` &lt;dbl&gt;,
-## #   `Libanicoccus (genus)` &lt;dbl&gt;, `Marvinbryantia (genus)` &lt;dbl&gt;, `Megamonas
-## #   (genus)` &lt;dbl&gt;, `Megasphaera (genus)` &lt;dbl&gt;, `Merdibacter (genus)` &lt;dbl&gt;,
-## #   `Methanobrevibacter (genus)` &lt;dbl&gt;, `Methylococcus (genus)` &lt;dbl&gt;,
-## #   `Mitsuokella (genus)` &lt;dbl&gt;, `Moryella (genus)` &lt;dbl&gt;, `Negativibacillus
-## #   (genus)` &lt;dbl&gt;, `Odoribacter (genus)` &lt;dbl&gt;, `Olsenella (genus)` &lt;dbl&gt;,
-## #   `Oscillibacter (genus)` &lt;dbl&gt;, `Oscillospira (genus)` &lt;dbl&gt;, `Oxalobacter
-## #   (genus)` &lt;dbl&gt;, `Papillibacter (genus)` &lt;dbl&gt;, `Parabacteroides
-## #   (genus)` &lt;dbl&gt;, `Paraprevotella (genus)` &lt;dbl&gt;, `Parasutterella
-## #   (genus)` &lt;dbl&gt;, `Peptococcus (genus)` &lt;dbl&gt;, `Phascolarctobacterium
-## #   (genus)` &lt;dbl&gt;, `Phocea (genus)` &lt;dbl&gt;, `Prevotella (genus)` &lt;dbl&gt;,
-## #   `Prevotellaceae_UCG-001 (genus)` &lt;dbl&gt;, `Pseudoflavonifractor
-## #   (genus)` &lt;dbl&gt;, `Romboutsia (genus)` &lt;dbl&gt;, `Roseburia (genus)` &lt;dbl&gt;,
-## #   `Rothia (genus)` &lt;dbl&gt;, `Ruminiclostridium (genus)` &lt;dbl&gt;, …</code></pre>
+<pre><code>## # A tibble: 329 x 134
+##    Cohort Acidaminococcus Actinomyces Agathobacter Akkermansia Alistipes
+##    &lt;chr&gt;            &lt;dbl&gt;       &lt;dbl&gt;        &lt;dbl&gt;       &lt;dbl&gt;     &lt;dbl&gt;
+##  1 AAU             0                0            0    0.000432  0.000865
+##  2 AAU             0                0            0    0.0182    0.00389 
+##  3 AAU             0                0            0    0         0.0471  
+##  4 AAU             0                0            0    0         0.000432
+##  5 AAU             0                0            0    0         0       
+##  6 AAU             0                0            0    0         0.0147  
+##  7 AAU             0                0            0    0         0.0104  
+##  8 AAU             0.0233           0            0    0         0.00173 
+##  9 AAU             0                0            0    0.0519    0.00692 
+## 10 AAU             0                0            0    0         0       
+## # … with 319 more rows, and 128 more variables: Allisonella &lt;dbl&gt;,
+## #   Allobacillus &lt;dbl&gt;, Alloprevotella &lt;dbl&gt;, Anaerofilum &lt;dbl&gt;,
+## #   Anaerostipes &lt;dbl&gt;, Anaerotruncus &lt;dbl&gt;, Atopobium &lt;dbl&gt;,
+## #   Bacteroides &lt;dbl&gt;, Barnesiella &lt;dbl&gt;, Bifidobacterium &lt;dbl&gt;,
+## #   Bilophila &lt;dbl&gt;, Blautia &lt;dbl&gt;, Butyricicoccus &lt;dbl&gt;, Butyricimonas &lt;dbl&gt;,
+## #   `CAG-352` &lt;dbl&gt;, `CAG-56` &lt;dbl&gt;, Campylobacter &lt;dbl&gt;,
+## #   Candidatus_Soleaferrea &lt;dbl&gt;, Catenibacterium &lt;dbl&gt;, Collinsella &lt;dbl&gt;,
+## #   Coprobacter &lt;dbl&gt;, `Defluviitaleaceae_UCG-011` &lt;dbl&gt;, Desulfovibrio &lt;dbl&gt;,
+## #   Dialister &lt;dbl&gt;, Dorea &lt;dbl&gt;, DTU089 &lt;dbl&gt;, Eggerthella &lt;dbl&gt;,
+## #   Eisenbergiella &lt;dbl&gt;, Enterococcus &lt;dbl&gt;, Enterorhabdus &lt;dbl&gt;,
+## #   Erysipelatoclostridium &lt;dbl&gt;, `Erysipelotrichaceae_UCG-003` &lt;dbl&gt;,
+## #   `Escherichia-Shigella` &lt;dbl&gt;, Faecalibacterium &lt;dbl&gt;, Faecalibaculum &lt;dbl&gt;,
+## #   Faecalitalea &lt;dbl&gt;, `Family_XIII_UCG-001` &lt;dbl&gt;, Flavonifractor &lt;dbl&gt;,
+## #   Fournierella &lt;dbl&gt;, Fusicatenibacter &lt;dbl&gt;, Fusobacterium &lt;dbl&gt;,
+## #   `GCA-900066575` &lt;dbl&gt;, Gordonibacter &lt;dbl&gt;, Haemophilus &lt;dbl&gt;,
+## #   Helicobacter &lt;dbl&gt;, Holdemanella &lt;dbl&gt;, Holdemania &lt;dbl&gt;, Howardella &lt;dbl&gt;,
+## #   Hungatella &lt;dbl&gt;, Imtechella &lt;dbl&gt;, Intestinibacter &lt;dbl&gt;,
+## #   Intestinimonas &lt;dbl&gt;, Lachnoclostridium &lt;dbl&gt;, Lachnospira &lt;dbl&gt;,
+## #   `Lachnospiraceae_UCG-001` &lt;dbl&gt;, `Lachnospiraceae_UCG-003` &lt;dbl&gt;,
+## #   `Lachnospiraceae_UCG-004` &lt;dbl&gt;, `Lachnospiraceae_UCG-008` &lt;dbl&gt;,
+## #   `Lachnospiraceae_UCG-010` &lt;dbl&gt;, Lactobacillus &lt;dbl&gt;, Lactococcus &lt;dbl&gt;,
+## #   Marvinbryantia &lt;dbl&gt;, Megasphaera &lt;dbl&gt;, Methanobrevibacter &lt;dbl&gt;,
+## #   Mitsuokella &lt;dbl&gt;, Moryella &lt;dbl&gt;, Negativibacillus &lt;dbl&gt;,
+## #   Odoribacter &lt;dbl&gt;, Olsenella &lt;dbl&gt;, Oscillibacter &lt;dbl&gt;,
+## #   Oscillospira &lt;dbl&gt;, Papillibacter &lt;dbl&gt;, Parabacteroides &lt;dbl&gt;,
+## #   Paraprevotella &lt;dbl&gt;, Parasutterella &lt;dbl&gt;, Peptococcus &lt;dbl&gt;,
+## #   Phascolarctobacterium &lt;dbl&gt;, Phocea &lt;dbl&gt;, Prevotella &lt;dbl&gt;,
+## #   `Prevotellaceae_UCG-001` &lt;dbl&gt;, Romboutsia &lt;dbl&gt;, Roseburia &lt;dbl&gt;,
+## #   Ruminiclostridium &lt;dbl&gt;, `Ruminococcaceae_UCG-002` &lt;dbl&gt;,
+## #   `Ruminococcaceae_UCG-003` &lt;dbl&gt;, `Ruminococcaceae_UCG-004` &lt;dbl&gt;,
+## #   `Ruminococcaceae_UCG-005` &lt;dbl&gt;, `Ruminococcaceae_UCG-007` &lt;dbl&gt;,
+## #   `Ruminococcaceae_UCG-010` &lt;dbl&gt;, `Ruminococcaceae_UCG-013` &lt;dbl&gt;,
+## #   `Ruminococcaceae_UCG-014` &lt;dbl&gt;, Sellimonas &lt;dbl&gt;, Senegalimassilia &lt;dbl&gt;,
+## #   Shuttleworthia &lt;dbl&gt;, Slackia &lt;dbl&gt;, Solobacterium &lt;dbl&gt;,
+## #   Streptococcus &lt;dbl&gt;, Subdoligranulum &lt;dbl&gt;, Sutterella &lt;dbl&gt;,
+## #   Terrisporobacter &lt;dbl&gt;, …</code></pre>
 <p>We’ll use the <code>vegdist()</code> function from the <code>vegan</code> package to calculate the Bray-Curtis dissimilarites and save it in a <code>taxa.dist</code> object.</p>
 <pre class="r"><code>taxa.dist &lt;- taxa.tbl %&gt;%
     select_if(is.double) %&gt;%
@@ -268,7 +260,7 @@ taxa.tbl</code></pre>
                    diag = TRUE, upper = TRUE)
 
 head(taxa.dist)</code></pre>
-<pre><code>## [1] 0.4824903 0.2733564 0.3601383 0.3484652 0.3290071 0.4796713</code></pre>
+<pre><code>## [1] 0.4824903 0.2733564 0.3601383 0.3484652 0.3290071 0.4795587</code></pre>
 <p>From that, we can use the <code>cmdscale()</code> function from the <code>stats</code> package to obtain the point coordinates in PCoA space. We’ll add the Cohort labels back, since we’ll want to use them to distinguish points in our visualization.</p>
 <pre class="r"><code>taxa.pcoa &lt;- taxa.dist %&gt;%
     stats::cmdscale(k = 2) %&gt;%
@@ -280,21 +272,22 @@ taxa.pcoa</code></pre>
 <pre><code>## # A tibble: 329 x 3
 ##    Cohort      V1       V2
 ##    &lt;chr&gt;    &lt;dbl&gt;    &lt;dbl&gt;
-##  1 AAU    -0.0769  0.125  
-##  2 AAU     0.173  -0.0779 
-##  3 AAU    -0.216   0.0348 
+##  1 AAU    -0.0769  0.124  
+##  2 AAU     0.173  -0.0781 
+##  3 AAU    -0.216   0.0341 
 ##  4 AAU    -0.0196  0.0102 
-##  5 AAU    -0.219   0.0796 
-##  6 AAU    -0.204  -0.00534
+##  5 AAU    -0.219   0.0795 
+##  6 AAU    -0.204  -0.00588
 ##  7 AAU    -0.0754 -0.184  
-##  8 AAU     0.0589  0.00364
-##  9 AAU    -0.141  -0.0421 
-## 10 AAU    -0.245   0.188  
+##  8 AAU     0.0588  0.00364
+##  9 AAU    -0.141  -0.0424 
+## 10 AAU    -0.245   0.187  
 ## # … with 319 more rows</code></pre>
-<p>Something useful I got in the habit of doing for my PCoA plots is adding the centroid of each group, i.e. the mean. I’m going to calculate those and save them in a separate <code>pcoa.centroids</code> variable. I’ve added a Pt.Type column that we’ll also use in our visualization to distinguish centroid points from the other data points (patient samples) in our plot.</p>
+<p>Something useful I got in the habit of doing for my PCoA plots is adding the <strong>centroid</strong> of each group, i.e. the mean. I’m going to calculate those and save them in a separate <code>pcoa.centroids</code> variable. I’ve added a Pt.Type column that we’ll also use in our visualization to distinguish centroid points from the other data points (patient samples) in our plot.</p>
 <pre class="r"><code>pcoa.centroids &lt;- taxa.pcoa %&gt;%
     group_by(Cohort) %&gt;%
     nest() %&gt;%
+    ungroup() %&gt;%
     # calculate centroids for each Cohort
     mutate(V1 = map_dbl(data, ~ mean(.$V1))) %&gt;%
     mutate(V2 = map_dbl(data, ~ mean(.$V2))) %&gt;%
@@ -304,14 +297,13 @@ taxa.pcoa</code></pre>
 
 pcoa.centroids</code></pre>
 <pre><code>## # A tibble: 4 x 4
-## # Groups:   Cohort [4]
 ##   Cohort       V1       V2 Pt.Type   
 ##   &lt;chr&gt;     &lt;dbl&gt;    &lt;dbl&gt; &lt;chr&gt;     
-## 1 AAU     -0.0678 -0.0655  Group Mean
-## 2 IBD     -0.194  -0.00140 Group Mean
-## 3 SpA     -0.0979 -0.0423  Group Mean
-## 4 Collect  0.224   0.0865  Group Mean</code></pre>
-<p>There isn’t much to do to prepare this data for plotting, but we do want to add the centroids above to the <code>taxa.pcoa</code> values we got earlier. Additionally, since we added a Pt.Type variable to the centroids tibble, we’ll want to do the same for our individual coordinates before we can use the <code>bind_rows()</code> command. Just as with the alpha diversity plots, I’m using <code>fct_relevel()</code> to order the Cohort variable how I want it to appear in the final legend.</p>
+## 1 AAU     -0.0677 -0.0656  Group Mean
+## 2 IBD     -0.194  -0.00146 Group Mean
+## 3 SpA     -0.0978 -0.0424  Group Mean
+## 4 Collect  0.224   0.0866  Group Mean</code></pre>
+<p>There isn’t much to do to prepare this data for plotting, but we do want to add the centroids above to the <code>taxa.pcoa</code> values we got earlier. Additionally, since we added a Pt.Type variable to the centroids tibble, we’ll want to do the same for our individual coordinates before we can use the <code>bind_rows()</code> command. Just as with the alpha diversity plots, I’m using <code>fct_relevel()</code> to order the Cohort variable how we want it to appear in the final legend from top to bottom.</p>
 <pre class="r"><code>plot.data &lt;- taxa.pcoa %&gt;%
     add_column(Pt.Type = &#39;Individual&#39;) %&gt;%
     bind_rows(pcoa.centroids) %&gt;%
@@ -321,22 +313,25 @@ plot.data</code></pre>
 <pre><code>## # A tibble: 333 x 4
 ##    Cohort      V1       V2 Pt.Type   
 ##    &lt;fct&gt;    &lt;dbl&gt;    &lt;dbl&gt; &lt;chr&gt;     
-##  1 AAU    -0.0769  0.125   Individual
-##  2 AAU     0.173  -0.0779  Individual
-##  3 AAU    -0.216   0.0348  Individual
+##  1 AAU    -0.0769  0.124   Individual
+##  2 AAU     0.173  -0.0781  Individual
+##  3 AAU    -0.216   0.0341  Individual
 ##  4 AAU    -0.0196  0.0102  Individual
-##  5 AAU    -0.219   0.0796  Individual
-##  6 AAU    -0.204  -0.00534 Individual
+##  5 AAU    -0.219   0.0795  Individual
+##  6 AAU    -0.204  -0.00588 Individual
 ##  7 AAU    -0.0754 -0.184   Individual
-##  8 AAU     0.0589  0.00364 Individual
-##  9 AAU    -0.141  -0.0421  Individual
-## 10 AAU    -0.245   0.188   Individual
+##  8 AAU     0.0588  0.00364 Individual
+##  9 AAU    -0.141  -0.0424  Individual
+## 10 AAU    -0.245   0.187   Individual
 ## # … with 323 more rows</code></pre>
+<p>Now our data is plot ready and we can use <code>geom_point()</code> again, this time to create a scatter plot of our PCoA coordinates. For visual appeal, I want to color these by cohort and use different shapes to represent the data points and the centroids, and make the centroids bigger. I also want to update the axis and legend titles with <code>labs()</code>, which I also used earlier, and finally use the <code>geom_label_repel()</code> function to label our centroids. This function takes a data frame or tibble as the first argument, and obtains the labels from a column in it as specified in the <code>mapping = aes(label = ...)</code> argument.</p>
 <pre class="r"><code>plot.data %&gt;%
     ggplot(aes(x = V1, y = V2)) +
     geom_point(aes(shape = Pt.Type, size = Pt.Type,
                    color = Cohort, fill = Cohort)) +
+    # 22 = filled square, 4 = x
     scale_shape_manual(values = c(22,4)) +
+    # make centroids 2x larger
     scale_size_manual(values = c(4,2)) +
     ggsci::scale_color_futurama() +
     ggsci::scale_fill_futurama() +
@@ -347,9 +342,12 @@ plot.data</code></pre>
                               mapping = aes(label = Cohort), size = 9/.pt,
                               min.segment.length = unit(0, &#39;lines&#39;), force = 5) +
     theme_bw()</code></pre>
-<p><img src="/posts/tidyverse-gut-diversity/index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p><img src="/posts/tidyverse-gut-diversity/index_files/figure-html/pcoa.1-1.png" width="672" /></p>
+<p>Our beta diversity analysis confirms another biological hypothesis: patients with autoimmune diseases have more similar microbiota to one another than they do to healthy controls, which is why we see the largest separation on the x-axis and the Collect samples in their own little cloud.</p>
+<p>Another visual appeal thing I got used to doing on my PCoAs when possible is including a <code>stat_ellipse()</code> around the groupings in my PCoA. All we need to do is add two lines of code and our group separation becomes a lot clearer.</p>
 <pre class="r"><code>plot.data %&gt;%
     ggplot(aes(x = V1, y = V2)) +
+    # add ellipse around cohort groups
     stat_ellipse(geom = &#39;polygon&#39;, alpha = 0.2, 
                  aes(color = Cohort, fill = Cohort)) +
     geom_point(aes(shape = Pt.Type, size = Pt.Type,
@@ -365,13 +363,19 @@ plot.data</code></pre>
                      mapping = aes(label = Cohort), size = 9/.pt,
                      min.segment.length = unit(0, &#39;lines&#39;), force = 5) +
     theme_bw()</code></pre>
-<p><img src="/posts/tidyverse-gut-diversity/index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p><img src="/posts/tidyverse-gut-diversity/index_files/figure-html/pcoa.2-1.png" width="672" /></p>
+</div>
+<div id="summary" class="section level2">
+<h2>Summary</h2>
+<p>There are really two kinds of visual data analysis: that which is for your eyes only while you’re figuring stuff out, and that which is intended to communicate something once you’ve arrived at a conclusion. Though this was an exploratory analysis (for you), my actual first plots of this data were <em>much</em> simpler and uglier. However, the cool thing about <code>ggplot2</code>’s approach of using layered commands is that it can facilitate both the quick-and-dirty visualization <em>and</em> generate really elegant, customizable plots.</p>
+<p>My motivation to get good at <code>ggplot2</code> grew out of a dislike of Illustrator/Inkscape work on a laptop. It’s the worst. I spent a lot of time playing around and reading the <a href="https://ggplot2.tidyverse.org/reference/index.html">documentation</a> website to get here (even before this I had only used the <code>theme()</code> option a few times without really understanding the capability), but I hope the code above serves as a more complete skeleton for your own exploration.</p>
+<p>Mostly I hope you feel a little more comfortable in <code>ggplot2</code> now and can see the benefits of using a graphical toolkit embedded in a programming as a visualization tool.</p>
 <style type="text/css">
 img {
     display: block;
     margin-left: auto;
     margin-right: auto;
-    width: 80%;
+    width: 85%;
     padding: 10px
 }
 </style>
