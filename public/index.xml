@@ -12,12 +12,12 @@
     
     
     <item>
-      <title>Gut Microbiome Diversity Analysis</title>
+      <title>Gut Microbiome Diversity Visualization</title>
       <link>/posts/tidyverse-gut-diversity/</link>
       <pubDate>Sun, 10 May 2020 00:00:00 +0000</pubDate>
       
       <guid>/posts/tidyverse-gut-diversity/</guid>
-      <description>A short workflow for alpha and beta diversity analysis using autoimmune gut microbiome data.</description>
+      <description>A short workflow for generating alpha and beta diversity plots using autoimmune gut microbiome data.</description>
     </item>
     
     <item>
