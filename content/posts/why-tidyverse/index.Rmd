@@ -258,7 +258,7 @@ It involves learning some new syntax, and some lingo. For light R users, simply 
 
 For those working extensively in R, committing to that as well as tidy data structures will make you a better, more curious programmer. Especially if you are self-taught, the tidyverse provides the quickest path to proficiency for data analysis in R, not only because it's clever and coherent but because it's got the most resources: the [documentation](https://tidyverse.tidyverse.org/) is immaculate, there are [cheatsheets](https://rstudio.com/resources/cheatsheets/) as well as [deeper programming resources](https://rstudio.com/resources/books/), plus an active developer and user community on GitHub and Stack Overflow. 
 
-Mastery of the basics opens up a wealth of more advanced tools that I will advocate for and explore myself in future posts, like nested data structures and functional programming the `purrr` package.
+Mastery of the basics opens up a wealth of more advanced tools that I will advocate for and explore myself in future posts, like nested data structures and functional programming with the `purrr` package.
 
 ```{css, echo = FALSE}
 img {
