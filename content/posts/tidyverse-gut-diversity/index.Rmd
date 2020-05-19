@@ -19,7 +19,7 @@ tags:
     - microbiome
     - ggplot
 summary:
-    A short workflow for generating alpha and beta diversity plots using autoimmune gut microbiome data.
+    A short workflow for generating alpha and beta diversity plots using taxonomic gut microbiome data from patients with autoimmune diseases.
 ---
 
 Alpha and beta diversity are ecological metrics frequently part of exploratory microbiome analysis. The former measures the taxonomic variance _within_ a sample, while the latter measures how samples vary _between_ one another. There are different ways to measure both indices.

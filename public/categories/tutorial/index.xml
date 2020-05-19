@@ -17,7 +17,7 @@
       <pubDate>Sun, 10 May 2020 00:00:00 +0000</pubDate>
       
       <guid>/posts/tidyverse-gut-diversity/</guid>
-      <description>A short workflow for generating alpha and beta diversity plots using autoimmune gut microbiome data.</description>
+      <description>A short workflow for generating alpha and beta diversity plots using taxonomic gut microbiome data from patients with autoimmune diseases.</description>
     </item>
     
   </channel>
