@@ -113,11 +113,11 @@ testing.data %>%
 
 I know the syntax of the mutate command above probably looks super weird. Firstly, I've opted for `mutate_at()` which doesn't assign new values using an `=` sign like the standard `mutate()` does, but rather a `vars()` parameter which applies whatever function is specified as the second argument to the raw data in `vars()`. The function could be something simple, like `sum()`, an anonymous function similar to the `apply()` syntax (`function(x) {do something with x}`), or a shorthand as I've done.
 
-The shorthand is part of the `purrr` package I will dedicate a specific presentation/tutorial to because it's a  clever and elegant way to solve **_so_** many problems. For now, just know that since I used `mutate_at()` and `vars()` and got a vector, I can use a shorthand where the `~` allows me to feed the first argument to the desired functions in the second argument using `.`.
+The shorthand is part of the `purrr` package I will dedicate a specific presentation/tutorial to because it's a  clever and elegant way to solve **_so_** many problems. For now, just know that since I used `mutate_at()` and `vars()` and got a vector, I can use a shorthand where the `~` allows me to feed each element of the first argument to the desired functions in the second argument using `.`.
 
-Essentially in one line we're saying "take the dates which were incorrectly read in as doubles _(the first argument from `vars()`)_, parse as ymd format with `ymd(.)`, and return formatted date objects in their place."
+Essentially in one line we're saying "take the dates which were incorrectly read in as doubles _(the first argument from `vars()`)_, parse as ymd format with `ymd(.)`, and return formatted date objects in their place." Think of `.` as a pronoun referring to the current element being operated on, like the `i` iterator in for-loops.
 
-People who dislike `apply` functions for their lack of readability probably won't like the shorthand, but I'll readily admit that I use it whenever I can because a) I prefer concise code and b) it's an easy way to practice something that opens up tons of really advanced avenues. Using it has definitely made me a better programmer because I've been forced to think about _functions_.
+People who dislike `apply` functions for their lack of readability probably won't like the shorthand, but I'll readily admit that I use it whenever I can because a) I prefer concise code and b) it's an easy way to practice something that opens up tons of really advanced avenues. Using it has definitely made me a better programmer because I've been forced to think about _functions_. `purrr` is more consistent than the `apply()` family of functions, so it's easier to learn as well.
 
 Here's another way that could be done without the shorthand notation, similar to `apply()`.
 
@@ -282,7 +282,7 @@ testing.plot <- plot.data %>%
 testing.plot
 ```
 
-## Summarize 
+
 
 
 ```{css, echo = FALSE}

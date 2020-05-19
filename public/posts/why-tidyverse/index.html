@@ -63,7 +63,7 @@
         
 <h1>A Case for the Tidyverse</h1>
 
-27 Apr 2020 // 13' read
+27 Apr 2020 // 17' read
 
 <br/>
 
@@ -107,9 +107,8 @@ head(mtcars)</code></pre>
 ## Hornet Sportabout 18.7   8  360 175 3.15 3.440 17.02  0  0    3    2
 ## Valiant           18.1   6  225 105 2.76 3.460 20.22  1  0    3    1</code></pre>
 <p>Let’s transform it to a <a href="https://tibble.tidyverse.org/">tibble</a> and see if you can spot the differences.</p>
-<pre class="r"><code>library(tibble)</code></pre>
-<pre><code>## Warning: package &#39;tibble&#39; was built under R version 3.6.2</code></pre>
-<pre class="r"><code>as_tibble(mtcars)</code></pre>
+<pre class="r"><code>library(tibble)
+as_tibble(mtcars)</code></pre>
 <pre><code>## # A tibble: 32 x 11
 ##      mpg   cyl  disp    hp  drat    wt  qsec    vs    am  gear  carb
 ##    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
@@ -206,12 +205,100 @@ cor.plot &lt;- mtcars %&gt;%
 <div id="tidying-and-wrangling" class="section level3">
 <h3>Tidying and Wrangling</h3>
 <p>Where the pipe really shines is during the process of data wrangling, i.e. manipulating the raw data into a format that invites further analysis. The two main packages for carrying this out are <a href="https://tidyr.tidyverse.org/">tidyr</a> and <a href="https://dplyr.tidyverse.org/">dplyr</a>.</p>
-<p>Now is finally the time to spell out what tidy data actually is.</p>
-<p>It’s a standard format that follows from the basic data structure of the tidyverse, a tibble, in which every column is a variable, every row is an observation, and every cell is a single value. Rownames, then, are not tidy. Aside from this, the <code>mtcars</code> data fulfills the other criteria.</p>
+<p>So what does tidy data refer to, exactly?</p>
+<p>It’s a standard format that follows from the basic data structure of the tidyverse, a tibble, in which <strong>1)</strong> every column is a variable, <strong>2)</strong> every row is an observation, and <strong>3)</strong> every cell is a single value. Rownames, then, are not tidy; aside from that, the <code>mtcars</code> data fulfills the other criteria. Here is a visual representation of tidy data.</p>
 <center>
 <img src="data/tidy.data.rep.png" /> from <em>R for Data Science</em> <a href="https://r4ds.had.co.nz/tidy-data.html">chapter 12</a>
 </center>
 <p><br></p>
+<p>The <a href="https://www.gapminder.org/data/">gapminder data</a>, which contains several per-country longitudinal metrics, by default displays this data in an untidy format. There are three variables in the table pictured below: country name (rownames), year (column names), and inflation-adjusted GDP per capita (the values).</p>
+<center>
+<img src="data/gapminder.png" />
+</center>
+<p></br></p>
+<p>Quickly, we’ll use the gapminder <a href="https://github.com/jennybc/gapminder">R package</a> just to see how this same data looks tidied.</p>
+<pre class="r"><code>library(tidyr)
+library(gapminder)
+
+gapminder %&gt;%
+    dplyr::select(c(&#39;country&#39;,&#39;year&#39;,&#39;gdpPercap&#39;))</code></pre>
+<pre><code>## # A tibble: 1,704 x 3
+##    country      year gdpPercap
+##    &lt;fct&gt;       &lt;int&gt;     &lt;dbl&gt;
+##  1 Afghanistan  1952      779.
+##  2 Afghanistan  1957      821.
+##  3 Afghanistan  1962      853.
+##  4 Afghanistan  1967      836.
+##  5 Afghanistan  1972      740.
+##  6 Afghanistan  1977      786.
+##  7 Afghanistan  1982      978.
+##  8 Afghanistan  1987      852.
+##  9 Afghanistan  1992      649.
+## 10 Afghanistan  1997      635.
+## # … with 1,694 more rows</code></pre>
+<p>How can we get our data to look like this?</p>
+<p>Tidyr has <strong>two workhorse functions when it comes to tidying data</strong>: <code>pivot_longer()</code> and <code>pivot_wider()</code>, <a href="https://github.com/tidyverse/tidyr/releases/tag/v1.0.0">formerly known as</a> as <code>gather()</code> and <code>spread()</code> respectively. Don’t get too caught up in the syntax yet, but here’s an animation of these functions in action from the <a href="https://github.com/gadenbuie/tidyexplain">tidyexplain</a> package.</p>
+<center>
+<img src="data/spread.gather.gif" />
+</center>
+<p></br></p>
+<p><code>pivot_longer()</code> <em>lengthens</em> data and increases the number of rows, allowing us to “gather” our column name values into a column of its own and assigning a key-value pair, and is useful when a variable is stored in column names as is the case with the <code>gapminder</code> data. <code>pivot_wider()</code> <em>widens</em> data and increases the number of columns, allowing us to “spread” the values in a single column across new columns.</p>
+<p>Let’s take the long, tidy <code>gapminder</code> data above and pivot it wider into an untidy format, which could have its uses.</p>
+<pre class="r"><code>gapminder.wide &lt;- gapminder %&gt;%
+    dplyr::select(c(&#39;country&#39;,&#39;year&#39;,&#39;gdpPercap&#39;)) %&gt;%
+    pivot_wider(names_from = &#39;year&#39;, 
+                values_from = &#39;gdpPercap&#39;)
+
+gapminder.wide</code></pre>
+<pre><code>## # A tibble: 142 x 13
+##    country `1952` `1957` `1962` `1967` `1972` `1977` `1982` `1987` `1992` `1997`
+##    &lt;fct&gt;    &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
+##  1 Afghan…   779.   821.   853.   836.   740.   786.   978.   852.   649.   635.
+##  2 Albania  1601.  1942.  2313.  2760.  3313.  3533.  3631.  3739.  2497.  3193.
+##  3 Algeria  2449.  3014.  2551.  3247.  4183.  4910.  5745.  5681.  5023.  4797.
+##  4 Angola   3521.  3828.  4269.  5523.  5473.  3009.  2757.  2430.  2628.  2277.
+##  5 Argent…  5911.  6857.  7133.  8053.  9443. 10079.  8998.  9140.  9308. 10967.
+##  6 Austra… 10040. 10950. 12217. 14526. 16789. 18334. 19477. 21889. 23425. 26998.
+##  7 Austria  6137.  8843. 10751. 12835. 16662. 19749. 21597. 23688. 27042. 29096.
+##  8 Bahrain  9867. 11636. 12753. 14805. 18269. 19340. 19211. 18524. 19036. 20292.
+##  9 Bangla…   684.   662.   686.   721.   630.   660.   677.   752.   838.   973.
+## 10 Belgium  8343.  9715. 10991. 13149. 16672. 19118. 20980. 22526. 25576. 27561.
+## # … with 132 more rows, and 2 more variables: `2002` &lt;dbl&gt;, `2007` &lt;dbl&gt;</code></pre>
+<p>Now it looks like our image above. Let’s pretend that <code>gapminder.wide</code> is our raw data and we need to tidy it. We’ll use <code>pivot_longer()</code> this time, telling it to ignore the country (<code>cols = -country</code>), and gather the column names into a variable called ‘year’, and the corresponding values into a variable called ‘gpdPercap’. We didn’t have to tell <code>pivot_wider()</code> to ignore any variables/columns, because our starting <code>gapminder.long</code> data only had three variables.</p>
+<pre class="r"><code>gapminder.long &lt;- gapminder.wide %&gt;%
+    pivot_longer(cols = -country,
+                 names_to = &#39;year&#39;,
+                 values_to = &#39;gdpPercap&#39;)
+
+gapminder.long</code></pre>
+<pre><code>## # A tibble: 1,704 x 3
+##    country     year  gdpPercap
+##    &lt;fct&gt;       &lt;chr&gt;     &lt;dbl&gt;
+##  1 Afghanistan 1952       779.
+##  2 Afghanistan 1957       821.
+##  3 Afghanistan 1962       853.
+##  4 Afghanistan 1967       836.
+##  5 Afghanistan 1972       740.
+##  6 Afghanistan 1977       786.
+##  7 Afghanistan 1982       978.
+##  8 Afghanistan 1987       852.
+##  9 Afghanistan 1992       649.
+## 10 Afghanistan 1997       635.
+## # … with 1,694 more rows</code></pre>
+<p>There are other functions in <code>tidyr</code>, but these are the most important.</p>
+<p>Once the data is tidied (and sometimes in the process), the <code>dplyr</code> package becomes essential. <code>dplyr</code> is “a grammar of data manipulation, providing a consistent set of verbs that help you solve the most common data manipulation challenges.”</p>
+<p>The basic function are as follows:</p>
+<ul>
+<li><code>mutate()</code> adds new variables that are functions of existing variables</li>
+<li><code>select()</code> picks variables based on their names</li>
+<li><code>filter()</code> picks cases based on their values</li>
+<li><code>summarise()</code> reduces multiple values down to a single summary</li>
+<li><code>arrange()</code> changes the ordering of the rows</li>
+</ul>
+<p>Since these are the <em>most common</em> data manipulations, they have <a href="https://tavareshugo.github.io/data_carpentry_extras/base-r_tidyverse_equivalents/base-r_tidyverse_equivalents.html">base R equivalents</a> just like much of the <code>dplyr</code> package. To be totally honest, aside from <code>subset()</code> (equivalent to <code>filter()</code>) and <code>sort()</code>/<code>order()</code> (equivalent to <code>arrange()</code>), I never used any of these. <code>subset()</code> has the exact same syntax as <code>filter()</code>, and I’m not going to argue that there are specific advantages to using <code>dplyr</code> if you’re already a pro at base R manipulations. If you’re not, I found <code>dplyr</code> incredibly intuitive and easy to learn where I had been unable to do so with base R, partially because of the tidyverse’s wide array of resources.</p>
+<!-- Especially at the beginning but even to this day, I study the `dplyr` [cheatsheet](https://github.com/rstudio/cheatsheets/blob/master/data-transformation.pdf) that gives an amazing overview of tibble/data.frame manipulations. -->
+<!-- talk about variants -->
+<!-- https://datascienceplus.com/spread-gather-separate-and-unite-variables-and-datasets-in-r/ -->
 <!-- do a distance matrix? or copy some work from gespic -->
 <!-- - dplyr and tidyr -->
 <!-- - gather and spread -->
@@ -220,6 +307,7 @@ cor.plot &lt;- mtcars %&gt;%
 </div>
 <div id="functional-programming" class="section level3">
 <h3>Functional Programming</h3>
+<p>Coming soon <!-- 21.4 For loops vs. functionals --> <!-- For loops are not as important in R as they are in other languages because R is a functional programming language. This means that it’s possible to wrap up for loops in a function, and call that function instead of using the for loop directly. --></p>
 </div>
 <div id="strings-and-factors" class="section level3">
 <h3>Strings and Factors</h3>

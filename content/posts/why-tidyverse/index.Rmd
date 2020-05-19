@@ -38,6 +38,10 @@ I like this representation because it contains all the tasks I do as a computati
 
 To show my favorite features, let's load everyone's least favorite dataset: **mtcars**. It's a data frame.
 
+```{r knitr, include = FALSE}
+knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+```
+
 ```{r load.mtcars}
 data(mtcars)
 head(mtcars)
@@ -145,19 +149,83 @@ It even has a series of ['aliases'](https://magrittr.tidyverse.org/reference/ali
 
 Where the pipe really shines is during the process of data wrangling, i.e. manipulating the raw data into a format that invites further analysis. The two main packages for carrying this out are [tidyr](https://tidyr.tidyverse.org/) and [dplyr](https://dplyr.tidyverse.org/). 
 
-Now is finally the time to spell out what tidy data actually is.
+So what does tidy data refer to, exactly?
 
-It's a standard format that follows from the basic data structure of the tidyverse, a tibble, in which every column is a variable, every row is an observation, and every cell is a single value. Rownames, then, are not tidy. Aside from this, the `mtcars` data fulfills the other criteria.
+It's a standard format that follows from the basic data structure of the tidyverse, a tibble, in which **1)** every column is a variable, **2)** every row is an observation, and **3)** every cell is a single value. Rownames, then, are not tidy; aside from that, the `mtcars` data fulfills the other criteria. Here is a visual representation of tidy data.
 
 <center>
 ![](data/tidy.data.rep.png)
 from _R for Data Science_ [chapter 12](https://r4ds.had.co.nz/tidy-data.html)
 </center><br>
 
+The [gapminder data](https://www.gapminder.org/data/), which contains several per-country longitudinal metrics, by default displays this data in an untidy format. There are three variables in the table pictured below: country name (rownames), year (column names), and inflation-adjusted GDP per capita (the values). 
 
-```{r knitr, include = FALSE}
-knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+<center>
+![](data/gapminder.png)
+</center></br>
+
+Quickly, we'll use the gapminder [R package](https://github.com/jennybc/gapminder) just to see how this same data looks tidied.
+
+```{r gapminder.show}
+library(tidyr)
+library(gapminder)
+
+gapminder %>%
+    dplyr::select(c('country','year','gdpPercap'))
 ```
+
+How can we get our data to look like this?
+
+Tidyr has **two workhorse functions when it comes to tidying data**: `pivot_longer()` and `pivot_wider()`, [formerly known as](https://github.com/tidyverse/tidyr/releases/tag/v1.0.0) as `gather()` and `spread()` respectively. Don't get too caught up in the syntax yet, but here's an animation of these functions in action from the [tidyexplain](https://github.com/gadenbuie/tidyexplain) package.
+
+<center>
+![](data/spread.gather.gif)
+</center></br>
+
+`pivot_longer()` _lengthens_ data and increases the number of rows, allowing us to "gather" our column name values into a column of its own and assigning a key-value pair, and is useful when a variable is stored in column names as is the case with the `gapminder` data. `pivot_wider()` _widens_ data and increases the number of columns, allowing us to "spread" the values in a single column across new columns. 
+
+Let's take the long, tidy `gapminder` data above and pivot it wider into an untidy format, which could have its uses.
+
+```{r gapminder.untidy}
+gapminder.wide <- gapminder %>%
+    dplyr::select(c('country','year','gdpPercap')) %>%
+    pivot_wider(names_from = 'year', 
+                values_from = 'gdpPercap')
+
+gapminder.wide
+```
+
+Now it looks like our image above. Let's pretend that `gapminder.wide` is our raw data and we need to tidy it. We'll use `pivot_longer()` this time, telling it to ignore the country (`cols = -country`), and gather the column names into a variable called 'year', and the corresponding values into a variable called 'gpdPercap'. We didn't have to tell `pivot_wider()` to ignore any variables/columns, because our starting `gapminder.long` data only had three variables.
+
+```{r gapminder.tidy}
+gapminder.long <- gapminder.wide %>%
+    pivot_longer(cols = -country,
+                 names_to = 'year',
+                 values_to = 'gdpPercap')
+
+gapminder.long
+```
+
+There are other functions in `tidyr`, but these are the most important. 
+
+Once the data is tidied (and sometimes in the process), the `dplyr` package becomes essential. `dplyr` is "a grammar of data manipulation, providing a consistent set of verbs that help you solve the most common data manipulation challenges."
+
+The basic function are as follows:
+
+- `mutate()` adds new variables that are functions of existing variables
+- `select()` picks variables based on their names
+- `filter()` picks cases based on their values
+- `summarise()` reduces multiple values down to a single summary
+- `arrange()` changes the ordering of the rows
+
+Since these are the _most common_ data manipulations, they have [base R equivalents](https://tavareshugo.github.io/data_carpentry_extras/base-r_tidyverse_equivalents/base-r_tidyverse_equivalents.html) just like much of the `dplyr` package. To be totally honest, aside from `subset()` (equivalent to `filter()`) and `sort()`/`order()` (equivalent to `arrange()`), I never used any of these. `subset()` has the exact same syntax as `filter()`, and I'm not going to argue that there are specific advantages to using `dplyr` if you're already a pro at base R manipulations. If you're not, I found `dplyr` incredibly intuitive and easy to learn where I had been unable to do so with base R, partially because of the tidyverse's wide array of resources. 
+
+<!-- Especially at the beginning but even to this day, I study the `dplyr` [cheatsheet](https://github.com/rstudio/cheatsheets/blob/master/data-transformation.pdf) that gives an amazing overview of tibble/data.frame manipulations. -->
+
+<!-- talk about variants -->
+
+<!-- https://datascienceplus.com/spread-gather-separate-and-unite-variables-and-datasets-in-r/ -->
+
 
 <!-- do a distance matrix? or copy some work from gespic -->
 <!-- - dplyr and tidyr -->
@@ -166,6 +234,10 @@ knitr::opts_chunk$set(message = FALSE, warning = FALSE)
 <!-- mutate -->
 
 ### Functional Programming
+
+Coming soon
+<!-- 21.4 For loops vs. functionals -->
+<!-- For loops are not as important in R as they are in other languages because R is a functional programming language. This means that it’s possible to wrap up for loops in a function, and call that function instead of using the for loop directly. -->
 
 
 ### Strings and Factors
