@@ -11,20 +11,22 @@ output:
 categories: 
     - tutorial
     - microbiome
-tags: 
-    - tutorial
-    - tidyverse
-    - r-stats
+tags:
+    - ecrc
     - forslund-lab
-    - microbiome
     - ggplot
+    - gut microbiome
+    - programming
+    - r-stats
+    - tidyverse
+    - tutorial
 summary:
     A short workflow for generating alpha and beta diversity plots using taxonomic gut microbiome data from patients with autoimmune diseases.
 ---
 
 Alpha and beta diversity are ecological metrics frequently part of exploratory microbiome analysis. The former measures the taxonomic variance _within_ a sample, while the latter measures how samples vary _between_ one another. There are different ways to measure both indices.
 
-I'm going to use some actual (anonymized) 16S taxonomic data that I'm working with. It's a composite dataset of patients (N = 222) presenting with any combination of Crohn's disease (IBD), ankylosing spondylitis (SpA), or acute anterior uveitis (AAU), pooled with a subset (N = 107) of healthy control samples from the [recently published](https://academic.oup.com/cardiovascres/advance-article-abstract/doi/10.1093/cvr/cvaa128/5831292?redirectedFrom=fulltext) Collect study. We'll be working with the genus-level rarefied data that has been transformed to relative abundances and filtered for prevalence in > 5% of samples.
+I'm going to use some actual (anonymized) 16S taxonomic data that I'm working with. It's a composite dataset of patients (N = 222) presenting with any combination of [Crohn's disease](https://en.wikipedia.org/wiki/Crohn%27s_disease) (IBD), [ankylosing spondylitis](https://www.mayoclinic.org/diseases-conditions/ankylosing-spondylitis/symptoms-causes/syc-20354808) (SpA), or acute anterior [uveitis](https://en.wikipedia.org/wiki/Uveitis#Types) (AAU), pooled with a subset (N = 107) of healthy control samples from the [recently published](https://academic.oup.com/cardiovascres/advance-article-abstract/doi/10.1093/cvr/cvaa128/5831292?redirectedFrom=fulltext) Collect study. We'll be working with the genus-level rarefied data that has been transformed to relative abundances and filtered for prevalence in > 5% of samples.
 
 
 ```{r knitr, include = FALSE}
@@ -41,7 +43,6 @@ library(ggrepel)
 library(ggpubr)
 ```
 
-<br>
 
 ## Alpha Diversity Boxplots
 
@@ -197,9 +198,8 @@ plot.data %>%
           # axis.text.x = element_text(angle = 45, hjust = 1)) 
 ```
 
-<br>
 
-## Beta Diversity + PCoA
+## Beta Diversity PCoA Plot
 
 The [beta diversity](https://en.wikipedia.org/wiki/Beta_diversity) is a measurement of OTU diversity between different ecosystems, here different patient microbiota. The Bray-Curtis dissimilarity is a semimetric statistic bounded between 0 and 1 (0 = same OTUs in same abundances, 1 = samples do not share any OTUs) quantifying the pairwise compositional overlap between samples.
 

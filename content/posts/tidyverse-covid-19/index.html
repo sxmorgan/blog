@@ -10,11 +10,11 @@ output:
     toc: true
 category: tutorial
 tags:
-  - tutorial
-  - tidyverse
-  - r-stats
+  - ecrc
   - forslund-lab
   - ggplot
+  - tidyverse
+  - tutorial
 summary:
     Exploratory data analysis with COVID-19 testing and prognosis in the US.
 ---
@@ -30,7 +30,7 @@ summary:
 </div>
 
 <p>This post is intended to be a follow up resource from my presentation for members of the ECRC. If you haven’t seen that or are new here, check out my other <a href="../why-tidyverse">post</a> on why you should use the tidyverse and get familiar with the syntax and functions I’ll be using, and find the raw R script used to generate this tutorial in my <a href="https://github.com/sxmorgan/ecrc-data-science">ecrc-data-science</a> repository on GitHub.</p>
-<p>In later posts I will go through a more complete workflow in more fine-grained detail with microbiome-specific examples, but for this introductory demo we are going to be using data from the <a href="https://covidtracking.com/">COVID Tracking Project</a> in the US. I have basically no experience teaching so this is an exercise for me too, and data that’s also unfamiliar to me makes it easier to keep in mind what it’s like to be a learner.</p>
+<p>In later posts I will go through a more complete workflow in more fine-grained detail with microbiome-specific examples, but for this demo we are going to be using data from the <a href="https://covidtracking.com/">COVID Tracking Project</a> in the US. I have no experience teaching so this is an exercise for me too, and data that’s also unfamiliar to me makes it easier to keep in mind what it’s like to be a learner!</p>
 <p>One of my favorite things about R is the active development community. In March I saw that someone had created a <code>covid19us</code> wrapper package to access the COVID Tracking Project’s API directly from R; however, at the time of writing, this function sadly <a href="https://github.com/aedobbyn/covid19us/issues/17">isn’t working</a>, so we’ll use the API.</p>
 <div id="import" class="section level2">
 <h2>Import</h2>
@@ -47,20 +47,20 @@ library(ggpubr)</code></pre>
     select(c(&#39;state&#39;,&#39;date&#39;,&#39;positive&#39;,&#39;negative&#39;,&#39;death&#39;,&#39;total&#39;)) 
 
 states.data</code></pre>
-<pre><code>## # A tibble: 4,161 x 6
+<pre><code>## # A tibble: 4,217 x 6
 ##    state     date positive negative death   total
 ##    &lt;chr&gt;    &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;
-##  1 AK    20200518      399    35212    10   35611
-##  2 AL    20200518    12086   145037   489  157123
-##  3 AR    20200518     4813    80426   100   85239
-##  4 AS    20200518        0      105     0     105
-##  5 AZ    20200518    14170   142303   686  156473
-##  6 CA    20200518    80430  1212242  3302 1292672
-##  7 CO    20200518    21938   106557  1215  128495
-##  8 CT    20200518    38116   139563  3449  177679
-##  9 DC    20200518     7270    30555   392   37825
-## 10 DE    20200518     7869    34589   297   42458
-## # … with 4,151 more rows</code></pre>
+##  1 AK    20200519      399    35981    10   36380
+##  2 AL    20200519    12376   145190   504  157566
+##  3 AR    20200519     4923    88778   102   93701
+##  4 AS    20200519        0      124     0     124
+##  5 AZ    20200519    14566   147005   704  161571
+##  6 CA    20200519    81795  1257521  3334 1339316
+##  7 CO    20200519    22202   109131  1224  131333
+##  8 CT    20200519    38430   147090  3472  185520
+##  9 DC    20200519     7434    31940   400   39374
+## 10 DE    20200519     8037    36095   304   44132
+## # … with 4,207 more rows</code></pre>
 <p>Additionally, I have downloaded the (projected) 2020 census estimates of all 50 states + Washington DC and Puerto Rico from <a href="https://worldpopulationreview.com" class="uri">https://worldpopulationreview.com</a>, which we’ll read in and use to standardize our tests per 100,000 residents.</p>
 <pre class="r"><code>states.pop &lt;- &#39;data/covid.us.state.population.csv&#39; %&gt;%
     read_csv() %&gt;%
@@ -117,48 +117,49 @@ states.abbrev</code></pre>
 raw.testing.data %&gt;%
     select(c(&#39;state&#39;,&#39;date&#39;,&#39;state.name&#39;,&#39;Pop&#39;)) %&gt;%
     arrange(state.name)</code></pre>
-<pre><code>## # A tibble: 3,905 x 4
+<pre><code>## # A tibble: 3,957 x 4
 ##    state     date state.name     Pop
 ##    &lt;chr&gt;    &lt;dbl&gt; &lt;chr&gt;        &lt;dbl&gt;
-##  1 AL    20200518 Alabama    4908621
-##  2 AL    20200517 Alabama    4908621
-##  3 AL    20200516 Alabama    4908621
-##  4 AL    20200515 Alabama    4908621
-##  5 AL    20200514 Alabama    4908621
-##  6 AL    20200513 Alabama    4908621
-##  7 AL    20200512 Alabama    4908621
-##  8 AL    20200511 Alabama    4908621
-##  9 AL    20200510 Alabama    4908621
-## 10 AL    20200509 Alabama    4908621
-## # … with 3,895 more rows</code></pre>
+##  1 AL    20200519 Alabama    4908621
+##  2 AL    20200518 Alabama    4908621
+##  3 AL    20200517 Alabama    4908621
+##  4 AL    20200516 Alabama    4908621
+##  5 AL    20200515 Alabama    4908621
+##  6 AL    20200514 Alabama    4908621
+##  7 AL    20200513 Alabama    4908621
+##  8 AL    20200512 Alabama    4908621
+##  9 AL    20200511 Alabama    4908621
+## 10 AL    20200510 Alabama    4908621
+## # … with 3,947 more rows</code></pre>
 <p>Our dates are in an ugly format, so we’ll use the <code>ymd()</code> command in the <code>lubridate</code> package to quickly parse it into a prettier ‘year-month-day’ format. To cut down on the size of our data of interest, let’s only look at dates after March 9th, just before many lockdown periods began.</p>
-<pre class="r"><code>testing.data &lt;- raw.testing.data %&gt;%
-    mutate_at(vars(date), ~ as_date(ymd(.))) %&gt;%
-    filter(date &gt; &#39;2020-03-09&#39;)
-
-# check trimmed date range
-testing.data %&gt;%
-    use_series(date) %&gt;%
-    range()</code></pre>
-<pre><code>## [1] &quot;2020-03-10&quot; &quot;2020-05-18&quot;</code></pre>
-<p>I know the syntax of the mutate command above probably looks super weird. Firstly, I’ve opted for <code>mutate_at()</code> which doesn’t assign new values using an <code>=</code> sign like the standard <code>mutate()</code> does, but rather a <code>vars()</code> parameter which applies whatever function is specified as the second argument to the raw data in <code>vars()</code>. The function could be something simple, like <code>sum()</code>, an anonymous function similar to the <code>apply()</code> syntax (<code>function(x) {do something with x}</code>), or a shorthand as I’ve done.</p>
-<p>The shorthand is part of the <code>purrr</code> package I will dedicate a specific presentation/tutorial to because it’s a clever and elegant way to solve <strong><em>so</em></strong> many problems. For now, just know that since I used <code>mutate_at()</code> and <code>vars()</code> and got a vector, I can use a shorthand where the <code>~</code> allows me to feed each element of the first argument to the desired functions in the second argument using <code>.</code>.</p>
-<p>Essentially in one line we’re saying “take the dates which were incorrectly read in as doubles <em>(the first argument from <code>vars()</code>)</em>, parse as ymd format with <code>ymd(.)</code>, and return formatted date objects in their place.” Think of <code>.</code> as a pronoun referring to the current element being operated on, like the <code>i</code> iterator in for-loops.</p>
-<p>People who dislike <code>apply</code> functions for their lack of readability probably won’t like the shorthand, but I’ll readily admit that I use it whenever I can because a) I prefer concise code and b) it’s an easy way to practice something that opens up tons of really advanced avenues. Using it has definitely made me a better programmer because I’ve been forced to think about <em>functions</em>. <code>purrr</code> is more consistent than the <code>apply()</code> family of functions, so it’s easier to learn as well.</p>
-<p>Here’s another way that could be done without the shorthand notation, similar to <code>apply()</code>.</p>
-<pre class="r"><code>testing.data &lt;- raw.testing.data %&gt;%
-    mutate_at(vars(date), function(x) {
-        x %&gt;%
-            ymd() %&gt;%
-            as_date() }) %&gt;%
-    filter(date &gt; &#39;2020-03-09&#39;)
-
-# check trimmed date range
-testing.data %&gt;%
-    use_series(date) %&gt;%
-    range()</code></pre>
-<pre><code>## [1] &quot;2020-03-10&quot; &quot;2020-05-18&quot;</code></pre>
-<p>And lastly, here’s how that would look if we used the standard <code>mutate()</code> command. Clearly I started here and played around <em>a lot</em> to get to where the shorthand is natural. This code in two steps is more intuitively readable but less concise.</p>
+<!-- # save content for case for the tidyverse post -->
+<!-- ```{r date.filtered} -->
+<!-- testing.data <- raw.testing.data %>% -->
+<!--     mutate_at(vars(date), ~ as_date(ymd(.))) %>% -->
+<!--     filter(date > '2020-03-09') -->
+<!-- # check trimmed date range -->
+<!-- testing.data %>% -->
+<!--     use_series(date) %>% -->
+<!--     range() -->
+<!-- ``` -->
+<!-- I know the syntax of the mutate command above probably looks super weird. Firstly, I've opted for `mutate_at()` which doesn't assign new values using an `=` sign like the standard `mutate()` does, but rather a `vars()` parameter which applies whatever function is specified as the second argument to the raw data in `vars()`. The function could be something simple, like `sum()`, an anonymous function similar to the `apply()` syntax (`function(x) {do something with x}`), or a shorthand as I've done. -->
+<!-- The shorthand is part of the `purrr` package I will dedicate a specific presentation/tutorial to because it's a  clever and elegant way to solve **_so_** many problems. For now, just know that since I used `mutate_at()` and `vars()` and got a vector, I can use a shorthand where the `~` allows me to feed each element of the first argument to the desired functions in the second argument using `.`. -->
+<!-- Essentially in one line we're saying "take the dates which were incorrectly read in as doubles _(the first argument from `vars()`)_, parse as ymd format with `ymd(.)`, and return formatted date objects in their place." Think of `.` as a pronoun referring to the current element being operated on, like the `i` iterator in for loops. -->
+<!-- People who dislike `apply` functions for their lack of readability probably won't like the shorthand, but I'll readily admit that I use it whenever I can because a) I prefer concise code and b) it's an easy way to practice something that opens up tons of really advanced avenues. Using it has definitely made me a better programmer because I've been forced to think about _functions_. `purrr` is more consistent than the `apply()` family of functions, so it's easier to learn as well. -->
+<!-- Here's another way that could be done without the shorthand notation, similar to `apply()`. -->
+<!-- ```{r date.sidebar} -->
+<!-- testing.data <- raw.testing.data %>% -->
+<!--     mutate_at(vars(date), function(x) { -->
+<!--         x %>% -->
+<!--             ymd() %>% -->
+<!--             as_date() }) %>% -->
+<!--     filter(date > '2020-03-09') -->
+<!-- # check trimmed date range -->
+<!-- testing.data %>% -->
+<!--     use_series(date) %>% -->
+<!--     range() -->
+<!-- ``` -->
+<!-- And lastly, here's how that would look if we used the standard `mutate()` command. Clearly I started here and played around _a lot_ to get to where the shorthand is natural. This code in two steps is more intuitively readable but less concise. -->
 <pre class="r"><code>testing.data &lt;- raw.testing.data %&gt;%
     mutate(date = ymd(date)) %&gt;%
     mutate(date = as_date(date)) %&gt;%
@@ -168,7 +169,7 @@ testing.data %&gt;%
 testing.data %&gt;%
     use_series(date) %&gt;%
     range()</code></pre>
-<pre><code>## [1] &quot;2020-03-10&quot; &quot;2020-05-18&quot;</code></pre>
+<pre><code>## [1] &quot;2020-03-10&quot; &quot;2020-05-19&quot;</code></pre>
 <p>Now that we have our dates sorted out, we can standardize our testing counts per 100k residents. To do this, we’ll create a column called <code>pop.factor</code> which divides the population by 100,000 to get the number of “groups” of 100k residents in that population. We’ll <code>mutate()</code> each of our count columns, dividing by our <code>pop.factor</code>, to get our standardized values. We will select only these new columns and the other variables that we’ll need to create some basic longitudinal scatter plots, ignoring the intermediate variables like <code>pop.factor</code>.</p>
 <pre class="r"><code>testing.data %&lt;&gt;%
     mutate(pop.factor = Pop/100000) %&gt;%
@@ -179,38 +180,38 @@ testing.data %&gt;%
     select(c(&#39;state.name&#39;,&#39;date&#39;,&#39;tests.std&#39;,&#39;deaths.std&#39;,&#39;positive.std&#39;,&#39;negative.std&#39;))
 
 testing.data</code></pre>
-<pre><code>## # A tibble: 3,632 x 6
+<pre><code>## # A tibble: 3,684 x 6
 ##    state.name          date       tests.std deaths.std positive.std negative.std
 ##    &lt;chr&gt;               &lt;date&gt;         &lt;dbl&gt;      &lt;dbl&gt;        &lt;dbl&gt;        &lt;dbl&gt;
-##  1 Alaska              2020-05-18     4852.       1.36         54.4        4797.
-##  2 Alabama             2020-05-18     3201.       9.96        246.         2955.
-##  3 Arkansas            2020-05-18     2805.       3.29        158.         2646.
-##  4 Arizona             2020-05-18     2121.       9.30        192.         1929.
-##  5 California          2020-05-18     3237.       8.27        201.         3035.
-##  6 Colorado            2020-05-18     2198.      20.8         375.         1823.
-##  7 Connecticut         2020-05-18     4987.      96.8        1070.         3917.
-##  8 District of Columb… 2020-05-18     5248.      54.4        1009.         4240.
-##  9 Delaware            2020-05-18     4320.      30.2         801.         3519.
-## 10 Florida             2020-05-18     3082.       9.43        211.         2864.
-## # … with 3,622 more rows</code></pre>
+##  1 Alaska              2020-05-19     4956.       1.36         54.4        4902.
+##  2 Alabama             2020-05-19     3210.      10.3         252.         2958.
+##  3 Arkansas            2020-05-19     3083.       3.36        162.         2921.
+##  4 Arizona             2020-05-19     2190.       9.54        197.         1992.
+##  5 California          2020-05-19     3354.       8.35        205.         3149.
+##  6 Colorado            2020-05-19     2247.      20.9         380.         1867.
+##  7 Connecticut         2020-05-19     5207.      97.4        1079.         4128.
+##  8 District of Columb… 2020-05-19     5463.      55.5        1032.         4432.
+##  9 Delaware            2020-05-19     4490.      30.9         818.         3672.
+## 10 Florida             2020-05-19     3261.       9.68        213.         3041.
+## # … with 3,674 more rows</code></pre>
 <p>By default, our states are sorted alphabetically, but what if we wanted to sort them according to their testing coverage?</p>
 <p>In a quick console sidebar, let’s see which states are performing the most testing.</p>
 <pre class="r"><code>testing.data %&gt;%
     arrange(desc(tests.std))</code></pre>
-<pre><code>## # A tibble: 3,632 x 6
+<pre><code>## # A tibble: 3,684 x 6
 ##    state.name   date       tests.std deaths.std positive.std negative.std
 ##    &lt;chr&gt;        &lt;date&gt;         &lt;dbl&gt;      &lt;dbl&gt;        &lt;dbl&gt;        &lt;dbl&gt;
-##  1 Rhode Island 2020-05-18    10925.       47.9        1211.        9713.
-##  2 Rhode Island 2020-05-17    10657.       47.2        1200.        9457.
-##  3 Rhode Island 2020-05-16    10271.       46.3        1177.        9094.
-##  4 Rhode Island 2020-05-15     9940.       45.4        1157.        8783.
-##  5 Rhode Island 2020-05-14     9620.       44.3        1138.        8482.
-##  6 Rhode Island 2020-05-13     9272.       43.7        1121.        8151.
-##  7 Rhode Island 2020-05-12     9017.       42.0        1100.        7918.
-##  8 Rhode Island 2020-05-11     8837.       40.7        1084.        7753.
-##  9 Rhode Island 2020-05-10     8636.       40.0        1067.        7569.
-## 10 Rhode Island 2020-05-09     8315.       39.6        1040.        7274.
-## # … with 3,622 more rows</code></pre>
+##  1 Rhode Island 2020-05-19    11101.       50.4        1226.        9875.
+##  2 Rhode Island 2020-05-18    10925.       47.9        1211.        9713.
+##  3 Rhode Island 2020-05-17    10657.       47.2        1200.        9457.
+##  4 Rhode Island 2020-05-16    10271.       46.3        1177.        9094.
+##  5 Rhode Island 2020-05-15     9940.       45.4        1157.        8783.
+##  6 Rhode Island 2020-05-14     9620.       44.3        1138.        8482.
+##  7 Rhode Island 2020-05-13     9272.       43.7        1121.        8151.
+##  8 Rhode Island 2020-05-12     9017.       42.0        1100.        7918.
+##  9 Rhode Island 2020-05-11     8837.       40.7        1084.        7753.
+## 10 Rhode Island 2020-05-10     8636.       40.0        1067.        7569.
+## # … with 3,674 more rows</code></pre>
 <p>In order to get a better overview, we can group our row observations by state and then nest the remaining data, which will collapse everything and leave us with a <code>state.name</code> column where we can quickly see the ten states with the highest testing per 100k residents.</p>
 <pre class="r"><code>temp &lt;- testing.data %&gt;%
     arrange(desc(tests.std)) %&gt;%
@@ -222,33 +223,33 @@ temp</code></pre>
 ## # Groups:   state.name [52]
 ##    state.name           data             
 ##    &lt;chr&gt;                &lt;list&gt;           
-##  1 Rhode Island         &lt;tibble [70 × 5]&gt;
-##  2 North Dakota         &lt;tibble [70 × 5]&gt;
-##  3 New York             &lt;tibble [70 × 5]&gt;
-##  4 Massachusetts        &lt;tibble [68 × 5]&gt;
-##  5 New Mexico           &lt;tibble [70 × 5]&gt;
-##  6 Louisiana            &lt;tibble [70 × 5]&gt;
-##  7 New Jersey           &lt;tibble [70 × 5]&gt;
-##  8 Utah                 &lt;tibble [70 × 5]&gt;
-##  9 District of Columbia &lt;tibble [70 × 5]&gt;
-## 10 Connecticut          &lt;tibble [70 × 5]&gt;
+##  1 Rhode Island         &lt;tibble [71 × 5]&gt;
+##  2 North Dakota         &lt;tibble [71 × 5]&gt;
+##  3 New York             &lt;tibble [71 × 5]&gt;
+##  4 Massachusetts        &lt;tibble [69 × 5]&gt;
+##  5 New Mexico           &lt;tibble [71 × 5]&gt;
+##  6 Louisiana            &lt;tibble [71 × 5]&gt;
+##  7 New Jersey           &lt;tibble [71 × 5]&gt;
+##  8 District of Columbia &lt;tibble [71 × 5]&gt;
+##  9 Utah                 &lt;tibble [71 × 5]&gt;
+## 10 Connecticut          &lt;tibble [71 × 5]&gt;
 ## # … with 42 more rows</code></pre>
 <p>The first item in our nested list-column contains a tibble for Rhode Island’s data (shown below), the second item a tibble for New York, etc.</p>
 <pre class="r"><code>temp$data[[1]]</code></pre>
-<pre><code>## # A tibble: 70 x 5
+<pre><code>## # A tibble: 71 x 5
 ##    date       tests.std deaths.std positive.std negative.std
 ##    &lt;date&gt;         &lt;dbl&gt;      &lt;dbl&gt;        &lt;dbl&gt;        &lt;dbl&gt;
-##  1 2020-05-18    10925.       47.9        1211.        9713.
-##  2 2020-05-17    10657.       47.2        1200.        9457.
-##  3 2020-05-16    10271.       46.3        1177.        9094.
-##  4 2020-05-15     9940.       45.4        1157.        8783.
-##  5 2020-05-14     9620.       44.3        1138.        8482.
-##  6 2020-05-13     9272.       43.7        1121.        8151.
-##  7 2020-05-12     9017.       42.0        1100.        7918.
-##  8 2020-05-11     8837.       40.7        1084.        7753.
-##  9 2020-05-10     8636.       40.0        1067.        7569.
-## 10 2020-05-09     8315.       39.6        1040.        7274.
-## # … with 60 more rows</code></pre>
+##  1 2020-05-19    11101.       50.4        1226.        9875.
+##  2 2020-05-18    10925.       47.9        1211.        9713.
+##  3 2020-05-17    10657.       47.2        1200.        9457.
+##  4 2020-05-16    10271.       46.3        1177.        9094.
+##  5 2020-05-15     9940.       45.4        1157.        8783.
+##  6 2020-05-14     9620.       44.3        1138.        8482.
+##  7 2020-05-13     9272.       43.7        1121.        8151.
+##  8 2020-05-12     9017.       42.0        1100.        7918.
+##  9 2020-05-11     8837.       40.7        1084.        7753.
+## 10 2020-05-10     8636.       40.0        1067.        7569.
+## # … with 61 more rows</code></pre>
 </div>
 <div id="visualize" class="section level2">
 <h2>Visualize</h2>
@@ -259,20 +260,20 @@ temp</code></pre>
     pivot_longer(cols = -c(&#39;date&#39;,&#39;state.name&#39;),
                  names_to = &#39;std.metric&#39;,
                  values_to = &#39;std.value&#39;)</code></pre>
-<pre><code>## # A tibble: 14,528 x 4
+<pre><code>## # A tibble: 14,736 x 4
 ##    state.name date       std.metric   std.value
 ##    &lt;chr&gt;      &lt;date&gt;     &lt;chr&gt;            &lt;dbl&gt;
-##  1 Alaska     2020-05-18 tests.std      4852.  
-##  2 Alaska     2020-05-18 deaths.std        1.36
-##  3 Alaska     2020-05-18 positive.std     54.4 
-##  4 Alaska     2020-05-18 negative.std   4797.  
-##  5 Alabama    2020-05-18 tests.std      3201.  
-##  6 Alabama    2020-05-18 deaths.std        9.96
-##  7 Alabama    2020-05-18 positive.std    246.  
-##  8 Alabama    2020-05-18 negative.std   2955.  
-##  9 Arkansas   2020-05-18 tests.std      2805.  
-## 10 Arkansas   2020-05-18 deaths.std        3.29
-## # … with 14,518 more rows</code></pre>
+##  1 Alaska     2020-05-19 tests.std      4956.  
+##  2 Alaska     2020-05-19 deaths.std        1.36
+##  3 Alaska     2020-05-19 positive.std     54.4 
+##  4 Alaska     2020-05-19 negative.std   4902.  
+##  5 Alabama    2020-05-19 tests.std      3210.  
+##  6 Alabama    2020-05-19 deaths.std       10.3 
+##  7 Alabama    2020-05-19 positive.std    252.  
+##  8 Alabama    2020-05-19 negative.std   2958.  
+##  9 Arkansas   2020-05-19 tests.std      3083.  
+## 10 Arkansas   2020-05-19 deaths.std        3.36
+## # … with 14,726 more rows</code></pre>
 <p>Perfect. But if we want to sort our states by <code>tests.std</code> like we did above, we need to do that <em>before</em> we collapse that variable to get everything plot tidy, hence why we didn’t use <code>%&lt;&gt;%</code> above to save our new tibble.</p>
 <p>A side note, once I start making plot tidy manipulations I create a new <code>plot.data</code> tibble. That way, I have my <code>testing.data</code> tibble available for console sidebars to help me refine the information in <code>plot.data</code> according to what I want <code>ggplot2</code> to use and display. I’ve played with this enough to know that in advance so that this tutorial goes a little smoother, but it’s just a suggestion/tip that’s helped me.</p>
 <p>Eventually we will use the <code>facet_wrap()</code> command to plot each state separately in a grid. Just as a few code chunks ago, this will be alphabetical by default. If we rather want the grid to display states in descending order by their <code>tests.std</code> values, we have to make our <code>state.name</code> variable an <em>ordered</em> factor, which requires a few steps that probably seem a little convuluted, but are the sort of little things that become second nature over time.</p>
@@ -288,16 +289,16 @@ plot.data</code></pre>
 <pre><code>## # A tibble: 52 x 3
 ##    state.name           data              ordered
 ##    &lt;chr&gt;                &lt;list&gt;              &lt;int&gt;
-##  1 Rhode Island         &lt;tibble [70 × 5]&gt;       1
-##  2 North Dakota         &lt;tibble [70 × 5]&gt;       2
-##  3 New York             &lt;tibble [70 × 5]&gt;       3
-##  4 Massachusetts        &lt;tibble [68 × 5]&gt;       4
-##  5 New Mexico           &lt;tibble [70 × 5]&gt;       5
-##  6 Louisiana            &lt;tibble [70 × 5]&gt;       6
-##  7 New Jersey           &lt;tibble [70 × 5]&gt;       7
-##  8 Utah                 &lt;tibble [70 × 5]&gt;       8
-##  9 District of Columbia &lt;tibble [70 × 5]&gt;       9
-## 10 Connecticut          &lt;tibble [70 × 5]&gt;      10
+##  1 Rhode Island         &lt;tibble [71 × 5]&gt;       1
+##  2 North Dakota         &lt;tibble [71 × 5]&gt;       2
+##  3 New York             &lt;tibble [71 × 5]&gt;       3
+##  4 Massachusetts        &lt;tibble [69 × 5]&gt;       4
+##  5 New Mexico           &lt;tibble [71 × 5]&gt;       5
+##  6 Louisiana            &lt;tibble [71 × 5]&gt;       6
+##  7 New Jersey           &lt;tibble [71 × 5]&gt;       7
+##  8 District of Columbia &lt;tibble [71 × 5]&gt;       8
+##  9 Utah                 &lt;tibble [71 × 5]&gt;       9
+## 10 Connecticut          &lt;tibble [71 × 5]&gt;      10
 ## # … with 42 more rows</code></pre>
 <p>The last step to prepare our grid order now that we have sorted the data and assigned each state a rank is to use <code>fct_reorder()</code> to mutate <code>state.name</code> by <code>ordered</code>. Then we can unnest our tibble in place with the <code>%&lt;&gt;%</code> operator and keep going. We don’t need <code>ordered</code> any more so we can deselect it.</p>
 <pre class="r"><code>plot.data %&lt;&gt;%
@@ -306,20 +307,20 @@ plot.data</code></pre>
     select(-ordered)
 
 plot.data</code></pre>
-<pre><code>## # A tibble: 3,632 x 6
+<pre><code>## # A tibble: 3,684 x 6
 ##    state.name   date       tests.std deaths.std positive.std negative.std
 ##    &lt;fct&gt;        &lt;date&gt;         &lt;dbl&gt;      &lt;dbl&gt;        &lt;dbl&gt;        &lt;dbl&gt;
-##  1 Rhode Island 2020-05-18    10925.       47.9        1211.        9713.
-##  2 Rhode Island 2020-05-17    10657.       47.2        1200.        9457.
-##  3 Rhode Island 2020-05-16    10271.       46.3        1177.        9094.
-##  4 Rhode Island 2020-05-15     9940.       45.4        1157.        8783.
-##  5 Rhode Island 2020-05-14     9620.       44.3        1138.        8482.
-##  6 Rhode Island 2020-05-13     9272.       43.7        1121.        8151.
-##  7 Rhode Island 2020-05-12     9017.       42.0        1100.        7918.
-##  8 Rhode Island 2020-05-11     8837.       40.7        1084.        7753.
-##  9 Rhode Island 2020-05-10     8636.       40.0        1067.        7569.
-## 10 Rhode Island 2020-05-09     8315.       39.6        1040.        7274.
-## # … with 3,622 more rows</code></pre>
+##  1 Rhode Island 2020-05-19    11101.       50.4        1226.        9875.
+##  2 Rhode Island 2020-05-18    10925.       47.9        1211.        9713.
+##  3 Rhode Island 2020-05-17    10657.       47.2        1200.        9457.
+##  4 Rhode Island 2020-05-16    10271.       46.3        1177.        9094.
+##  5 Rhode Island 2020-05-15     9940.       45.4        1157.        8783.
+##  6 Rhode Island 2020-05-14     9620.       44.3        1138.        8482.
+##  7 Rhode Island 2020-05-13     9272.       43.7        1121.        8151.
+##  8 Rhode Island 2020-05-12     9017.       42.0        1100.        7918.
+##  9 Rhode Island 2020-05-11     8837.       40.7        1084.        7753.
+## 10 Rhode Island 2020-05-10     8636.       40.0        1067.        7569.
+## # … with 3,674 more rows</code></pre>
 <p>Now that we’ve taken care of ordering, we have to collapse our four testing variables and save it this time. We’ll use the same <code>pivot_longer()</code> command we did above.</p>
 <pre class="r"><code>plot.data %&lt;&gt;%
     pivot_longer(cols = -c(&#39;date&#39;,&#39;state.name&#39;),
@@ -327,20 +328,20 @@ plot.data</code></pre>
                  values_to = &#39;std.value&#39;)
 
 plot.data</code></pre>
-<pre><code>## # A tibble: 14,528 x 4
+<pre><code>## # A tibble: 14,736 x 4
 ##    state.name   date       std.metric   std.value
 ##    &lt;fct&gt;        &lt;date&gt;     &lt;chr&gt;            &lt;dbl&gt;
-##  1 Rhode Island 2020-05-18 tests.std      10925. 
-##  2 Rhode Island 2020-05-18 deaths.std        47.9
-##  3 Rhode Island 2020-05-18 positive.std    1211. 
-##  4 Rhode Island 2020-05-18 negative.std    9713. 
-##  5 Rhode Island 2020-05-17 tests.std      10657. 
-##  6 Rhode Island 2020-05-17 deaths.std        47.2
-##  7 Rhode Island 2020-05-17 positive.std    1200. 
-##  8 Rhode Island 2020-05-17 negative.std    9457. 
-##  9 Rhode Island 2020-05-16 tests.std      10271. 
-## 10 Rhode Island 2020-05-16 deaths.std        46.3
-## # … with 14,518 more rows</code></pre>
+##  1 Rhode Island 2020-05-19 tests.std      11101. 
+##  2 Rhode Island 2020-05-19 deaths.std        50.4
+##  3 Rhode Island 2020-05-19 positive.std    1226. 
+##  4 Rhode Island 2020-05-19 negative.std    9875. 
+##  5 Rhode Island 2020-05-18 tests.std      10925. 
+##  6 Rhode Island 2020-05-18 deaths.std        47.9
+##  7 Rhode Island 2020-05-18 positive.std    1211. 
+##  8 Rhode Island 2020-05-18 negative.std    9713. 
+##  9 Rhode Island 2020-05-17 tests.std      10657. 
+## 10 Rhode Island 2020-05-17 deaths.std        47.2
+## # … with 14,726 more rows</code></pre>
 <p>Finally, we’ll beautify <code>plot.data</code> by reordering our <code>std.metric</code> variable to get the shapes and colors we want (I have prefigured to save time), and changing the names to be a bit more intuitive for the final plots.</p>
 <pre class="r"><code>plot.data %&lt;&gt;%
     mutate_at(vars(std.metric), ~ fct_relevel(., &#39;tests.std&#39;,&#39;negative.std&#39;,
@@ -352,22 +353,22 @@ plot.data</code></pre>
                                               `Deaths` = &#39;deaths.std&#39;)) 
     
 plot.data</code></pre>
-<pre><code>## # A tibble: 14,528 x 4
+<pre><code>## # A tibble: 14,736 x 4
 ##    state.name   date       std.metric         std.value
 ##    &lt;fct&gt;        &lt;date&gt;     &lt;fct&gt;                  &lt;dbl&gt;
-##  1 Rhode Island 2020-05-18 Total Test Results   10925. 
-##  2 Rhode Island 2020-05-18 Deaths                  47.9
-##  3 Rhode Island 2020-05-18 Positive Tests        1211. 
-##  4 Rhode Island 2020-05-18 Negative Tests        9713. 
-##  5 Rhode Island 2020-05-17 Total Test Results   10657. 
-##  6 Rhode Island 2020-05-17 Deaths                  47.2
-##  7 Rhode Island 2020-05-17 Positive Tests        1200. 
-##  8 Rhode Island 2020-05-17 Negative Tests        9457. 
-##  9 Rhode Island 2020-05-16 Total Test Results   10271. 
-## 10 Rhode Island 2020-05-16 Deaths                  46.3
-## # … with 14,518 more rows</code></pre>
+##  1 Rhode Island 2020-05-19 Total Test Results   11101. 
+##  2 Rhode Island 2020-05-19 Deaths                  50.4
+##  3 Rhode Island 2020-05-19 Positive Tests        1226. 
+##  4 Rhode Island 2020-05-19 Negative Tests        9875. 
+##  5 Rhode Island 2020-05-18 Total Test Results   10925. 
+##  6 Rhode Island 2020-05-18 Deaths                  47.9
+##  7 Rhode Island 2020-05-18 Positive Tests        1211. 
+##  8 Rhode Island 2020-05-18 Negative Tests        9713. 
+##  9 Rhode Island 2020-05-17 Total Test Results   10657. 
+## 10 Rhode Island 2020-05-17 Deaths                  47.2
+## # … with 14,726 more rows</code></pre>
 <p>We’re finally ready to plot!</p>
-<p>We’ll use <code>geom_point()</code> so that each <code>std.value</code> is plotted individually, and use our ordered <code>std.metric</code> factor created above to dictate the color and shape. Because we used the <code>lubridate</code> package earlier to parse our dates, you might have noticed from the tibble outputs that our date column became a <date> data type. <code>ggplot2</code> has nice built-in functions for date scales, so we’ll use <code>scale_x_date()</code> and tell it that we want to tick every third week and display the dates in ‘dd.mm’ format.</p>
+<p>We’ll use <code>geom_point()</code> so that each <code>std.value</code> is plotted individually, and use our ordered <code>std.metric</code> factor created above to dictate the color and shape. Because we used the <code>lubridate</code> package earlier to parse our dates, you might have noticed from the tibble outputs that our date column was not numeric but an explicit ‘date’ type. <code>ggplot2</code> has nice built-in functions for date scales, so we’ll use <code>scale_x_date()</code> and tell it that we want to tick every third week and display the dates in ‘dd.mm’ format.</p>
 <p>If you haven’t already I encourage you to explore the <code>ggsci</code> and <code>ggpubr</code> packages which offer a lot of functionality and style options. My go-to is the <code>scale_color_futurama()</code> color palette and the <code>theme_pubclean()</code> theme from each, respectively. The theme is a minimal one that helps highlight the data trend of interest and moves the legend to the top of the plot.</p>
 <pre class="r"><code>testing.plot &lt;- plot.data %&gt;%
     ggplot(aes(x = date, y = std.value)) +

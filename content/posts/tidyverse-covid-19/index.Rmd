@@ -10,18 +10,18 @@ output:
     toc: true
 category: tutorial
 tags:
-  - tutorial
-  - tidyverse
-  - r-stats
+  - ecrc
   - forslund-lab
   - ggplot
+  - tidyverse
+  - tutorial
 summary:
     Exploratory data analysis with COVID-19 testing and prognosis in the US.
 ---
 
 This post is intended to be a follow up resource from my presentation for members of the ECRC. If you haven't seen that or are new here, check out my other [post](../why-tidyverse) on why you should use the tidyverse and get familiar with the syntax and functions I'll be using, and find the raw R script used to generate this tutorial in my [ecrc-data-science](https://github.com/sxmorgan/ecrc-data-science) repository on GitHub. 
 
-In later posts I will go through a more complete workflow in more fine-grained detail with microbiome-specific examples, but for this introductory demo we are going to be using data from the [COVID Tracking Project](https://covidtracking.com/) in the US. I have basically no experience teaching so this is an exercise for me too, and data that's also unfamiliar to me makes it easier to keep in mind what it's like to be a learner.
+In later posts I will go through a more complete workflow in more fine-grained detail with microbiome-specific examples, but for this demo we are going to be using data from the [COVID Tracking Project](https://covidtracking.com/) in the US. I have no experience teaching so this is an exercise for me too, and data that's also unfamiliar to me makes it easier to keep in mind what it's like to be a learner!
 
 One of my favorite things about R is the active development community. In March I saw that someone had created a `covid19us` wrapper package to access the COVID Tracking Project's API directly from R; however, at the time of writing, this function sadly [isn't working](https://github.com/aedobbyn/covid19us/issues/17), so we'll use the API.
 
@@ -101,42 +101,43 @@ raw.testing.data %>%
 
 Our dates are in an ugly format, so we'll use the `ymd()` command in the `lubridate` package to quickly parse it into a prettier 'year-month-day' format. To cut down on the size of our data of interest, let's only look at dates after March 9th, just before many lockdown periods began.
 
-```{r date.filtered}
-testing.data <- raw.testing.data %>%
-    mutate_at(vars(date), ~ as_date(ymd(.))) %>%
-    filter(date > '2020-03-09')
+<!-- # save content for case for the tidyverse post -->
+<!-- ```{r date.filtered} -->
+<!-- testing.data <- raw.testing.data %>% -->
+<!--     mutate_at(vars(date), ~ as_date(ymd(.))) %>% -->
+<!--     filter(date > '2020-03-09') -->
 
-# check trimmed date range
-testing.data %>%
-    use_series(date) %>%
-    range()
-```
+<!-- # check trimmed date range -->
+<!-- testing.data %>% -->
+<!--     use_series(date) %>% -->
+<!--     range() -->
+<!-- ``` -->
 
-I know the syntax of the mutate command above probably looks super weird. Firstly, I've opted for `mutate_at()` which doesn't assign new values using an `=` sign like the standard `mutate()` does, but rather a `vars()` parameter which applies whatever function is specified as the second argument to the raw data in `vars()`. The function could be something simple, like `sum()`, an anonymous function similar to the `apply()` syntax (`function(x) {do something with x}`), or a shorthand as I've done.
+<!-- I know the syntax of the mutate command above probably looks super weird. Firstly, I've opted for `mutate_at()` which doesn't assign new values using an `=` sign like the standard `mutate()` does, but rather a `vars()` parameter which applies whatever function is specified as the second argument to the raw data in `vars()`. The function could be something simple, like `sum()`, an anonymous function similar to the `apply()` syntax (`function(x) {do something with x}`), or a shorthand as I've done. -->
 
-The shorthand is part of the `purrr` package I will dedicate a specific presentation/tutorial to because it's a  clever and elegant way to solve **_so_** many problems. For now, just know that since I used `mutate_at()` and `vars()` and got a vector, I can use a shorthand where the `~` allows me to feed each element of the first argument to the desired functions in the second argument using `.`.
+<!-- The shorthand is part of the `purrr` package I will dedicate a specific presentation/tutorial to because it's a  clever and elegant way to solve **_so_** many problems. For now, just know that since I used `mutate_at()` and `vars()` and got a vector, I can use a shorthand where the `~` allows me to feed each element of the first argument to the desired functions in the second argument using `.`. -->
 
-Essentially in one line we're saying "take the dates which were incorrectly read in as doubles _(the first argument from `vars()`)_, parse as ymd format with `ymd(.)`, and return formatted date objects in their place." Think of `.` as a pronoun referring to the current element being operated on, like the `i` iterator in for-loops.
+<!-- Essentially in one line we're saying "take the dates which were incorrectly read in as doubles _(the first argument from `vars()`)_, parse as ymd format with `ymd(.)`, and return formatted date objects in their place." Think of `.` as a pronoun referring to the current element being operated on, like the `i` iterator in for loops. -->
 
-People who dislike `apply` functions for their lack of readability probably won't like the shorthand, but I'll readily admit that I use it whenever I can because a) I prefer concise code and b) it's an easy way to practice something that opens up tons of really advanced avenues. Using it has definitely made me a better programmer because I've been forced to think about _functions_. `purrr` is more consistent than the `apply()` family of functions, so it's easier to learn as well.
+<!-- People who dislike `apply` functions for their lack of readability probably won't like the shorthand, but I'll readily admit that I use it whenever I can because a) I prefer concise code and b) it's an easy way to practice something that opens up tons of really advanced avenues. Using it has definitely made me a better programmer because I've been forced to think about _functions_. `purrr` is more consistent than the `apply()` family of functions, so it's easier to learn as well. -->
 
-Here's another way that could be done without the shorthand notation, similar to `apply()`.
+<!-- Here's another way that could be done without the shorthand notation, similar to `apply()`. -->
 
-```{r date.sidebar}
-testing.data <- raw.testing.data %>%
-    mutate_at(vars(date), function(x) {
-        x %>%
-            ymd() %>%
-            as_date() }) %>%
-    filter(date > '2020-03-09')
+<!-- ```{r date.sidebar} -->
+<!-- testing.data <- raw.testing.data %>% -->
+<!--     mutate_at(vars(date), function(x) { -->
+<!--         x %>% -->
+<!--             ymd() %>% -->
+<!--             as_date() }) %>% -->
+<!--     filter(date > '2020-03-09') -->
 
-# check trimmed date range
-testing.data %>%
-    use_series(date) %>%
-    range()
-```
+<!-- # check trimmed date range -->
+<!-- testing.data %>% -->
+<!--     use_series(date) %>% -->
+<!--     range() -->
+<!-- ``` -->
 
-And lastly, here's how that would look if we used the standard `mutate()` command. Clearly I started here and played around _a lot_ to get to where the shorthand is natural. This code in two steps is more intuitively readable but less concise.
+<!-- And lastly, here's how that would look if we used the standard `mutate()` command. Clearly I started here and played around _a lot_ to get to where the shorthand is natural. This code in two steps is more intuitively readable but less concise. -->
 
 ```{r date.sidebar.mutate}
 testing.data <- raw.testing.data %>%
@@ -263,7 +264,7 @@ plot.data
 
 We're finally ready to plot! 
 
-We'll use `geom_point()` so that each `std.value` is plotted individually, and use our ordered `std.metric` factor created above to dictate the color and shape. Because we used the `lubridate` package earlier to parse our dates, you might have noticed from the tibble outputs that our date column became a <date> data type. `ggplot2` has nice built-in functions for date scales, so we'll use `scale_x_date()` and tell it that we want to tick every third week and display the dates in 'dd.mm' format. 
+We'll use `geom_point()` so that each `std.value` is plotted individually, and use our ordered `std.metric` factor created above to dictate the color and shape. Because we used the `lubridate` package earlier to parse our dates, you might have noticed from the tibble outputs that our date column was not numeric but an explicit 'date' type. `ggplot2` has nice built-in functions for date scales, so we'll use `scale_x_date()` and tell it that we want to tick every third week and display the dates in 'dd.mm' format. 
 
 If you haven't already I encourage you to explore the `ggsci` and `ggpubr` packages which offer a lot of functionality and style options. My go-to is the `scale_color_futurama()` color palette and the `theme_pubclean()` theme from each, respectively. The theme is a minimal one that helps highlight the data trend of interest and moves the legend to the top of the plot.
 

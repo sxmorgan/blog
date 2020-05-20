@@ -18,6 +18,13 @@
     
         
         <url>
+            <loc>/tags/ecrc/</loc>
+            <lastmod>2020-05-10T00:00:00+00:00</lastmod>
+        </url>
+        
+    
+        
+        <url>
             <loc>/tags/forslund-lab/</loc>
             <lastmod>2020-05-10T00:00:00+00:00</lastmod>
         </url>
@@ -32,14 +39,14 @@
     
         
         <url>
-            <loc>/posts/tidyverse-gut-diversity/</loc>
+            <loc>/tags/gut-microbiome/</loc>
             <lastmod>2020-05-10T00:00:00+00:00</lastmod>
         </url>
         
     
         
         <url>
-            <loc>/tags/microbiome/</loc>
+            <loc>/posts/tidyverse-gut-diversity/</loc>
             <lastmod>2020-05-10T00:00:00+00:00</lastmod>
         </url>
         
@@ -54,6 +61,13 @@
         
         <url>
             <loc>/posts/</loc>
+            <lastmod>2020-05-10T00:00:00+00:00</lastmod>
+        </url>
+        
+    
+        
+        <url>
+            <loc>/tags/programming/</loc>
             <lastmod>2020-05-10T00:00:00+00:00</lastmod>
         </url>
         
@@ -103,13 +117,6 @@
         
         <url>
             <loc>/posts/why-tidyverse/</loc>
-            <lastmod>2020-04-27T00:00:00+00:00</lastmod>
-        </url>
-        
-    
-        
-        <url>
-            <loc>/tags/programming/</loc>
             <lastmod>2020-04-27T00:00:00+00:00</lastmod>
         </url>
         

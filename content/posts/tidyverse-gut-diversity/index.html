@@ -11,13 +11,15 @@ output:
 categories: 
     - tutorial
     - microbiome
-tags: 
-    - tutorial
-    - tidyverse
-    - r-stats
+tags:
+    - ecrc
     - forslund-lab
-    - microbiome
     - ggplot
+    - gut microbiome
+    - programming
+    - r-stats
+    - tidyverse
+    - tutorial
 summary:
     A short workflow for generating alpha and beta diversity plots using taxonomic gut microbiome data from patients with autoimmune diseases.
 ---
@@ -27,20 +29,19 @@ summary:
 <div id="TOC">
 <ul>
 <li><a href="#alpha-diversity-boxplots">Alpha Diversity Boxplots</a></li>
-<li><a href="#beta-diversity-pcoa">Beta Diversity + PCoA</a></li>
+<li><a href="#beta-diversity-pcoa-plot">Beta Diversity PCoA Plot</a></li>
 <li><a href="#summary">Summary</a></li>
 </ul>
 </div>
 
 <p>Alpha and beta diversity are ecological metrics frequently part of exploratory microbiome analysis. The former measures the taxonomic variance <em>within</em> a sample, while the latter measures how samples vary <em>between</em> one another. There are different ways to measure both indices.</p>
-<p>I’m going to use some actual (anonymized) 16S taxonomic data that I’m working with. It’s a composite dataset of patients (N = 222) presenting with any combination of Crohn’s disease (IBD), ankylosing spondylitis (SpA), or acute anterior uveitis (AAU), pooled with a subset (N = 107) of healthy control samples from the <a href="https://academic.oup.com/cardiovascres/advance-article-abstract/doi/10.1093/cvr/cvaa128/5831292?redirectedFrom=fulltext">recently published</a> Collect study. We’ll be working with the genus-level rarefied data that has been transformed to relative abundances and filtered for prevalence in &gt; 5% of samples.</p>
+<p>I’m going to use some actual (anonymized) 16S taxonomic data that I’m working with. It’s a composite dataset of patients (N = 222) presenting with any combination of <a href="https://en.wikipedia.org/wiki/Crohn%27s_disease">Crohn’s disease</a> (IBD), <a href="https://www.mayoclinic.org/diseases-conditions/ankylosing-spondylitis/symptoms-causes/syc-20354808">ankylosing spondylitis</a> (SpA), or acute anterior <a href="https://en.wikipedia.org/wiki/Uveitis#Types">uveitis</a> (AAU), pooled with a subset (N = 107) of healthy control samples from the <a href="https://academic.oup.com/cardiovascres/advance-article-abstract/doi/10.1093/cvr/cvaa128/5831292?redirectedFrom=fulltext">recently published</a> Collect study. We’ll be working with the genus-level rarefied data that has been transformed to relative abundances and filtered for prevalence in &gt; 5% of samples.</p>
 <p>First, libraries. Like <code>ggsci</code> and <code>ggpubr</code>, <a href="https://github.com/slowkow/ggrepel">ggrepel</a> is another plotting package using <code>ggplot2</code> syntax that’s excellent for adding customizable labels to plots, which we’ll do later.</p>
 <pre class="r"><code>library(tidyverse)
 library(magrittr)
 library(ggsci) 
 library(ggrepel)
 library(ggpubr)</code></pre>
-<p><br></p>
 <div id="alpha-diversity-boxplots" class="section level2">
 <h2>Alpha Diversity Boxplots</h2>
 <p>The abundance tables I’m going to work with were generated from raw 16S reads using <a href="https://microbiomejournal.biomedcentral.com/articles/10.1186/2049-2618-2-30">LoTuS</a> and rarefied using the <a href="https://academic.oup.com/bioinformatics/article/33/16/2594/3111845">rarefaction toolkit</a> (rtk), which calculates per-sample diversity metrics so we don’t have to do that, and I’ll just be reading in the anonymized metadata table instead.</p>
@@ -192,10 +193,9 @@ plot.data %&gt;%
 <p><img src="/posts/tidyverse-gut-diversity/index_files/figure-html/alpha.phenotype-1.png" width="672" /></p>
 <pre class="r"><code>          # tilt it the other way
           # axis.text.x = element_text(angle = 45, hjust = 1)) </code></pre>
-<p><br></p>
 </div>
-<div id="beta-diversity-pcoa" class="section level2">
-<h2>Beta Diversity + PCoA</h2>
+<div id="beta-diversity-pcoa-plot" class="section level2">
+<h2>Beta Diversity PCoA Plot</h2>
 <p>The <a href="https://en.wikipedia.org/wiki/Beta_diversity">beta diversity</a> is a measurement of OTU diversity between different ecosystems, here different patient microbiota. The Bray-Curtis dissimilarity is a semimetric statistic bounded between 0 and 1 (0 = same OTUs in same abundances, 1 = samples do not share any OTUs) quantifying the pairwise compositional overlap between samples.</p>
 <p>Once dissimilarities have been computed, a PCoA ordination creates an n-dimensional (usually n = 2) mapping of the dissimilarities between samples such that the calculated dissimilarity between samples is preserved and able to be visualized in a lower-dimensional space.</p>
 <p>For this, I’ll read in the actual abundance table which has the Cohort variable as a label in the first column.</p>

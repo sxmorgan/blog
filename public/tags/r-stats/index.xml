@@ -21,15 +21,6 @@
     </item>
     
     <item>
-      <title>A Simple Tidyverse Workflow</title>
-      <link>/posts/tidyverse-covid-19/</link>
-      <pubDate>Tue, 05 May 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/posts/tidyverse-covid-19/</guid>
-      <description>Exploratory data analysis with COVID-19 testing and prognosis in the US.</description>
-    </item>
-    
-    <item>
       <title>A Case for the Tidyverse</title>
       <link>/posts/why-tidyverse/</link>
       <pubDate>Mon, 27 Apr 2020 00:00:00 +0000</pubDate>
