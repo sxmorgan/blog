@@ -1,5 +1,5 @@
 ---
-title: "A Case for the Tidyverse"
+title: A Case for the Tidyverse
 author: Morgan Essex
 date: '2020-04-27'
 slug: why-tidyverse
@@ -27,12 +27,14 @@ The [tidyverse](https://www.tidyverse.org/packages/) is a set of actively develo
 
 <!-- Plenty of his talks and interviews are available on YouTube as well; [here's](https://www.youtube.com/watch?v=9YTNYT1maa4) my favorite from the [VIZBI](https://vizbi.org/) conference at EMBL last year.  -->
 
-Many R programmers who don't explicitly know what the tidyverse is have at least used `ggplot2`, and if they got their start in base R as I did, probably found it annoying because of the slightly different syntax. The inspiration behind it was to be the first open source implementation of _[The Grammar of Graphics](https://towardsdatascience.com/a-comprehensive-guide-to-the-grammar-of-graphics-for-effective-visualization-of-multi-dimensional-1f92b4ed4149)_ (hence **gg**plot), a statistical textbook from the 1980s that provided a concise way to describe a range of data visualizations. Grammar is simply an attribute of language that dictates how elements must be expressed in order to be understood, and where human languages predominately evolve the grammar that distinguishes them functionally, programming languages can be tailored and tweaked. 
+Many R programmers who don't explicitly know what the tidyverse is have at least used `ggplot2`, and if they got their start in base R as I did, probably found it annoying because of the slightly different syntax. The inspiration behind it was to be the first open source implementation of _[The Grammar of Graphics](https://towardsdatascience.com/a-comprehensive-guide-to-the-grammar-of-graphics-for-effective-visualization-of-multi-dimensional-1f92b4ed4149)_ (hence **gg**plot), a statistical textbook from the 1980s that provided a unique way to describe a range of data visualizations succinctly. 
+
+Grammar is simply an attribute of language that dictates how elements must be expressed in order to be coherent, and where human languages predominately evolve the grammar that distinguishes them functionally, programming languages are, well, programmed. `ggplot2` is a graphical language embedded in a programming language. Where in Excel points in X-Y space are called a scatterplot, in `ggplot2` the same visual element (a data point) is the basis of both scatterplots and boxplots, what differs is whether one axis is categorical or not.
 
 The mission of `ggplot` - getting from data to visualization more intuitively by tweaking the grammar - is what paved the way for the rest of the tidyverse. R users who have ever melted or cast a data frame might be curious to know that those packages were also Hadley's work and key milestones of the `dplyr` package in the mature tidyverse. As he puts it, very often the key to creating a visualization is about getting the data in the right form, hence the expansion into data manipulation.
 
 <center>
-![Figure 1 from _R for Data Science_](data/data.science.process.png)
+![](data/data.science.process.png)
 Canonical data science workflow from _R for Data Science_ [chapter 1](https://r4ds.had.co.nz/tidy-data.html)
 </center><br>
 
@@ -40,7 +42,16 @@ I like this representation because it contains all the tasks I do as a computati
 
 ## Ecosystem {#pkgs}
 
-To take a look at the core packages and show my favorite features, let's load everyone's least favorite dataset: **mtcars**. It's a data frame.
+Much like a biological ecosystem, the tidyverse works because while the entities (packages, functions) are specialized, they share common concepts (syntax, structures), which allows them to flexibly adapt to different problems (modelling, visualization) of varying complexity. I hope other biologists can appreciate the metaphors as much as I do.
+
+Here's an overview of some of the packages we're going to discuss today and for your reference.
+
+<center>
+![](data/tidy.ecosystem.png)
+<small>Photo taken from [_Getting Started with tidyverse in R_](https://www.storybench.org/getting-started-with-tidyverse-in-r/)</small>
+</center><br>
+
+To dive into the core packages and functions, let's load everyone's least favorite dataset: **mtcars**. It's a data frame.
 
 ```{r knitr, include = FALSE}
 knitr::opts_chunk$set(message = FALSE, warning = FALSE)
@@ -208,7 +219,7 @@ gapminder.long <- gapminder.wide %>%
 
 ### Wrangling {#dplyr}
 
-Once the data is tidied, the `dplyr` package becomes essential to "wrangle" it further. Like `ggplot2`, `dplyr` is "a _grammar_ of data manipulation. Practically what this means is that the functions and corresponding parameter names are intended to help you translate your thoughts into code more quickly, and vice versa. 
+Once the data is tidied, the `dplyr` package becomes essential to "wrangle" it further. Like `ggplot2`, `dplyr` is a _grammar_ of data manipulation. Practically what this means is that the functions and corresponding parameter names are intended to help you translate your thoughts into code more quickly, and vice versa. 
 
 The basic function are as follows:
 
