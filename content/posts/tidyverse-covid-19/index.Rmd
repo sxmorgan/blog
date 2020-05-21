@@ -270,8 +270,9 @@ testing.plot <- plot.data %>%
     # fix title, axes, legends
     labs(title = 'COVID-19 Testing and Prognosis in US States',
          x = '', y = '', color = 'Per 100k Residents:', shape = 'Per 100k Residents:') +
-    theme_pubclean() %>%
-    print()
+    theme_pubclean()
+
+testing.plot
 ```
 
 
