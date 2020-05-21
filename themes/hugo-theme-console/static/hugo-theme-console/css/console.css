@@ -38,8 +38,6 @@
     --global-line-height: 1.6em;
     --page-width: 70em;
     --display-h1-decoration: 1;
-    --code-bg-color: #fff;
-    --code-font-size: 12px;
 }
 
 .sidebar-heading {
@@ -88,21 +86,32 @@ h1 {
     margin-bottom: 150px;
 }
 
-pre {
+/* code is for ` ` snippets, pre for chunks */
+/*pre {
   background-color: #F5F5F5;
   line-height: 1.4;
   overflow-x: auto;
   padding: 1em;
 }
 
-/* code is for ` ` snippets, pre for chunks */
 code {
   background-color: transparent;
-  /* color: inherit; */
+  color: inherit; 
   color: #000080;
   font-size: 100%;
   padding: 0;
+} */
+
+pre {
+  border: 1.5px solid #ddd;
+  box-shadow: 4px 4px 4px #eee;
+  padding: 1em;
+  overflow-x: auto;
 }
+code { 
+    background: #f9f9f9; }
+pre code { 
+    background: none; }
 
 .content-column-content p,
 .content-column-content li {
