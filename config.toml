@@ -8,8 +8,8 @@ ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
 #  posts = "/:title/"
 
 [params]
-  highlightjsVersion = "10.0.2"
-  highlightjsCDN = "//cdnjs.cloudflare.com"
+  # highlightjsVersion = "10.0.2"
+  # highlightjsCDN = "//cdnjs.cloudflare.com"
   highlightjsLang = ["r", "yaml"]
   highlightjsTheme = "tomorrow"
   

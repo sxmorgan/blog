@@ -6,7 +6,6 @@ slug: tidyverse-gut-diversity
 output:
   blogdown::html_page:
     fig_caption: true
-    css: tomorrow.css
     toc: true
 categories: 
     - tutorial
@@ -53,10 +52,9 @@ There are packages for calculating diversity indices in R from an abundance tabl
 The richness is an OTU count (how many OTUs, here genera, in a sample), while the [Shannon entropy](https://en.wiktionary.org/wiki/Shannon_entropy) is also informed by abundances and yields a measure of how evenly OTUs are distributed across a sample; a high Shannon entropy implies that some OTUs have similar abundance levels, while a low entropy indicates that some OTUs dominate over others. A lower Shannon diversity is frequently associated with chronic disease.
 
 ```{r readin.alpha}
-meta.tbl <- readRDS(file = 'data/meta.tbl.rds')
-
-meta.tbl
-
+meta.tbl <- 'data/meta.tbl.rds' %>%
+    readRDS() %>%
+    print()
 ```
 
 That's actually all we need to generate a quick plot for ourselves. 
@@ -98,9 +96,8 @@ plot.data <- meta.tbl %>%
                                              'Control',
                                              'IBD','IBD+SpA','IBD+AAU',
                                              'IBD+SpA+AAU','SpA','SpA+AAU',
-                                             'AAU'))
-
-plot.data
+                                             'AAU')) %>%
+    print()
 ```
 
 The next thing we want to do is add statistical significance between the cohorts, using the [ggpubr](https://rpkgs.datanovia.com/ggpubr/index.html) package (the same one I'll use for custom color palettes). It's a good package with it's own tweaked version of e.g. boxplots that's potentially worth checking out.
@@ -212,9 +209,9 @@ For this, I'll read in the actual abundance table which has the Cohort variable 
 <!-- **NOTE:** the PERMANOVA test does not distinguish between diffferences among groups which are the result of location (a "true" difference in multivariate space) or dispersion (variance homogeneity), and significance values should be interpreted with caution. See the Assumptions section of the original method [linked here](https://onlinelibrary.wiley.com/doi/full/10.1111/j.1442-9993.2001.01070.pp.x). -->
 
 ```{r readin.taxa}
-taxa.tbl <- readRDS(file = 'data/taxa.tbl.rds')
-
-taxa.tbl
+taxa.tbl <- 'data/taxa.tbl.rds' %>%
+    readRDS() %>%
+    print()
 ```
 
 We'll use the `vegdist()` function from the `vegan` package to calculate the Bray-Curtis dissimilarites and save it in a `taxa.dist` object.
@@ -235,9 +232,8 @@ taxa.pcoa <- taxa.dist %>%
     stats::cmdscale(k = 2) %>%
     as_tibble(names_repair = 'check_unique') %>%
     add_column(Cohort = taxa.tbl$Cohort,
-               .before = 1)
-
-taxa.pcoa
+               .before = 1) %>%
+    print()
 ```
 
 Something useful I got in the habit of doing for my PCoA plots is adding the **centroid** of each group, i.e. the mean. I'm going to calculate those and save them in a separate `pcoa.centroids` variable. I've added a Pt.Type column that we'll also use in our visualization to distinguish centroid points from the other data points (patient samples) in our plot.
@@ -252,9 +248,8 @@ pcoa.centroids <- taxa.pcoa %>%
     mutate(V2 = map_dbl(data, ~ mean(.$V2))) %>%
     # remove column of original points
     select(-data) %>%
-    add_column(Pt.Type = 'Group Mean')
-
-pcoa.centroids
+    add_column(Pt.Type = 'Group Mean') %>%
+    print()
 ```
 
 There isn't much to do to prepare this data for plotting, but we do want to add the centroids above to the `taxa.pcoa` values we got earlier. Additionally, since we added a Pt.Type variable to the centroids tibble, we'll want to do the same for our individual coordinates before we can use the `bind_rows()` command. Just as with the alpha diversity plots, I'm using `fct_relevel()` to order the Cohort variable how we want it to appear in the final legend from top to bottom.
@@ -263,9 +258,8 @@ There isn't much to do to prepare this data for plotting, but we do want to add 
 plot.data <- taxa.pcoa %>%
     add_column(Pt.Type = 'Individual') %>%
     bind_rows(pcoa.centroids) %>%
-    mutate_at(vars(Cohort), ~ fct_relevel(., 'SpA','IBD','AAU','Collect')) 
-
-plot.data
+    mutate_at(vars(Cohort), ~ fct_relevel(., 'SpA','IBD','AAU','Collect')) %>%
+    print()
 ```
 
 Now our data is plot ready and we can use `geom_point()` again, this time to create a scatter plot of our PCoA coordinates. For visual appeal, I want to color these by cohort and use different shapes to represent the data points and the centroids, and make the centroids bigger. I also want to update the axis and legend titles with `labs()`, which I also used earlier, and finally use the `geom_label_repel()` function to label our centroids. This function takes a data frame or tibble as the first argument, and obtains the labels from a column in it as specified in the `mapping = aes(label = ...)` argument.

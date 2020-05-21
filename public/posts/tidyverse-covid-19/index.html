@@ -11,6 +11,7 @@
     <link rel="stylesheet" href='/hugo-theme-console/css/terminal-0.7.1.min.css'>
     <link rel="stylesheet" href='/hugo-theme-console/css/animate-3.7.2.min.css'>
     <link rel="stylesheet" href='/hugo-theme-console/css/console.css'>
+    <link rel="stylesheet" href='/hugo-theme-console/css/tomorrow.css'>
     
       <!--[if lt IE 9]>
           <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
@@ -18,16 +19,8 @@
       <![endif]-->
     <link rel="icon" 
       type="image/png" 
-      href="/favicon-comp.png"><meta property="og:title" content="A Simple Tidyverse Workflow" />
-<meta property="og:description" content="" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="/posts/tidyverse-covid-19/" /><meta property="article:published_time" content="2020-05-05T00:00:00+00:00" />
-
-
-
-<meta name="twitter:title" content="A Simple Tidyverse Workflow"/>
-<meta name="twitter:description" content="Exploratory data analysis with COVID-19 testing and prognosis in the US."/>
-
+      href="/favicon-comp.png">
+    
 </head>
 <body class="terminal">
     <div class="container">
@@ -63,7 +56,7 @@
         
 <h1>A Simple Tidyverse Workflow</h1>
 
-5 May 2020 // 15' read
+5 May 2020 // 27' read
 
 <br/>
 
@@ -92,29 +85,27 @@ library(ggpubr)</code></pre>
 <p>Then, let’s call <code>read_csv()</code> on the complete longitudinal dataset url, which defaults to a tibble, and <code>select()</code> the testing counts that will be relevant for our analysis: positive, negative, death, and total.</p>
 <pre class="r"><code>states.data &lt;- &#39;https://covidtracking.com/api/v1/states/daily.csv&#39; %&gt;%
     read_csv() %&gt;%
-    select(c(&#39;state&#39;,&#39;date&#39;,&#39;positive&#39;,&#39;negative&#39;,&#39;death&#39;,&#39;total&#39;)) 
-
-states.data</code></pre>
-<pre><code>## # A tibble: 4,217 x 6
+    select(c(&#39;state&#39;,&#39;date&#39;,&#39;positive&#39;,&#39;negative&#39;,&#39;death&#39;,&#39;total&#39;)) %&gt;%
+    print()</code></pre>
+<pre><code>## # A tibble: 4,273 x 6
 ##    state     date positive negative death   total
 ##    &lt;chr&gt;    &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;
-##  1 AK    20200519      399    35981    10   36380
-##  2 AL    20200519    12376   145190   504  157566
-##  3 AR    20200519     4923    88778   102   93701
-##  4 AS    20200519        0      124     0     124
-##  5 AZ    20200519    14566   147005   704  161571
-##  6 CA    20200519    81795  1257521  3334 1339316
-##  7 CO    20200519    22202   109131  1224  131333
-##  8 CT    20200519    38430   147090  3472  185520
-##  9 DC    20200519     7434    31940   400   39374
-## 10 DE    20200519     8037    36095   304   44132
-## # … with 4,207 more rows</code></pre>
+##  1 AK    20200520      402    36643    10   37045
+##  2 AL    20200520    12744   151706   517  164450
+##  3 AR    20200520     5003    91255   107   96258
+##  4 AS    20200520        0      124     0     124
+##  5 AZ    20200520    14897   150538   747  165435
+##  6 CA    20200520    84057  1296063  3436 1380120
+##  7 CO    20200520    22482   109355  1257  131837
+##  8 CT    20200520    39017   151701  3529  190718
+##  9 DC    20200520     7551    32868   407   40419
+## 10 DE    20200520     8194    37218   310   45412
+## # … with 4,263 more rows</code></pre>
 <p>Additionally, I have downloaded the (projected) 2020 census estimates of all 50 states + Washington DC and Puerto Rico from <a href="https://worldpopulationreview.com" class="uri">https://worldpopulationreview.com</a>, which we’ll read in and use to standardize our tests per 100,000 residents.</p>
 <pre class="r"><code>states.pop &lt;- &#39;data/covid.us.state.population.csv&#39; %&gt;%
     read_csv() %&gt;%
-    select(c(&#39;rank&#39;,&#39;State&#39;,&#39;Pop&#39;)) 
-
-states.pop</code></pre>
+    select(c(&#39;rank&#39;,&#39;State&#39;,&#39;Pop&#39;)) %&gt;%
+    print()</code></pre>
 <pre><code>## # A tibble: 52 x 3
 ##     rank State               Pop
 ##    &lt;dbl&gt; &lt;chr&gt;             &lt;dbl&gt;
@@ -133,9 +124,8 @@ states.pop</code></pre>
 <pre class="r"><code>states.abbrev &lt;- &#39;https://worldpopulationreview.com/static/states/abbr-name-list.csv&#39; %&gt;%
     read_csv() %&gt;%
     mutate(name = stringr::str_replace(name, &#39;Of&#39;, &#39;of&#39;)) %&gt;%
-    add_row(name = &#39;Puerto Rico&#39;, abbreviation = &#39;PR&#39;)
-
-states.abbrev</code></pre>
+    add_row(name = &#39;Puerto Rico&#39;, abbreviation = &#39;PR&#39;) %&gt;%
+    print()</code></pre>
 <pre><code>## # A tibble: 52 x 2
 ##    name                 abbreviation
 ##    &lt;chr&gt;                &lt;chr&gt;       
@@ -165,20 +155,20 @@ states.abbrev</code></pre>
 raw.testing.data %&gt;%
     select(c(&#39;state&#39;,&#39;date&#39;,&#39;state.name&#39;,&#39;Pop&#39;)) %&gt;%
     arrange(state.name)</code></pre>
-<pre><code>## # A tibble: 3,957 x 4
+<pre><code>## # A tibble: 4,009 x 4
 ##    state     date state.name     Pop
 ##    &lt;chr&gt;    &lt;dbl&gt; &lt;chr&gt;        &lt;dbl&gt;
-##  1 AL    20200519 Alabama    4908621
-##  2 AL    20200518 Alabama    4908621
-##  3 AL    20200517 Alabama    4908621
-##  4 AL    20200516 Alabama    4908621
-##  5 AL    20200515 Alabama    4908621
-##  6 AL    20200514 Alabama    4908621
-##  7 AL    20200513 Alabama    4908621
-##  8 AL    20200512 Alabama    4908621
-##  9 AL    20200511 Alabama    4908621
-## 10 AL    20200510 Alabama    4908621
-## # … with 3,947 more rows</code></pre>
+##  1 AL    20200520 Alabama    4908621
+##  2 AL    20200519 Alabama    4908621
+##  3 AL    20200518 Alabama    4908621
+##  4 AL    20200517 Alabama    4908621
+##  5 AL    20200516 Alabama    4908621
+##  6 AL    20200515 Alabama    4908621
+##  7 AL    20200514 Alabama    4908621
+##  8 AL    20200513 Alabama    4908621
+##  9 AL    20200512 Alabama    4908621
+## 10 AL    20200511 Alabama    4908621
+## # … with 3,999 more rows</code></pre>
 <p>Our dates are in an ugly format, so we’ll use the <code>ymd()</code> command in the <code>lubridate</code> package to quickly parse it into a prettier ‘year-month-day’ format. To cut down on the size of our data of interest, let’s only look at dates after March 9th, just before many lockdown periods began.</p>
 <!-- # save content for case for the tidyverse post -->
 <!-- ```{r date.filtered} -->
@@ -217,7 +207,7 @@ raw.testing.data %&gt;%
 testing.data %&gt;%
     use_series(date) %&gt;%
     range()</code></pre>
-<pre><code>## [1] &quot;2020-03-10&quot; &quot;2020-05-19&quot;</code></pre>
+<pre><code>## [1] &quot;2020-03-10&quot; &quot;2020-05-20&quot;</code></pre>
 <p>Now that we have our dates sorted out, we can standardize our testing counts per 100k residents. To do this, we’ll create a column called <code>pop.factor</code> which divides the population by 100,000 to get the number of “groups” of 100k residents in that population. We’ll <code>mutate()</code> each of our count columns, dividing by our <code>pop.factor</code>, to get our standardized values. We will select only these new columns and the other variables that we’ll need to create some basic longitudinal scatter plots, ignoring the intermediate variables like <code>pop.factor</code>.</p>
 <pre class="r"><code>testing.data %&lt;&gt;%
     mutate(pop.factor = Pop/100000) %&gt;%
@@ -225,79 +215,77 @@ testing.data %&gt;%
     mutate(deaths.std = death/pop.factor) %&gt;%
     mutate(positive.std = positive/pop.factor) %&gt;%
     mutate(negative.std = negative/pop.factor) %&gt;%
-    select(c(&#39;state.name&#39;,&#39;date&#39;,&#39;tests.std&#39;,&#39;deaths.std&#39;,&#39;positive.std&#39;,&#39;negative.std&#39;))
-
-testing.data</code></pre>
-<pre><code>## # A tibble: 3,684 x 6
+    select(c(&#39;state.name&#39;,&#39;date&#39;,&#39;tests.std&#39;,&#39;deaths.std&#39;,&#39;positive.std&#39;,&#39;negative.std&#39;)) %&gt;%
+    print()</code></pre>
+<pre><code>## # A tibble: 3,736 x 6
 ##    state.name          date       tests.std deaths.std positive.std negative.std
 ##    &lt;chr&gt;               &lt;date&gt;         &lt;dbl&gt;      &lt;dbl&gt;        &lt;dbl&gt;        &lt;dbl&gt;
-##  1 Alaska              2020-05-19     4956.       1.36         54.4        4902.
-##  2 Alabama             2020-05-19     3210.      10.3         252.         2958.
-##  3 Arkansas            2020-05-19     3083.       3.36        162.         2921.
-##  4 Arizona             2020-05-19     2190.       9.54        197.         1992.
-##  5 California          2020-05-19     3354.       8.35        205.         3149.
-##  6 Colorado            2020-05-19     2247.      20.9         380.         1867.
-##  7 Connecticut         2020-05-19     5207.      97.4        1079.         4128.
-##  8 District of Columb… 2020-05-19     5463.      55.5        1032.         4432.
-##  9 Delaware            2020-05-19     4490.      30.9         818.         3672.
-## 10 Florida             2020-05-19     3261.       9.68        213.         3041.
-## # … with 3,674 more rows</code></pre>
+##  1 Alaska              2020-05-20     5047.       1.36         54.8        4992.
+##  2 Alabama             2020-05-20     3350.      10.5         260.         3091.
+##  3 Arkansas            2020-05-20     3167.       3.52        165.         3003.
+##  4 Arizona             2020-05-20     2242.      10.1         202.         2040.
+##  5 California          2020-05-20     3456.       8.60        210.         3245.
+##  6 Colorado            2020-05-20     2255.      21.5         385.         1871.
+##  7 Connecticut         2020-05-20     5353.      99.0        1095.         4258.
+##  8 District of Columb… 2020-05-20     5608.      56.5        1048.         4561.
+##  9 Delaware            2020-05-20     4620.      31.5         834.         3787.
+## 10 Florida             2020-05-20     3513.       9.88        216.         3291.
+## # … with 3,726 more rows</code></pre>
 <p>By default, our states are sorted alphabetically, but what if we wanted to sort them according to their testing coverage?</p>
 <p>In a quick console sidebar, let’s see which states are performing the most testing.</p>
 <pre class="r"><code>testing.data %&gt;%
     arrange(desc(tests.std))</code></pre>
-<pre><code>## # A tibble: 3,684 x 6
+<pre><code>## # A tibble: 3,736 x 6
 ##    state.name   date       tests.std deaths.std positive.std negative.std
 ##    &lt;chr&gt;        &lt;date&gt;         &lt;dbl&gt;      &lt;dbl&gt;        &lt;dbl&gt;        &lt;dbl&gt;
-##  1 Rhode Island 2020-05-19    11101.       50.4        1226.        9875.
-##  2 Rhode Island 2020-05-18    10925.       47.9        1211.        9713.
-##  3 Rhode Island 2020-05-17    10657.       47.2        1200.        9457.
-##  4 Rhode Island 2020-05-16    10271.       46.3        1177.        9094.
-##  5 Rhode Island 2020-05-15     9940.       45.4        1157.        8783.
-##  6 Rhode Island 2020-05-14     9620.       44.3        1138.        8482.
-##  7 Rhode Island 2020-05-13     9272.       43.7        1121.        8151.
-##  8 Rhode Island 2020-05-12     9017.       42.0        1100.        7918.
-##  9 Rhode Island 2020-05-11     8837.       40.7        1084.        7753.
-## 10 Rhode Island 2020-05-10     8636.       40.0        1067.        7569.
-## # … with 3,674 more rows</code></pre>
+##  1 Rhode Island 2020-05-20    11412.       50.9        1265.       10147.
+##  2 Rhode Island 2020-05-19    11101.       50.4        1226.        9875.
+##  3 Rhode Island 2020-05-18    10925.       47.9        1211.        9713.
+##  4 Rhode Island 2020-05-17    10657.       47.2        1200.        9457.
+##  5 Rhode Island 2020-05-16    10271.       46.3        1177.        9094.
+##  6 Rhode Island 2020-05-15     9940.       45.4        1157.        8783.
+##  7 Rhode Island 2020-05-14     9620.       44.3        1138.        8482.
+##  8 Rhode Island 2020-05-13     9272.       43.7        1121.        8151.
+##  9 Rhode Island 2020-05-12     9017.       42.0        1100.        7918.
+## 10 Rhode Island 2020-05-11     8837.       40.7        1084.        7753.
+## # … with 3,726 more rows</code></pre>
 <p>In order to get a better overview, we can group our row observations by state and then nest the remaining data, which will collapse everything and leave us with a <code>state.name</code> column where we can quickly see the ten states with the highest testing per 100k residents.</p>
 <pre class="r"><code>temp &lt;- testing.data %&gt;%
     arrange(desc(tests.std)) %&gt;%
     group_by(state.name) %&gt;%
-    nest()
-
-temp</code></pre>
+    nest() %&gt;%
+    print()</code></pre>
 <pre><code>## # A tibble: 52 x 2
 ## # Groups:   state.name [52]
 ##    state.name           data             
 ##    &lt;chr&gt;                &lt;list&gt;           
-##  1 Rhode Island         &lt;tibble [71 × 5]&gt;
-##  2 North Dakota         &lt;tibble [71 × 5]&gt;
-##  3 New York             &lt;tibble [71 × 5]&gt;
-##  4 Massachusetts        &lt;tibble [69 × 5]&gt;
-##  5 New Mexico           &lt;tibble [71 × 5]&gt;
-##  6 Louisiana            &lt;tibble [71 × 5]&gt;
-##  7 New Jersey           &lt;tibble [71 × 5]&gt;
-##  8 District of Columbia &lt;tibble [71 × 5]&gt;
-##  9 Utah                 &lt;tibble [71 × 5]&gt;
-## 10 Connecticut          &lt;tibble [71 × 5]&gt;
+##  1 Rhode Island         &lt;tibble [72 × 5]&gt;
+##  2 North Dakota         &lt;tibble [72 × 5]&gt;
+##  3 New York             &lt;tibble [72 × 5]&gt;
+##  4 Massachusetts        &lt;tibble [70 × 5]&gt;
+##  5 New Mexico           &lt;tibble [72 × 5]&gt;
+##  6 Louisiana            &lt;tibble [72 × 5]&gt;
+##  7 New Jersey           &lt;tibble [72 × 5]&gt;
+##  8 District of Columbia &lt;tibble [72 × 5]&gt;
+##  9 Utah                 &lt;tibble [72 × 5]&gt;
+## 10 Connecticut          &lt;tibble [72 × 5]&gt;
 ## # … with 42 more rows</code></pre>
 <p>The first item in our nested list-column contains a tibble for Rhode Island’s data (shown below), the second item a tibble for New York, etc.</p>
 <pre class="r"><code>temp$data[[1]]</code></pre>
-<pre><code>## # A tibble: 71 x 5
+<pre><code>## # A tibble: 72 x 5
 ##    date       tests.std deaths.std positive.std negative.std
 ##    &lt;date&gt;         &lt;dbl&gt;      &lt;dbl&gt;        &lt;dbl&gt;        &lt;dbl&gt;
-##  1 2020-05-19    11101.       50.4        1226.        9875.
-##  2 2020-05-18    10925.       47.9        1211.        9713.
-##  3 2020-05-17    10657.       47.2        1200.        9457.
-##  4 2020-05-16    10271.       46.3        1177.        9094.
-##  5 2020-05-15     9940.       45.4        1157.        8783.
-##  6 2020-05-14     9620.       44.3        1138.        8482.
-##  7 2020-05-13     9272.       43.7        1121.        8151.
-##  8 2020-05-12     9017.       42.0        1100.        7918.
-##  9 2020-05-11     8837.       40.7        1084.        7753.
-## 10 2020-05-10     8636.       40.0        1067.        7569.
-## # … with 61 more rows</code></pre>
+##  1 2020-05-20    11412.       50.9        1265.       10147.
+##  2 2020-05-19    11101.       50.4        1226.        9875.
+##  3 2020-05-18    10925.       47.9        1211.        9713.
+##  4 2020-05-17    10657.       47.2        1200.        9457.
+##  5 2020-05-16    10271.       46.3        1177.        9094.
+##  6 2020-05-15     9940.       45.4        1157.        8783.
+##  7 2020-05-14     9620.       44.3        1138.        8482.
+##  8 2020-05-13     9272.       43.7        1121.        8151.
+##  9 2020-05-12     9017.       42.0        1100.        7918.
+## 10 2020-05-11     8837.       40.7        1084.        7753.
+## # … with 62 more rows</code></pre>
 </div>
 <div id="visualize" class="section level2">
 <h2>Visualize</h2>
@@ -308,20 +296,20 @@ temp</code></pre>
     pivot_longer(cols = -c(&#39;date&#39;,&#39;state.name&#39;),
                  names_to = &#39;std.metric&#39;,
                  values_to = &#39;std.value&#39;)</code></pre>
-<pre><code>## # A tibble: 14,736 x 4
+<pre><code>## # A tibble: 14,944 x 4
 ##    state.name date       std.metric   std.value
 ##    &lt;chr&gt;      &lt;date&gt;     &lt;chr&gt;            &lt;dbl&gt;
-##  1 Alaska     2020-05-19 tests.std      4956.  
-##  2 Alaska     2020-05-19 deaths.std        1.36
-##  3 Alaska     2020-05-19 positive.std     54.4 
-##  4 Alaska     2020-05-19 negative.std   4902.  
-##  5 Alabama    2020-05-19 tests.std      3210.  
-##  6 Alabama    2020-05-19 deaths.std       10.3 
-##  7 Alabama    2020-05-19 positive.std    252.  
-##  8 Alabama    2020-05-19 negative.std   2958.  
-##  9 Arkansas   2020-05-19 tests.std      3083.  
-## 10 Arkansas   2020-05-19 deaths.std        3.36
-## # … with 14,726 more rows</code></pre>
+##  1 Alaska     2020-05-20 tests.std      5047.  
+##  2 Alaska     2020-05-20 deaths.std        1.36
+##  3 Alaska     2020-05-20 positive.std     54.8 
+##  4 Alaska     2020-05-20 negative.std   4992.  
+##  5 Alabama    2020-05-20 tests.std      3350.  
+##  6 Alabama    2020-05-20 deaths.std       10.5 
+##  7 Alabama    2020-05-20 positive.std    260.  
+##  8 Alabama    2020-05-20 negative.std   3091.  
+##  9 Arkansas   2020-05-20 tests.std      3167.  
+## 10 Arkansas   2020-05-20 deaths.std        3.52
+## # … with 14,934 more rows</code></pre>
 <p>Perfect. But if we want to sort our states by <code>tests.std</code> like we did above, we need to do that <em>before</em> we collapse that variable to get everything plot tidy, hence why we didn’t use <code>%&lt;&gt;%</code> above to save our new tibble.</p>
 <p>A side note, once I start making plot tidy manipulations I create a new <code>plot.data</code> tibble. That way, I have my <code>testing.data</code> tibble available for console sidebars to help me refine the information in <code>plot.data</code> according to what I want <code>ggplot2</code> to use and display. I’ve played with this enough to know that in advance so that this tutorial goes a little smoother, but it’s just a suggestion/tip that’s helped me.</p>
 <p>Eventually we will use the <code>facet_wrap()</code> command to plot each state separately in a grid. Just as a few code chunks ago, this will be alphabetical by default. If we rather want the grid to display states in descending order by their <code>tests.std</code> values, we have to make our <code>state.name</code> variable an <em>ordered</em> factor, which requires a few steps that probably seem a little convuluted, but are the sort of little things that become second nature over time.</p>
@@ -331,65 +319,62 @@ temp</code></pre>
     group_by(state.name) %&gt;%
     nest() %&gt;%
     ungroup() %&gt;%
-    mutate(ordered = 1:n())
-
-plot.data</code></pre>
+    mutate(ordered = 1:n()) %&gt;%
+    print()</code></pre>
 <pre><code>## # A tibble: 52 x 3
 ##    state.name           data              ordered
 ##    &lt;chr&gt;                &lt;list&gt;              &lt;int&gt;
-##  1 Rhode Island         &lt;tibble [71 × 5]&gt;       1
-##  2 North Dakota         &lt;tibble [71 × 5]&gt;       2
-##  3 New York             &lt;tibble [71 × 5]&gt;       3
-##  4 Massachusetts        &lt;tibble [69 × 5]&gt;       4
-##  5 New Mexico           &lt;tibble [71 × 5]&gt;       5
-##  6 Louisiana            &lt;tibble [71 × 5]&gt;       6
-##  7 New Jersey           &lt;tibble [71 × 5]&gt;       7
-##  8 District of Columbia &lt;tibble [71 × 5]&gt;       8
-##  9 Utah                 &lt;tibble [71 × 5]&gt;       9
-## 10 Connecticut          &lt;tibble [71 × 5]&gt;      10
+##  1 Rhode Island         &lt;tibble [72 × 5]&gt;       1
+##  2 North Dakota         &lt;tibble [72 × 5]&gt;       2
+##  3 New York             &lt;tibble [72 × 5]&gt;       3
+##  4 Massachusetts        &lt;tibble [70 × 5]&gt;       4
+##  5 New Mexico           &lt;tibble [72 × 5]&gt;       5
+##  6 Louisiana            &lt;tibble [72 × 5]&gt;       6
+##  7 New Jersey           &lt;tibble [72 × 5]&gt;       7
+##  8 District of Columbia &lt;tibble [72 × 5]&gt;       8
+##  9 Utah                 &lt;tibble [72 × 5]&gt;       9
+## 10 Connecticut          &lt;tibble [72 × 5]&gt;      10
 ## # … with 42 more rows</code></pre>
 <p>The last step to prepare our grid order now that we have sorted the data and assigned each state a rank is to use <code>fct_reorder()</code> to mutate <code>state.name</code> by <code>ordered</code>. Then we can unnest our tibble in place with the <code>%&lt;&gt;%</code> operator and keep going. We don’t need <code>ordered</code> any more so we can deselect it.</p>
 <pre class="r"><code>plot.data %&lt;&gt;%
     unnest(data) %&gt;%
     mutate_at(vars(state.name), ~ fct_reorder(., ordered)) %&gt;%
-    select(-ordered)
-
-plot.data</code></pre>
-<pre><code>## # A tibble: 3,684 x 6
+    select(-ordered) %&gt;%
+    print()</code></pre>
+<pre><code>## # A tibble: 3,736 x 6
 ##    state.name   date       tests.std deaths.std positive.std negative.std
 ##    &lt;fct&gt;        &lt;date&gt;         &lt;dbl&gt;      &lt;dbl&gt;        &lt;dbl&gt;        &lt;dbl&gt;
-##  1 Rhode Island 2020-05-19    11101.       50.4        1226.        9875.
-##  2 Rhode Island 2020-05-18    10925.       47.9        1211.        9713.
-##  3 Rhode Island 2020-05-17    10657.       47.2        1200.        9457.
-##  4 Rhode Island 2020-05-16    10271.       46.3        1177.        9094.
-##  5 Rhode Island 2020-05-15     9940.       45.4        1157.        8783.
-##  6 Rhode Island 2020-05-14     9620.       44.3        1138.        8482.
-##  7 Rhode Island 2020-05-13     9272.       43.7        1121.        8151.
-##  8 Rhode Island 2020-05-12     9017.       42.0        1100.        7918.
-##  9 Rhode Island 2020-05-11     8837.       40.7        1084.        7753.
-## 10 Rhode Island 2020-05-10     8636.       40.0        1067.        7569.
-## # … with 3,674 more rows</code></pre>
+##  1 Rhode Island 2020-05-20    11412.       50.9        1265.       10147.
+##  2 Rhode Island 2020-05-19    11101.       50.4        1226.        9875.
+##  3 Rhode Island 2020-05-18    10925.       47.9        1211.        9713.
+##  4 Rhode Island 2020-05-17    10657.       47.2        1200.        9457.
+##  5 Rhode Island 2020-05-16    10271.       46.3        1177.        9094.
+##  6 Rhode Island 2020-05-15     9940.       45.4        1157.        8783.
+##  7 Rhode Island 2020-05-14     9620.       44.3        1138.        8482.
+##  8 Rhode Island 2020-05-13     9272.       43.7        1121.        8151.
+##  9 Rhode Island 2020-05-12     9017.       42.0        1100.        7918.
+## 10 Rhode Island 2020-05-11     8837.       40.7        1084.        7753.
+## # … with 3,726 more rows</code></pre>
 <p>Now that we’ve taken care of ordering, we have to collapse our four testing variables and save it this time. We’ll use the same <code>pivot_longer()</code> command we did above.</p>
 <pre class="r"><code>plot.data %&lt;&gt;%
     pivot_longer(cols = -c(&#39;date&#39;,&#39;state.name&#39;),
                  names_to = &#39;std.metric&#39;,
-                 values_to = &#39;std.value&#39;)
-
-plot.data</code></pre>
-<pre><code>## # A tibble: 14,736 x 4
+                 values_to = &#39;std.value&#39;) %&gt;%
+    print()</code></pre>
+<pre><code>## # A tibble: 14,944 x 4
 ##    state.name   date       std.metric   std.value
 ##    &lt;fct&gt;        &lt;date&gt;     &lt;chr&gt;            &lt;dbl&gt;
-##  1 Rhode Island 2020-05-19 tests.std      11101. 
-##  2 Rhode Island 2020-05-19 deaths.std        50.4
-##  3 Rhode Island 2020-05-19 positive.std    1226. 
-##  4 Rhode Island 2020-05-19 negative.std    9875. 
-##  5 Rhode Island 2020-05-18 tests.std      10925. 
-##  6 Rhode Island 2020-05-18 deaths.std        47.9
-##  7 Rhode Island 2020-05-18 positive.std    1211. 
-##  8 Rhode Island 2020-05-18 negative.std    9713. 
-##  9 Rhode Island 2020-05-17 tests.std      10657. 
-## 10 Rhode Island 2020-05-17 deaths.std        47.2
-## # … with 14,726 more rows</code></pre>
+##  1 Rhode Island 2020-05-20 tests.std      11412. 
+##  2 Rhode Island 2020-05-20 deaths.std        50.9
+##  3 Rhode Island 2020-05-20 positive.std    1265. 
+##  4 Rhode Island 2020-05-20 negative.std   10147. 
+##  5 Rhode Island 2020-05-19 tests.std      11101. 
+##  6 Rhode Island 2020-05-19 deaths.std        50.4
+##  7 Rhode Island 2020-05-19 positive.std    1226. 
+##  8 Rhode Island 2020-05-19 negative.std    9875. 
+##  9 Rhode Island 2020-05-18 tests.std      10925. 
+## 10 Rhode Island 2020-05-18 deaths.std        47.9
+## # … with 14,934 more rows</code></pre>
 <p>Finally, we’ll beautify <code>plot.data</code> by reordering our <code>std.metric</code> variable to get the shapes and colors we want (I have prefigured to save time), and changing the names to be a bit more intuitive for the final plots.</p>
 <pre class="r"><code>plot.data %&lt;&gt;%
     mutate_at(vars(std.metric), ~ fct_relevel(., &#39;tests.std&#39;,&#39;negative.std&#39;,
@@ -398,23 +383,22 @@ plot.data</code></pre>
                                               `Total Test Results` = &#39;tests.std&#39;,
                                              `Negative Tests` = &#39;negative.std&#39;,
                                               `Positive Tests` = &#39;positive.std&#39;,
-                                              `Deaths` = &#39;deaths.std&#39;)) 
-    
-plot.data</code></pre>
-<pre><code>## # A tibble: 14,736 x 4
+                                              `Deaths` = &#39;deaths.std&#39;)) %&gt;%
+    print()</code></pre>
+<pre><code>## # A tibble: 14,944 x 4
 ##    state.name   date       std.metric         std.value
 ##    &lt;fct&gt;        &lt;date&gt;     &lt;fct&gt;                  &lt;dbl&gt;
-##  1 Rhode Island 2020-05-19 Total Test Results   11101. 
-##  2 Rhode Island 2020-05-19 Deaths                  50.4
-##  3 Rhode Island 2020-05-19 Positive Tests        1226. 
-##  4 Rhode Island 2020-05-19 Negative Tests        9875. 
-##  5 Rhode Island 2020-05-18 Total Test Results   10925. 
-##  6 Rhode Island 2020-05-18 Deaths                  47.9
-##  7 Rhode Island 2020-05-18 Positive Tests        1211. 
-##  8 Rhode Island 2020-05-18 Negative Tests        9713. 
-##  9 Rhode Island 2020-05-17 Total Test Results   10657. 
-## 10 Rhode Island 2020-05-17 Deaths                  47.2
-## # … with 14,726 more rows</code></pre>
+##  1 Rhode Island 2020-05-20 Total Test Results   11412. 
+##  2 Rhode Island 2020-05-20 Deaths                  50.9
+##  3 Rhode Island 2020-05-20 Positive Tests        1265. 
+##  4 Rhode Island 2020-05-20 Negative Tests       10147. 
+##  5 Rhode Island 2020-05-19 Total Test Results   11101. 
+##  6 Rhode Island 2020-05-19 Deaths                  50.4
+##  7 Rhode Island 2020-05-19 Positive Tests        1226. 
+##  8 Rhode Island 2020-05-19 Negative Tests        9875. 
+##  9 Rhode Island 2020-05-18 Total Test Results   10925. 
+## 10 Rhode Island 2020-05-18 Deaths                  47.9
+## # … with 14,934 more rows</code></pre>
 <p>We’re finally ready to plot!</p>
 <p>We’ll use <code>geom_point()</code> so that each <code>std.value</code> is plotted individually, and use our ordered <code>std.metric</code> factor created above to dictate the color and shape. Because we used the <code>lubridate</code> package earlier to parse our dates, you might have noticed from the tibble outputs that our date column was not numeric but an explicit ‘date’ type. <code>ggplot2</code> has nice built-in functions for date scales, so we’ll use <code>scale_x_date()</code> and tell it that we want to tick every third week and display the dates in ‘dd.mm’ format.</p>
 <p>If you haven’t already I encourage you to explore the <code>ggsci</code> and <code>ggpubr</code> packages which offer a lot of functionality and style options. My go-to is the <code>scale_color_futurama()</code> color palette and the <code>theme_pubclean()</code> theme from each, respectively. The theme is a minimal one that helps highlight the data trend of interest and moves the legend to the top of the plot.</p>
@@ -428,10 +412,453 @@ plot.data</code></pre>
     # fix title, axes, legends
     labs(title = &#39;COVID-19 Testing and Prognosis in US States&#39;,
          x = &#39;&#39;, y = &#39;&#39;, color = &#39;Per 100k Residents:&#39;, shape = &#39;Per 100k Residents:&#39;) +
-    theme_pubclean()
-
-testing.plot</code></pre>
-<p><img src="/posts/tidyverse-covid-19/index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+    theme_pubclean() %&gt;%
+    print()</code></pre>
+<pre><code>## List of 93
+##  $ line                      :List of 6
+##   ..$ colour       : chr &quot;black&quot;
+##   ..$ size         : num 0.545
+##   ..$ linetype     : num 1
+##   ..$ lineend      : chr &quot;butt&quot;
+##   ..$ arrow        : logi FALSE
+##   ..$ inherit.blank: logi TRUE
+##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_line&quot; &quot;element&quot;
+##  $ rect                      :List of 5
+##   ..$ fill         : chr &quot;white&quot;
+##   ..$ colour       : chr &quot;black&quot;
+##   ..$ size         : num 0.545
+##   ..$ linetype     : num 1
+##   ..$ inherit.blank: logi TRUE
+##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_rect&quot; &quot;element&quot;
+##  $ text                      :List of 11
+##   ..$ family       : chr &quot;&quot;
+##   ..$ face         : chr &quot;plain&quot;
+##   ..$ colour       : chr &quot;black&quot;
+##   ..$ size         : num 12
+##   ..$ hjust        : num 0.5
+##   ..$ vjust        : num 0.5
+##   ..$ angle        : num 0
+##   ..$ lineheight   : num 0.9
+##   ..$ margin       : &#39;margin&#39; num [1:4] 0pt 0pt 0pt 0pt
+##   .. ..- attr(*, &quot;valid.unit&quot;)= int 8
+##   .. ..- attr(*, &quot;unit&quot;)= chr &quot;pt&quot;
+##   ..$ debug        : logi FALSE
+##   ..$ inherit.blank: logi TRUE
+##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_text&quot; &quot;element&quot;
+##  $ title                     : NULL
+##  $ aspect.ratio              : NULL
+##  $ axis.title                : NULL
+##  $ axis.title.x              :List of 11
+##   ..$ family       : NULL
+##   ..$ face         : NULL
+##   ..$ colour       : NULL
+##   ..$ size         : NULL
+##   ..$ hjust        : NULL
+##   ..$ vjust        : num 1
+##   ..$ angle        : NULL
+##   ..$ lineheight   : NULL
+##   ..$ margin       : &#39;margin&#39; num [1:4] 3pt 0pt 0pt 0pt
+##   .. ..- attr(*, &quot;valid.unit&quot;)= int 8
+##   .. ..- attr(*, &quot;unit&quot;)= chr &quot;pt&quot;
+##   ..$ debug        : NULL
+##   ..$ inherit.blank: logi TRUE
+##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_text&quot; &quot;element&quot;
+##  $ axis.title.x.top          :List of 11
+##   ..$ family       : NULL
+##   ..$ face         : NULL
+##   ..$ colour       : NULL
+##   ..$ size         : NULL
+##   ..$ hjust        : NULL
+##   ..$ vjust        : num 0
+##   ..$ angle        : NULL
+##   ..$ lineheight   : NULL
+##   ..$ margin       : &#39;margin&#39; num [1:4] 0pt 0pt 3pt 0pt
+##   .. ..- attr(*, &quot;valid.unit&quot;)= int 8
+##   .. ..- attr(*, &quot;unit&quot;)= chr &quot;pt&quot;
+##   ..$ debug        : NULL
+##   ..$ inherit.blank: logi TRUE
+##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_text&quot; &quot;element&quot;
+##  $ axis.title.x.bottom       : NULL
+##  $ axis.title.y              :List of 11
+##   ..$ family       : NULL
+##   ..$ face         : NULL
+##   ..$ colour       : NULL
+##   ..$ size         : NULL
+##   ..$ hjust        : NULL
+##   ..$ vjust        : num 1
+##   ..$ angle        : num 90
+##   ..$ lineheight   : NULL
+##   ..$ margin       : &#39;margin&#39; num [1:4] 0pt 3pt 0pt 0pt
+##   .. ..- attr(*, &quot;valid.unit&quot;)= int 8
+##   .. ..- attr(*, &quot;unit&quot;)= chr &quot;pt&quot;
+##   ..$ debug        : NULL
+##   ..$ inherit.blank: logi TRUE
+##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_text&quot; &quot;element&quot;
+##  $ axis.title.y.left         : NULL
+##  $ axis.title.y.right        :List of 11
+##   ..$ family       : NULL
+##   ..$ face         : NULL
+##   ..$ colour       : NULL
+##   ..$ size         : NULL
+##   ..$ hjust        : NULL
+##   ..$ vjust        : num 0
+##   ..$ angle        : num -90
+##   ..$ lineheight   : NULL
+##   ..$ margin       : &#39;margin&#39; num [1:4] 0pt 0pt 0pt 3pt
+##   .. ..- attr(*, &quot;valid.unit&quot;)= int 8
+##   .. ..- attr(*, &quot;unit&quot;)= chr &quot;pt&quot;
+##   ..$ debug        : NULL
+##   ..$ inherit.blank: logi TRUE
+##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_text&quot; &quot;element&quot;
+##  $ axis.text                 :List of 11
+##   ..$ family       : NULL
+##   ..$ face         : NULL
+##   ..$ colour       : chr &quot;grey30&quot;
+##   ..$ size         : &#39;rel&#39; num 0.8
+##   ..$ hjust        : NULL
+##   ..$ vjust        : NULL
+##   ..$ angle        : NULL
+##   ..$ lineheight   : NULL
+##   ..$ margin       : NULL
+##   ..$ debug        : NULL
+##   ..$ inherit.blank: logi TRUE
+##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_text&quot; &quot;element&quot;
+##  $ axis.text.x               :List of 11
+##   ..$ family       : NULL
+##   ..$ face         : NULL
+##   ..$ colour       : NULL
+##   ..$ size         : NULL
+##   ..$ hjust        : NULL
+##   ..$ vjust        : num 1
+##   ..$ angle        : NULL
+##   ..$ lineheight   : NULL
+##   ..$ margin       : &#39;margin&#39; num [1:4] 2.4pt 0pt 0pt 0pt
+##   .. ..- attr(*, &quot;valid.unit&quot;)= int 8
+##   .. ..- attr(*, &quot;unit&quot;)= chr &quot;pt&quot;
+##   ..$ debug        : NULL
+##   ..$ inherit.blank: logi TRUE
+##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_text&quot; &quot;element&quot;
+##  $ axis.text.x.top           :List of 11
+##   ..$ family       : NULL
+##   ..$ face         : NULL
+##   ..$ colour       : NULL
+##   ..$ size         : NULL
+##   ..$ hjust        : NULL
+##   ..$ vjust        : num 0
+##   ..$ angle        : NULL
+##   ..$ lineheight   : NULL
+##   ..$ margin       : &#39;margin&#39; num [1:4] 0pt 0pt 2.4pt 0pt
+##   .. ..- attr(*, &quot;valid.unit&quot;)= int 8
+##   .. ..- attr(*, &quot;unit&quot;)= chr &quot;pt&quot;
+##   ..$ debug        : NULL
+##   ..$ inherit.blank: logi TRUE
+##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_text&quot; &quot;element&quot;
+##  $ axis.text.x.bottom        : NULL
+##  $ axis.text.y               :List of 11
+##   ..$ family       : NULL
+##   ..$ face         : NULL
+##   ..$ colour       : NULL
+##   ..$ size         : NULL
+##   ..$ hjust        : num 1
+##   ..$ vjust        : NULL
+##   ..$ angle        : NULL
+##   ..$ lineheight   : NULL
+##   ..$ margin       : &#39;margin&#39; num [1:4] 0pt 2.4pt 0pt 0pt
+##   .. ..- attr(*, &quot;valid.unit&quot;)= int 8
+##   .. ..- attr(*, &quot;unit&quot;)= chr &quot;pt&quot;
+##   ..$ debug        : NULL
+##   ..$ inherit.blank: logi TRUE
+##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_text&quot; &quot;element&quot;
+##  $ axis.text.y.left          : NULL
+##  $ axis.text.y.right         :List of 11
+##   ..$ family       : NULL
+##   ..$ face         : NULL
+##   ..$ colour       : NULL
+##   ..$ size         : NULL
+##   ..$ hjust        : num 0
+##   ..$ vjust        : NULL
+##   ..$ angle        : NULL
+##   ..$ lineheight   : NULL
+##   ..$ margin       : &#39;margin&#39; num [1:4] 0pt 0pt 0pt 2.4pt
+##   .. ..- attr(*, &quot;valid.unit&quot;)= int 8
+##   .. ..- attr(*, &quot;unit&quot;)= chr &quot;pt&quot;
+##   ..$ debug        : NULL
+##   ..$ inherit.blank: logi TRUE
+##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_text&quot; &quot;element&quot;
+##  $ axis.ticks                :List of 6
+##   ..$ colour       : chr &quot;grey20&quot;
+##   ..$ size         : NULL
+##   ..$ linetype     : NULL
+##   ..$ lineend      : NULL
+##   ..$ arrow        : logi FALSE
+##   ..$ inherit.blank: logi TRUE
+##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_line&quot; &quot;element&quot;
+##  $ axis.ticks.x              : NULL
+##  $ axis.ticks.x.top          : NULL
+##  $ axis.ticks.x.bottom       : NULL
+##  $ axis.ticks.y              : NULL
+##  $ axis.ticks.y.left         : NULL
+##  $ axis.ticks.y.right        : NULL
+##  $ axis.ticks.length         : &#39;unit&#39; num 3pt
+##   ..- attr(*, &quot;valid.unit&quot;)= int 8
+##   ..- attr(*, &quot;unit&quot;)= chr &quot;pt&quot;
+##  $ axis.ticks.length.x       : NULL
+##  $ axis.ticks.length.x.top   : NULL
+##  $ axis.ticks.length.x.bottom: NULL
+##  $ axis.ticks.length.y       : NULL
+##  $ axis.ticks.length.y.left  : NULL
+##  $ axis.ticks.length.y.right : NULL
+##  $ axis.line                 : list()
+##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_blank&quot; &quot;element&quot;
+##  $ axis.line.x               : NULL
+##  $ axis.line.x.top           : NULL
+##  $ axis.line.x.bottom        : NULL
+##  $ axis.line.y               : NULL
+##  $ axis.line.y.left          : NULL
+##  $ axis.line.y.right         : NULL
+##  $ legend.background         :List of 5
+##   ..$ fill         : chr &quot;white&quot;
+##   ..$ colour       : logi NA
+##   ..$ size         : NULL
+##   ..$ linetype     : NULL
+##   ..$ inherit.blank: logi FALSE
+##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_rect&quot; &quot;element&quot;
+##  $ legend.margin             : &#39;margin&#39; num [1:4] 6pt 6pt 6pt 6pt
+##   ..- attr(*, &quot;valid.unit&quot;)= int 8
+##   ..- attr(*, &quot;unit&quot;)= chr &quot;pt&quot;
+##  $ legend.spacing            : &#39;unit&#39; num 12pt
+##   ..- attr(*, &quot;valid.unit&quot;)= int 8
+##   ..- attr(*, &quot;unit&quot;)= chr &quot;pt&quot;
+##  $ legend.spacing.x          : NULL
+##  $ legend.spacing.y          : NULL
+##  $ legend.key                :List of 5
+##   ..$ fill         : chr &quot;grey95&quot;
+##   ..$ colour       : logi NA
+##   ..$ size         : NULL
+##   ..$ linetype     : NULL
+##   ..$ inherit.blank: logi TRUE
+##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_rect&quot; &quot;element&quot;
+##  $ legend.key.size           : &#39;unit&#39; num 1.2lines
+##   ..- attr(*, &quot;valid.unit&quot;)= int 3
+##   ..- attr(*, &quot;unit&quot;)= chr &quot;lines&quot;
+##  $ legend.key.height         : NULL
+##  $ legend.key.width          : NULL
+##  $ legend.text               :List of 11
+##   ..$ family       : NULL
+##   ..$ face         : NULL
+##   ..$ colour       : NULL
+##   ..$ size         : &#39;rel&#39; num 0.8
+##   ..$ hjust        : NULL
+##   ..$ vjust        : NULL
+##   ..$ angle        : NULL
+##   ..$ lineheight   : NULL
+##   ..$ margin       : NULL
+##   ..$ debug        : NULL
+##   ..$ inherit.blank: logi TRUE
+##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_text&quot; &quot;element&quot;
+##  $ legend.text.align         : NULL
+##  $ legend.title              :List of 11
+##   ..$ family       : NULL
+##   ..$ face         : NULL
+##   ..$ colour       : NULL
+##   ..$ size         : NULL
+##   ..$ hjust        : num 0
+##   ..$ vjust        : NULL
+##   ..$ angle        : NULL
+##   ..$ lineheight   : NULL
+##   ..$ margin       : NULL
+##   ..$ debug        : NULL
+##   ..$ inherit.blank: logi TRUE
+##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_text&quot; &quot;element&quot;
+##  $ legend.title.align        : NULL
+##  $ legend.position           : chr &quot;top&quot;
+##  $ legend.direction          : NULL
+##  $ legend.justification      : chr &quot;center&quot;
+##  $ legend.box                : NULL
+##  $ legend.box.just           : NULL
+##  $ legend.box.margin         : &#39;margin&#39; num [1:4] 0cm 0cm 0cm 0cm
+##   ..- attr(*, &quot;valid.unit&quot;)= int 1
+##   ..- attr(*, &quot;unit&quot;)= chr &quot;cm&quot;
+##  $ legend.box.background     : list()
+##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_blank&quot; &quot;element&quot;
+##  $ legend.box.spacing        : &#39;unit&#39; num 12pt
+##   ..- attr(*, &quot;valid.unit&quot;)= int 8
+##   ..- attr(*, &quot;unit&quot;)= chr &quot;pt&quot;
+##  $ panel.background          :List of 5
+##   ..$ fill         : chr &quot;white&quot;
+##   ..$ colour       : logi NA
+##   ..$ size         : NULL
+##   ..$ linetype     : NULL
+##   ..$ inherit.blank: logi FALSE
+##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_rect&quot; &quot;element&quot;
+##  $ panel.border              : list()
+##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_blank&quot; &quot;element&quot;
+##  $ panel.spacing             : &#39;unit&#39; num 6pt
+##   ..- attr(*, &quot;valid.unit&quot;)= int 8
+##   ..- attr(*, &quot;unit&quot;)= chr &quot;pt&quot;
+##  $ panel.spacing.x           : NULL
+##  $ panel.spacing.y           : NULL
+##  $ panel.grid                :List of 6
+##   ..$ colour       : chr &quot;white&quot;
+##   ..$ size         : NULL
+##   ..$ linetype     : NULL
+##   ..$ lineend      : NULL
+##   ..$ arrow        : logi FALSE
+##   ..$ inherit.blank: logi TRUE
+##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_line&quot; &quot;element&quot;
+##  $ panel.grid.major          : NULL
+##  $ panel.grid.minor          :List of 6
+##   ..$ colour       : NULL
+##   ..$ size         : &#39;rel&#39; num 0.5
+##   ..$ linetype     : NULL
+##   ..$ lineend      : NULL
+##   ..$ arrow        : logi FALSE
+##   ..$ inherit.blank: logi TRUE
+##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_line&quot; &quot;element&quot;
+##  $ panel.grid.major.x        : NULL
+##  $ panel.grid.major.y        :List of 6
+##   ..$ colour       : chr &quot;grey&quot;
+##   ..$ size         : NULL
+##   ..$ linetype     : chr &quot;dotted&quot;
+##   ..$ lineend      : NULL
+##   ..$ arrow        : logi FALSE
+##   ..$ inherit.blank: logi FALSE
+##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_line&quot; &quot;element&quot;
+##  $ panel.grid.minor.x        : NULL
+##  $ panel.grid.minor.y        : NULL
+##  $ panel.ontop               : logi FALSE
+##  $ plot.background           :List of 5
+##   ..$ fill         : NULL
+##   ..$ colour       : chr &quot;white&quot;
+##   ..$ size         : NULL
+##   ..$ linetype     : NULL
+##   ..$ inherit.blank: logi TRUE
+##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_rect&quot; &quot;element&quot;
+##  $ plot.title                :List of 11
+##   ..$ family       : NULL
+##   ..$ face         : NULL
+##   ..$ colour       : NULL
+##   ..$ size         : &#39;rel&#39; num 1.2
+##   ..$ hjust        : num 0
+##   ..$ vjust        : num 1
+##   ..$ angle        : NULL
+##   ..$ lineheight   : NULL
+##   ..$ margin       : &#39;margin&#39; num [1:4] 0pt 0pt 6pt 0pt
+##   .. ..- attr(*, &quot;valid.unit&quot;)= int 8
+##   .. ..- attr(*, &quot;unit&quot;)= chr &quot;pt&quot;
+##   ..$ debug        : NULL
+##   ..$ inherit.blank: logi TRUE
+##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_text&quot; &quot;element&quot;
+##  $ plot.title.position       : chr &quot;panel&quot;
+##  $ plot.subtitle             :List of 11
+##   ..$ family       : NULL
+##   ..$ face         : NULL
+##   ..$ colour       : NULL
+##   ..$ size         : NULL
+##   ..$ hjust        : num 0
+##   ..$ vjust        : num 1
+##   ..$ angle        : NULL
+##   ..$ lineheight   : NULL
+##   ..$ margin       : &#39;margin&#39; num [1:4] 0pt 0pt 6pt 0pt
+##   .. ..- attr(*, &quot;valid.unit&quot;)= int 8
+##   .. ..- attr(*, &quot;unit&quot;)= chr &quot;pt&quot;
+##   ..$ debug        : NULL
+##   ..$ inherit.blank: logi TRUE
+##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_text&quot; &quot;element&quot;
+##  $ plot.caption              :List of 11
+##   ..$ family       : NULL
+##   ..$ face         : NULL
+##   ..$ colour       : NULL
+##   ..$ size         : &#39;rel&#39; num 0.8
+##   ..$ hjust        : num 1
+##   ..$ vjust        : num 1
+##   ..$ angle        : NULL
+##   ..$ lineheight   : NULL
+##   ..$ margin       : &#39;margin&#39; num [1:4] 6pt 0pt 0pt 0pt
+##   .. ..- attr(*, &quot;valid.unit&quot;)= int 8
+##   .. ..- attr(*, &quot;unit&quot;)= chr &quot;pt&quot;
+##   ..$ debug        : NULL
+##   ..$ inherit.blank: logi TRUE
+##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_text&quot; &quot;element&quot;
+##  $ plot.caption.position     : chr &quot;panel&quot;
+##  $ plot.tag                  :List of 11
+##   ..$ family       : NULL
+##   ..$ face         : NULL
+##   ..$ colour       : NULL
+##   ..$ size         : &#39;rel&#39; num 1.2
+##   ..$ hjust        : num 0.5
+##   ..$ vjust        : num 0.5
+##   ..$ angle        : NULL
+##   ..$ lineheight   : NULL
+##   ..$ margin       : NULL
+##   ..$ debug        : NULL
+##   ..$ inherit.blank: logi TRUE
+##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_text&quot; &quot;element&quot;
+##  $ plot.tag.position         : chr &quot;topleft&quot;
+##  $ plot.margin               : &#39;margin&#39; num [1:4] 6pt 6pt 6pt 6pt
+##   ..- attr(*, &quot;valid.unit&quot;)= int 8
+##   ..- attr(*, &quot;unit&quot;)= chr &quot;pt&quot;
+##  $ strip.background          :List of 5
+##   ..$ fill         : chr &quot;grey85&quot;
+##   ..$ colour       : logi NA
+##   ..$ size         : NULL
+##   ..$ linetype     : NULL
+##   ..$ inherit.blank: logi TRUE
+##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_rect&quot; &quot;element&quot;
+##  $ strip.background.x        : NULL
+##  $ strip.background.y        : NULL
+##  $ strip.placement           : chr &quot;inside&quot;
+##  $ strip.text                :List of 11
+##   ..$ family       : NULL
+##   ..$ face         : NULL
+##   ..$ colour       : chr &quot;grey10&quot;
+##   ..$ size         : &#39;rel&#39; num 0.8
+##   ..$ hjust        : NULL
+##   ..$ vjust        : NULL
+##   ..$ angle        : NULL
+##   ..$ lineheight   : NULL
+##   ..$ margin       : &#39;margin&#39; num [1:4] 4.8pt 4.8pt 4.8pt 4.8pt
+##   .. ..- attr(*, &quot;valid.unit&quot;)= int 8
+##   .. ..- attr(*, &quot;unit&quot;)= chr &quot;pt&quot;
+##   ..$ debug        : NULL
+##   ..$ inherit.blank: logi TRUE
+##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_text&quot; &quot;element&quot;
+##  $ strip.text.x              : NULL
+##  $ strip.text.y              :List of 11
+##   ..$ family       : NULL
+##   ..$ face         : NULL
+##   ..$ colour       : NULL
+##   ..$ size         : NULL
+##   ..$ hjust        : NULL
+##   ..$ vjust        : NULL
+##   ..$ angle        : num -90
+##   ..$ lineheight   : NULL
+##   ..$ margin       : NULL
+##   ..$ debug        : NULL
+##   ..$ inherit.blank: logi TRUE
+##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_text&quot; &quot;element&quot;
+##  $ strip.switch.pad.grid     : &#39;unit&#39; num 3pt
+##   ..- attr(*, &quot;valid.unit&quot;)= int 8
+##   ..- attr(*, &quot;unit&quot;)= chr &quot;pt&quot;
+##  $ strip.switch.pad.wrap     : &#39;unit&#39; num 3pt
+##   ..- attr(*, &quot;valid.unit&quot;)= int 8
+##   ..- attr(*, &quot;unit&quot;)= chr &quot;pt&quot;
+##  $ strip.text.y.left         :List of 11
+##   ..$ family       : NULL
+##   ..$ face         : NULL
+##   ..$ colour       : NULL
+##   ..$ size         : NULL
+##   ..$ hjust        : NULL
+##   ..$ vjust        : NULL
+##   ..$ angle        : num 90
+##   ..$ lineheight   : NULL
+##   ..$ margin       : NULL
+##   ..$ debug        : NULL
+##   ..$ inherit.blank: logi TRUE
+##   ..- attr(*, &quot;class&quot;)= chr [1:2] &quot;element_text&quot; &quot;element&quot;
+##  - attr(*, &quot;class&quot;)= chr [1:2] &quot;theme&quot; &quot;gg&quot;
+##  - attr(*, &quot;complete&quot;)= logi TRUE
+##  - attr(*, &quot;validate&quot;)= logi TRUE</code></pre>
 <style type="text/css">
 img {
     display: block;
@@ -445,6 +872,13 @@ img {
 
 
 tagged:  ecrc  forslund-lab  ggplot  tidyverse  tutorial   
+        <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.2/highlight.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.2/languages/r.min.js"></script>
+
+<script>
+    hljs.configure({languages: []});
+    hljs.initHighlightingOnLoad();
+</script>
         <div class="footer">
     Powered by <a href="https://gohugo.io/">Hugo</a> and <a href="https://www.netlify.com/">Netlify</a>. 
 </div>

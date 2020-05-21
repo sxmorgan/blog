@@ -47,9 +47,8 @@ Then, let's call `read_csv()` on the complete longitudinal dataset url, which de
 ```{r states.data}
 states.data <- 'https://covidtracking.com/api/v1/states/daily.csv' %>%
     read_csv() %>%
-    select(c('state','date','positive','negative','death','total')) 
-
-states.data
+    select(c('state','date','positive','negative','death','total')) %>%
+    print()
 ```
 
 ```{r states.data.pkg, include = FALSE}
@@ -64,9 +63,8 @@ Additionally, I have downloaded the (projected) 2020 census estimates of all 50 
 ```{r states.pop}
 states.pop <- 'data/covid.us.state.population.csv' %>%
     read_csv() %>%
-    select(c('rank','State','Pop')) 
-
-states.pop
+    select(c('rank','State','Pop')) %>%
+    print()
 ```
 
 Lastly, we're going to pull another .csv directly from that website which contains state-abbreviation pairs (e.g. CA, California) that we'll use later to "beautify" our plots. The 'of' in District of Columbia in this list is capitalized incorrectly, so we'll manually `mutate()` this and apply the `str_replace()` function from the [stringr](https://stringr.tidyverse.org/) package to avoid a mismatch later. We'll also add a row for Puerto Rico, since that abbreviation is missing.
@@ -75,9 +73,8 @@ Lastly, we're going to pull another .csv directly from that website which contai
 states.abbrev <- 'https://worldpopulationreview.com/static/states/abbr-name-list.csv' %>%
     read_csv() %>%
     mutate(name = stringr::str_replace(name, 'Of', 'of')) %>%
-    add_row(name = 'Puerto Rico', abbreviation = 'PR')
-
-states.abbrev
+    add_row(name = 'Puerto Rico', abbreviation = 'PR') %>%
+    print()
 ```
 
 ## Tidy and Wrangle
@@ -160,9 +157,8 @@ testing.data %<>%
     mutate(deaths.std = death/pop.factor) %>%
     mutate(positive.std = positive/pop.factor) %>%
     mutate(negative.std = negative/pop.factor) %>%
-    select(c('state.name','date','tests.std','deaths.std','positive.std','negative.std'))
-
-testing.data
+    select(c('state.name','date','tests.std','deaths.std','positive.std','negative.std')) %>%
+    print()
 ```
 
 By default, our states are sorted alphabetically, but what if we wanted to sort them according to their testing coverage?
@@ -180,9 +176,8 @@ In order to get a better overview, we can group our row observations by state an
 temp <- testing.data %>%
     arrange(desc(tests.std)) %>%
     group_by(state.name) %>%
-    nest()
-
-temp
+    nest() %>%
+    print()
 ```
 
 The first item in our nested list-column contains a tibble for Rhode Island's data (shown below), the second item a tibble for New York, etc.  
@@ -220,9 +215,8 @@ plot.data <- testing.data %>%
     group_by(state.name) %>%
     nest() %>%
     ungroup() %>%
-    mutate(ordered = 1:n())
-
-plot.data
+    mutate(ordered = 1:n()) %>%
+    print()
 ```
 
 The last step to prepare our grid order now that we have sorted the data and assigned each state a rank is to use `fct_reorder()` to mutate `state.name` by `ordered`. Then we can unnest our tibble in place with the `%<>%` operator and keep going. We don't need `ordered` any more so we can deselect it.
@@ -231,9 +225,8 @@ The last step to prepare our grid order now that we have sorted the data and ass
 plot.data %<>%
     unnest(data) %>%
     mutate_at(vars(state.name), ~ fct_reorder(., ordered)) %>%
-    select(-ordered)
-
-plot.data
+    select(-ordered) %>%
+    print()
 ```
 
 Now that we've taken care of ordering, we have to collapse our four testing variables and save it this time. We'll use the same `pivot_longer()` command we did above.
@@ -242,9 +235,8 @@ Now that we've taken care of ordering, we have to collapse our four testing vari
 plot.data %<>%
     pivot_longer(cols = -c('date','state.name'),
                  names_to = 'std.metric',
-                 values_to = 'std.value')
-
-plot.data
+                 values_to = 'std.value') %>%
+    print()
 ```
 
 Finally, we'll beautify `plot.data` by reordering our `std.metric` variable to get the shapes and colors we want (I have prefigured to save time), and changing the names to be a bit more intuitive for the final plots.
@@ -257,9 +249,8 @@ plot.data %<>%
                                               `Total Test Results` = 'tests.std',
                                              `Negative Tests` = 'negative.std',
                                               `Positive Tests` = 'positive.std',
-                                              `Deaths` = 'deaths.std')) 
-    
-plot.data
+                                              `Deaths` = 'deaths.std')) %>%
+    print()
 ```
 
 We're finally ready to plot! 
@@ -279,9 +270,8 @@ testing.plot <- plot.data %>%
     # fix title, axes, legends
     labs(title = 'COVID-19 Testing and Prognosis in US States',
          x = '', y = '', color = 'Per 100k Residents:', shape = 'Per 100k Residents:') +
-    theme_pubclean()
-
-testing.plot
+    theme_pubclean() %>%
+    print()
 ```
 
 

@@ -11,6 +11,7 @@
     <link rel="stylesheet" href='/hugo-theme-console/css/terminal-0.7.1.min.css'>
     <link rel="stylesheet" href='/hugo-theme-console/css/animate-3.7.2.min.css'>
     <link rel="stylesheet" href='/hugo-theme-console/css/console.css'>
+    <link rel="stylesheet" href='/hugo-theme-console/css/tomorrow.css'>
     
       <!--[if lt IE 9]>
           <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
@@ -18,16 +19,8 @@
       <![endif]-->
     <link rel="icon" 
       type="image/png" 
-      href="/favicon-comp.png"><meta property="og:title" content="Gut Microbiome Diversity Visualization" />
-<meta property="og:description" content="" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="/posts/tidyverse-gut-diversity/" /><meta property="article:published_time" content="2020-05-10T00:00:00+00:00" />
-
-
-
-<meta name="twitter:title" content="Gut Microbiome Diversity Visualization"/>
-<meta name="twitter:description" content="A short workflow for generating alpha and beta diversity plots using taxonomic gut microbiome data from patients with autoimmune diseases."/>
-
+      href="/favicon-comp.png">
+    
 </head>
 <body class="terminal">
     <div class="container">
@@ -67,7 +60,6 @@
 
 <br/>
 
-  <link rel="stylesheet" href="tomorrow.css" type="text/css" />
 
 <div id="TOC">
 <ul>
@@ -90,9 +82,9 @@ library(ggpubr)</code></pre>
 <p>The abundance tables I’m going to work with were generated from raw 16S reads using <a href="https://microbiomejournal.biomedcentral.com/articles/10.1186/2049-2618-2-30">LoTuS</a> and rarefied using the <a href="https://academic.oup.com/bioinformatics/article/33/16/2594/3111845">rarefaction toolkit</a> (rtk), which calculates per-sample diversity metrics so we don’t have to do that, and I’ll just be reading in the anonymized metadata table instead.</p>
 <p>There are packages for calculating diversity indices in R from an abundance table too if that’s needed, for example <code>phyloseq</code> or <code>microbiome</code>.</p>
 <p>The richness is an OTU count (how many OTUs, here genera, in a sample), while the <a href="https://en.wiktionary.org/wiki/Shannon_entropy">Shannon entropy</a> is also informed by abundances and yields a measure of how evenly OTUs are distributed across a sample; a high Shannon entropy implies that some OTUs have similar abundance levels, while a low entropy indicates that some OTUs dominate over others. A lower Shannon diversity is frequently associated with chronic disease.</p>
-<pre class="r"><code>meta.tbl &lt;- readRDS(file = &#39;data/meta.tbl.rds&#39;)
-
-meta.tbl</code></pre>
+<pre class="r"><code>meta.tbl &lt;- &#39;data/meta.tbl.rds&#39; %&gt;%
+    readRDS() %&gt;%
+    print()</code></pre>
 <pre><code>## # A tibble: 329 x 4
 ##    Cohort Phenotype Shannon Richness
 ##    &lt;chr&gt;  &lt;chr&gt;       &lt;dbl&gt;    &lt;dbl&gt;
@@ -139,9 +131,8 @@ meta.tbl</code></pre>
                                              &#39;Control&#39;,
                                              &#39;IBD&#39;,&#39;IBD+SpA&#39;,&#39;IBD+AAU&#39;,
                                              &#39;IBD+SpA+AAU&#39;,&#39;SpA&#39;,&#39;SpA+AAU&#39;,
-                                             &#39;AAU&#39;))
-
-plot.data</code></pre>
+                                             &#39;AAU&#39;)) %&gt;%
+    print()</code></pre>
 <pre><code>## # A tibble: 329 x 4
 ##    Cohort  Phenotype Shannon Richness
 ##    &lt;fct&gt;   &lt;fct&gt;       &lt;dbl&gt;    &lt;dbl&gt;
@@ -244,9 +235,9 @@ plot.data %&gt;%
 <p>For this, I’ll read in the actual abundance table which has the Cohort variable as a label in the first column.</p>
 <!-- Additionally, a **permutational multivariate analysis of variance (PERMANOVA)** significance test can be carried out on the distance matrix to assess whether the variance explained by a given predictor (e.g. the disease phenotype) is significant or not. -->
 <!-- **NOTE:** the PERMANOVA test does not distinguish between diffferences among groups which are the result of location (a "true" difference in multivariate space) or dispersion (variance homogeneity), and significance values should be interpreted with caution. See the Assumptions section of the original method [linked here](https://onlinelibrary.wiley.com/doi/full/10.1111/j.1442-9993.2001.01070.pp.x). -->
-<pre class="r"><code>taxa.tbl &lt;- readRDS(file = &#39;data/taxa.tbl.rds&#39;)
-
-taxa.tbl</code></pre>
+<pre class="r"><code>taxa.tbl &lt;- &#39;data/taxa.tbl.rds&#39; %&gt;%
+    readRDS() %&gt;%
+    print()</code></pre>
 <pre><code>## # A tibble: 329 x 134
 ##    Cohort Acidaminococcus Actinomyces Agathobacter Akkermansia Alistipes
 ##    &lt;chr&gt;            &lt;dbl&gt;       &lt;dbl&gt;        &lt;dbl&gt;       &lt;dbl&gt;     &lt;dbl&gt;
@@ -309,9 +300,8 @@ head(taxa.dist)</code></pre>
     stats::cmdscale(k = 2) %&gt;%
     as_tibble(names_repair = &#39;check_unique&#39;) %&gt;%
     add_column(Cohort = taxa.tbl$Cohort,
-               .before = 1)
-
-taxa.pcoa</code></pre>
+               .before = 1) %&gt;%
+    print()</code></pre>
 <pre><code>## # A tibble: 329 x 3
 ##    Cohort      V1       V2
 ##    &lt;chr&gt;    &lt;dbl&gt;    &lt;dbl&gt;
@@ -336,9 +326,8 @@ taxa.pcoa</code></pre>
     mutate(V2 = map_dbl(data, ~ mean(.$V2))) %&gt;%
     # remove column of original points
     select(-data) %&gt;%
-    add_column(Pt.Type = &#39;Group Mean&#39;)
-
-pcoa.centroids</code></pre>
+    add_column(Pt.Type = &#39;Group Mean&#39;) %&gt;%
+    print()</code></pre>
 <pre><code>## # A tibble: 4 x 4
 ##   Cohort       V1       V2 Pt.Type   
 ##   &lt;chr&gt;     &lt;dbl&gt;    &lt;dbl&gt; &lt;chr&gt;     
@@ -350,9 +339,8 @@ pcoa.centroids</code></pre>
 <pre class="r"><code>plot.data &lt;- taxa.pcoa %&gt;%
     add_column(Pt.Type = &#39;Individual&#39;) %&gt;%
     bind_rows(pcoa.centroids) %&gt;%
-    mutate_at(vars(Cohort), ~ fct_relevel(., &#39;SpA&#39;,&#39;IBD&#39;,&#39;AAU&#39;,&#39;Collect&#39;)) 
-
-plot.data</code></pre>
+    mutate_at(vars(Cohort), ~ fct_relevel(., &#39;SpA&#39;,&#39;IBD&#39;,&#39;AAU&#39;,&#39;Collect&#39;)) %&gt;%
+    print()</code></pre>
 <pre><code>## # A tibble: 333 x 4
 ##    Cohort      V1       V2 Pt.Type   
 ##    &lt;fct&gt;    &lt;dbl&gt;    &lt;dbl&gt; &lt;chr&gt;     
@@ -426,6 +414,13 @@ img {
 
 
 tagged:  ecrc  forslund-lab  ggplot  gut microbiome  programming  r-stats  tidyverse  tutorial   
+        <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.2/highlight.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.0.2/languages/r.min.js"></script>
+
+<script>
+    hljs.configure({languages: []});
+    hljs.initHighlightingOnLoad();
+</script>
         <div class="footer">
     Powered by <a href="https://gohugo.io/">Hugo</a> and <a href="https://www.netlify.com/">Netlify</a>. 
 </div>
