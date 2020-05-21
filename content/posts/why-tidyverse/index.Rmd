@@ -324,7 +324,7 @@ mtcars %>%
     head()
 ```
 
-The main advantage of a list is that it can store _any_ type of object - models, plots, matrices, data frames, or other lists, but they can quickly become overwhelming to work with or explore. The reason tibbles and nesting in `tidyr` is so cool is because it **re-engineers the data frame**, which is easy to work with and keeps related things together well, to **incorporate the list's ability to store complex data types.** Furthermore, this is now the perfect structure for the tidyverse ecosystem: `dplyr` has already given us a complete toolbox for dealing with data frames, and later in the next sections I will explore the `purrr` package for dealing with lists. Like I said, a portal.
+The main advantage of a list is that it can store _any_ type of object - models, plots, matrices, data frames, or other lists, but they can quickly become overwhelming to work with or explore. The reason nesting is so clever is because it **re-engineers the data frame**, which is easy to work with and keeps related things together well, to **incorporate the list's ability to store complex data types.** Furthermore, this is now the perfect structure for the tidyverse ecosystem: `dplyr` has already given us a complete toolbox for dealing with data frames, and later I will explore the `purrr` package for dealing with lists. Like I said, a portal.
 
 <!-- This is why data frames can have variables that are numeric, character, and factor and a matrix cannot: its underlying data structure is not a list but a two-dimensional vector. -->
 
