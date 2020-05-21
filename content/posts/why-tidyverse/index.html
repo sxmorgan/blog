@@ -374,9 +374,64 @@ mtcars.nest$data[[3]]</code></pre>
 ## 13 Ford Pantera L     15.8  351    264  4.22  3.17  14.5     0     1     5     4
 ## 14 Maserati Bora      15    301    335  3.54  3.57  14.6     0     1     5     8</code></pre>
 <p>Whereas the <code>summarize()</code> function <em>transformed</em> our data, <code>nest()</code> <em>restructured</em> our data. You could generalize this to the package level and say that <code>dplyr</code> primarily transforms and <code>tidyr</code> primarily restructures. Of course, we still need to transform it in order to get the average mpg, but I want to pause here and discuss why one would want to restructure their data, in case it’s not immediately obvious.</p>
-<p>First, especially since it’s a tidyverse function and therefore built to work with tibbles, nesting is a super <strong>visually appealing and an easy way to get specific peeks into your data</strong>. This would be the basic use case. We can quickly see the number of observations/rows associated with our grouping variable, since the dimensions of the tibble are displayed, without having to calculate that specifically.</p>
-<p>More importantly though, <strong>nesting and list-columns are somewhat of a portal within the tidyverse</strong>. Up until <code>nest()</code>, we had been working with a single data structure: a tibble, a data frame. A familiar and incredibly handy structure made up of rows, columns and values. In R, a data frame is distinct from a matrix because it can hold values of different data types. In other words, the values must be numeric in a matrix, but they can be characters, factors, and/or strings in a data frame.</p>
-<p><code>tidyr</code> <strong>standardized the data frame</strong> such that all rows were observations and all columns were variables, but it also <strong>allows values to be anything</strong> - even another data frame (or a model, or an object, or a plot). This is the beauty of functional programming and the <code>purrr</code> package, and it’s actually what brought me to adopt the tidyverse. It’s absolutely brilliant because it <strong>harnesses the advantages of both data frames and lists</strong>. More on this to come in a more programming-heavy post.</p>
+<p>First, especially since it’s a tidyverse function and therefore built to work with tibbles, nesting is a super <strong>visually appealing and an easy way to get specific peeks into your data</strong>. This would be the basic use case. We can quickly see the number of observations/rows associated with our grouping variable, since the dimensions of the tibble are displayed, without having to calculate that specifically or save the nested structure.</p>
+<p>More importantly though, <strong>nesting and list-columns are somewhat of a portal within the tidyverse</strong>. Up until <code>nest()</code>, we had been working with a single data structure: a tibble, a data frame. A familiar and incredibly handy structure made up of rows, columns and values that we know how to work with. A data frame combines both of R’s two fundamental data types in that it is a <strong>list</strong> of <strong>vectors</strong> (which all have the same length). That’s why we can call <code>as.list()</code> on <code>mtcars</code> with no problem.</p>
+<pre class="r"><code>mtcars %&gt;%
+    as.list() %&gt;%
+    head()</code></pre>
+<pre><code>## $mpg
+##  [1] 21.0 21.0 22.8 21.4 18.7 18.1 14.3 24.4 22.8 19.2 17.8 16.4 17.3 15.2 10.4
+## [16] 10.4 14.7 32.4 30.4 33.9 21.5 15.5 15.2 13.3 19.2 27.3 26.0 30.4 15.8 19.7
+## [31] 15.0 21.4
+## 
+## $cyl
+##  [1] 6 6 4 6 8 6 8 4 4 6 6 8 8 8 8 8 8 4 4 4 4 8 8 8 8 4 4 4 8 6 8 4
+## 
+## $disp
+##  [1] 160.0 160.0 108.0 258.0 360.0 225.0 360.0 146.7 140.8 167.6 167.6 275.8
+## [13] 275.8 275.8 472.0 460.0 440.0  78.7  75.7  71.1 120.1 318.0 304.0 350.0
+## [25] 400.0  79.0 120.3  95.1 351.0 145.0 301.0 121.0
+## 
+## $hp
+##  [1] 110 110  93 110 175 105 245  62  95 123 123 180 180 180 205 215 230  66  52
+## [20]  65  97 150 150 245 175  66  91 113 264 175 335 109
+## 
+## $drat
+##  [1] 3.90 3.90 3.85 3.08 3.15 2.76 3.21 3.69 3.92 3.92 3.92 3.07 3.07 3.07 2.93
+## [16] 3.00 3.23 4.08 4.93 4.22 3.70 2.76 3.15 3.73 3.08 4.08 4.43 3.77 4.22 3.62
+## [31] 3.54 4.11
+## 
+## $wt
+##  [1] 2.620 2.875 2.320 3.215 3.440 3.460 3.570 3.190 3.150 3.440 3.440 4.070
+## [13] 3.730 3.780 5.250 5.424 5.345 2.200 1.615 1.835 2.465 3.520 3.435 3.840
+## [25] 3.845 1.935 2.140 1.513 3.170 2.770 3.570 2.780</code></pre>
+<p>A matrix on the other hand is <em>not</em> a list of vectors, but a two-dimensional vector, which is why it must be of the same atomic type (character, numeric, logical). We can convert <code>mtcars</code> to a matrix since all of the values are actually numeric, but when we then go to convert the matrix to a list, we lose track of our columns.</p>
+<pre class="r"><code>mtcars %&gt;%
+    as.matrix() %&gt;%
+    as.list() %&gt;%
+    head()</code></pre>
+<pre><code>## [[1]]
+## [1] 21
+## 
+## [[2]]
+## [1] 21
+## 
+## [[3]]
+## [1] 22.8
+## 
+## [[4]]
+## [1] 21.4
+## 
+## [[5]]
+## [1] 18.7
+## 
+## [[6]]
+## [1] 18.1</code></pre>
+<p>The main advantage of a list is that it can store <em>any</em> type of object - models, plots, matrices, data frames, or other lists, but they can quickly become overwhelming to work with or explore. The reason tibbles and nesting in <code>tidyr</code> is so cool is because it <strong>re-engineers the data frame</strong>, which is easy to work with and keeps related things together well, to <strong>incorporate the list’s ability to store complex data types.</strong> Furthermore, this is now the perfect structure for the tidyverse ecosystem: <code>dplyr</code> has already given us a complete toolbox for dealing with data frames, and later in the next sections I will explore the <code>purrr</code> package for dealing with lists. Like I said, a portal.</p>
+<!-- This is why data frames can have variables that are numeric, character, and factor and a matrix cannot: its underlying data structure is not a list but a two-dimensional vector. -->
+<!-- there are two basic data structures: vectors and lists. Vectors must be of the _same_ data type (i.e. numeric, character, or factor), but lists can hold _any_ data type. The reasons matrices and data frames behave differently in R is because a matrix is two-dimensional vector (still one data type), but a data frame in R is a actually a _list_ of vectors that are all the same length. -->
+<!-- familiar and incredibly handy structure made up of rows, columns and values. In R, a data frame is distinct from a matrix because it can hold varibles of multiple data types. In other words, the values must be of one type in a matrix, but they can be characters, factors, and/or strings in a data frame as long as columns are consistent. -->
+<!-- `tidyr` **standardized the data frame** such that all rows were observations and all columns were variables (and variables weren't spread across column or rownames), but it also **allows columns to be lists and values to be anything** - even another data frame (or a model, or an object, or a plot). This is the beauty of functional programming and the `purrr` package, and it's actually what brought me to adopt the tidyverse. It's absolutely brilliant because it **harnesses the advantages of both data frames and lists**. More on this to come in a more programming-heavy post. -->
 <!-- For me this is a natural place to pause because the discovery of nested list-columns was the beginning of an exponential growth phase in my interest to program - a portal. While I do hope to make programming more accessible and intuitive to everyone reading this, I recognize the primary audience will likely be split between those using R to do somewhat cut-and-dry manipulations like we've done here (perhaps to achieve simple correlations or visualizations), and those using R to do more complex and custom manipulations like modeling and simulation, and I want to respect that delineation.  -->
 <!-- As the name of this part of the tutorial suggests, much like a biological [ecosystem](#pkgs) the tidyverse works because while the entities (packages, functions) are specialized, they share common concepts (syntax, structures) that allow them to flexibly adapt to different problems (modeling, visualization). I hope those also working in biology can appreciate the metaphors as much as I do. -->
 <!-- As the [workflow](#intro) in the introduction showed, exploratory data analysis is an iterative, nonlinear process. I have tried to introduce it in a linear fashion to emphasize the tools, but in reality few tasks are as simple as these. I and many others came to R to solve messy and complex biological problems that we don't know the answer to, which require many more transformations and use of specialized packages or functions to even get to better questions most of the time. While everything that's been introduced so far still facilitates that process to some degree in my opinion, it's literally the tip of the iceberg.  -->

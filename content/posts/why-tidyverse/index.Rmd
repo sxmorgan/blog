@@ -305,11 +305,34 @@ mtcars.nest$data[[3]]
 
 Whereas the `summarize()` function _transformed_ our data, `nest()` _restructured_ our data. You could generalize this to the package level and say that `dplyr` primarily transforms and `tidyr` primarily restructures. Of course, we still need to transform it in order to get the average mpg, but I want to pause here and discuss why one would want to restructure their data, in case it's not immediately obvious. 
 
-First, especially since it's a tidyverse function and therefore built to work with tibbles, nesting is a super **visually appealing and an easy way to get specific peeks into your data**. This would be the basic use case. We can quickly see the number of observations/rows associated with our grouping variable, since the dimensions of the tibble are displayed, without having to calculate that specifically. 
+First, especially since it's a tidyverse function and therefore built to work with tibbles, nesting is a super **visually appealing and an easy way to get specific peeks into your data**. This would be the basic use case. We can quickly see the number of observations/rows associated with our grouping variable, since the dimensions of the tibble are displayed, without having to calculate that specifically or save the nested structure. 
 
-More importantly though, **nesting and list-columns are somewhat of a portal within the tidyverse**. Up until `nest()`, we had been working with a single data structure: a tibble, a data frame. A familiar and incredibly handy structure made up of rows, columns and values. In R, a data frame is distinct from a matrix because it can hold values of different data types. In other words, the values must be numeric in a matrix, but they can be characters, factors, and/or strings in a data frame.
+More importantly though, **nesting and list-columns are somewhat of a portal within the tidyverse**. Up until `nest()`, we had been working with a single data structure: a tibble, a data frame. A familiar and incredibly handy structure made up of rows, columns and values that we know how to work with. A data frame combines both of R's two fundamental data types in that it is a **list** of **vectors** (which all have the same length). That's why we can call `as.list()` on `mtcars` with no problem.
 
-`tidyr` **standardized the data frame** such that all rows were observations and all columns were variables, but it also **allows values to be anything** - even another data frame (or a model, or an object, or a plot). This is the beauty of functional programming and the `purrr` package, and it's actually what brought me to adopt the tidyverse. It's absolutely brilliant because it **harnesses the advantages of both data frames and lists**. More on this to come in a more programming-heavy post.
+```{r}
+mtcars %>%
+    as.list() %>%
+    head()
+```
+
+A matrix on the other hand is _not_ a list of vectors, but a two-dimensional vector, which is why it must be of the same atomic type (character, numeric, logical). We can convert `mtcars` to a matrix since all of the values are actually numeric, but when we then go to convert the matrix to a list, we lose track of our columns.
+
+```{r}
+mtcars %>%
+    as.matrix() %>%
+    as.list() %>%
+    head()
+```
+
+The main advantage of a list is that it can store _any_ type of object - models, plots, matrices, data frames, or other lists, but they can quickly become overwhelming to work with or explore. The reason tibbles and nesting in `tidyr` is so cool is because it **re-engineers the data frame**, which is easy to work with and keeps related things together well, to **incorporate the list's ability to store complex data types.** Furthermore, this is now the perfect structure for the tidyverse ecosystem: `dplyr` has already given us a complete toolbox for dealing with data frames, and later in the next sections I will explore the `purrr` package for dealing with lists. Like I said, a portal.
+
+<!-- This is why data frames can have variables that are numeric, character, and factor and a matrix cannot: its underlying data structure is not a list but a two-dimensional vector. -->
+
+<!-- there are two basic data structures: vectors and lists. Vectors must be of the _same_ data type (i.e. numeric, character, or factor), but lists can hold _any_ data type. The reasons matrices and data frames behave differently in R is because a matrix is two-dimensional vector (still one data type), but a data frame in R is a actually a _list_ of vectors that are all the same length. -->
+
+<!-- familiar and incredibly handy structure made up of rows, columns and values. In R, a data frame is distinct from a matrix because it can hold varibles of multiple data types. In other words, the values must be of one type in a matrix, but they can be characters, factors, and/or strings in a data frame as long as columns are consistent. -->
+
+<!-- `tidyr` **standardized the data frame** such that all rows were observations and all columns were variables (and variables weren't spread across column or rownames), but it also **allows columns to be lists and values to be anything** - even another data frame (or a model, or an object, or a plot). This is the beauty of functional programming and the `purrr` package, and it's actually what brought me to adopt the tidyverse. It's absolutely brilliant because it **harnesses the advantages of both data frames and lists**. More on this to come in a more programming-heavy post. -->
 
 <!-- For me this is a natural place to pause because the discovery of nested list-columns was the beginning of an exponential growth phase in my interest to program - a portal. While I do hope to make programming more accessible and intuitive to everyone reading this, I recognize the primary audience will likely be split between those using R to do somewhat cut-and-dry manipulations like we've done here (perhaps to achieve simple correlations or visualizations), and those using R to do more complex and custom manipulations like modeling and simulation, and I want to respect that delineation.  -->
 
