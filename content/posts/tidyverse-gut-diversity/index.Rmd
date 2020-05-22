@@ -286,7 +286,7 @@ plot.data %>%
 
 Our beta diversity analysis confirms another biological hypothesis: patients with autoimmune diseases have more similar microbiota to one another than they do to healthy controls, which is why we see the largest separation on the x-axis and the Collect samples in their own little cloud.
 
-Another visual appeal thing I got used to doing on my PCoAs when possible is including a `stat_ellipse()` around the groupings in my PCoA. All we need to do is add two lines of code and our group separation becomes a lot clearer.
+Another thing I got used to doing on my PCoAs when possible is including a `stat_ellipse()` around the groupings in my PCoA. All we need to do is add two lines of code and our group separation becomes a lot clearer.
 
 ```{r pcoa.2}
 plot.data %>%

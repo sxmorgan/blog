@@ -338,7 +338,7 @@ head(taxa.dist)</code></pre>
     theme_bw()</code></pre>
 <p><img src="/posts/tidyverse-gut-diversity/index_files/figure-html/pcoa.1-1.png" width="672" /></p>
 <p>Our beta diversity analysis confirms another biological hypothesis: patients with autoimmune diseases have more similar microbiota to one another than they do to healthy controls, which is why we see the largest separation on the x-axis and the Collect samples in their own little cloud.</p>
-<p>Another visual appeal thing I got used to doing on my PCoAs when possible is including a <code>stat_ellipse()</code> around the groupings in my PCoA. All we need to do is add two lines of code and our group separation becomes a lot clearer.</p>
+<p>Another thing I got used to doing on my PCoAs when possible is including a <code>stat_ellipse()</code> around the groupings in my PCoA. All we need to do is add two lines of code and our group separation becomes a lot clearer.</p>
 <pre class="r"><code>plot.data %&gt;%
     ggplot(aes(x = V1, y = V2)) +
     # add ellipse around cohort groups

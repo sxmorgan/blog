@@ -23,15 +23,15 @@ summary:
 
 ## Inspiration and Inception {#intro}
 
-The [tidyverse](https://www.tidyverse.org/packages/) is a set of actively developed and well-maintained R packages to facilitate the typical data analysis workflow. Most but not all of the core tidyverse packages (there are now 8) were designed by [Hadley Wickham](http://hadley.nz/), chief scientist at RStudio since 2013. His book _[R for Data Science](https://r4ds.had.co.nz/)_ is an incredible resource that is only roughly summarized in this tutorial. 
+The [tidyverse](https://www.tidyverse.org/packages/) is a set of actively developed and well-maintained R packages to facilitate the typical data analysis workflow. Most but not all of the core tidyverse packages (there are now 8) were designed by [Hadley Wickham](http://hadley.nz/), chief scientist at RStudio since 2013. His book _[R for Data Science](https://r4ds.had.co.nz/)_ is an incredible resource that is only roughly summarized in this tutorial as it's clicked and helped me in my own work. 
 
 <!-- Plenty of his talks and interviews are available on YouTube as well; [here's](https://www.youtube.com/watch?v=9YTNYT1maa4) my favorite from the [VIZBI](https://vizbi.org/) conference at EMBL last year.  -->
 
-Many R programmers who don't explicitly know what the tidyverse is have at least used `ggplot2`, and if they got their start in base R as I did, probably found it annoying because of the slightly different syntax. The inspiration behind it was to be the first open source implementation of _[The Grammar of Graphics](https://towardsdatascience.com/a-comprehensive-guide-to-the-grammar-of-graphics-for-effective-visualization-of-multi-dimensional-1f92b4ed4149)_ (hence **gg**plot), a statistical textbook from the 1980s that provided a unique way to describe a range of data visualizations succinctly. 
+Many R programmers who don't explicitly know what the tidyverse is have at least used `ggplot2`, and if they got their start in base R as I did, probably found it annoying because of the slightly different syntax. The inspiration behind it was to be the first open source implementation of _[The Grammar of Graphics](https://towardsdatascience.com/a-comprehensive-guide-to-the-grammar-of-graphics-for-effective-visualization-of-multi-dimensional-1f92b4ed4149)_ (hence **gg**plot), a statistical textbook from the 1980s that provided a unique way to describe a range of data visualizations succinctly. Hence, `ggplot2` is a graphical language embedded in a programming language.
 
-Grammar is simply an attribute of language that dictates how elements must be expressed in order to be coherent, and where human languages predominately evolve the grammar that distinguishes them functionally, programming languages are, well, programmed. `ggplot2` is a graphical language embedded in a programming language. Where in Excel points in X-Y space are called a scatterplot, in `ggplot2` the same visual element (a data point) is the basis of both scatterplots and boxplots, what differs is whether one axis is categorical or not.
+Grammar is simply an attribute of language that dictates how elements must be expressed in order to be coherent, and where human languages predominately evolve the grammar that distinguishes them functionally, programming languages are, well, programmed. Traditionally, points in X-Y space are called a scatterplot, but in `ggplot2` the same visual elements (a `geom_point()` + two axes) can be the basis of both scatterplots and boxplots - what differs is whether one axis is categorical or not.
 
-The mission of `ggplot` - getting from data to visualization more intuitively by tweaking the grammar - is what paved the way for the rest of the tidyverse. R users who have ever melted or cast a data frame might be curious to know that those packages were also Hadley's work and key milestones of the `dplyr` package in the mature tidyverse. As he puts it, very often the key to creating a visualization is about getting the data in the right form, hence the expansion into data manipulation.
+The mission of `ggplot` - getting from data to visualization more intuitively by tweaking the grammar - is what paved the way for the rest of the tidyverse. R users who have ever melted or cast a data frame might be curious to know that those packages were also Hadley's work and key milestones of the `dplyr` package in the mature tidyverse. As he puts it, very often the key to creating a visualization is about getting the data in the right form, hence the expansion into data manipulation packages.
 
 <center>
 ![](data/data.science.process.png)
@@ -42,9 +42,9 @@ I like this representation because it contains all the tasks I do as a computati
 
 ## Ecosystem {#pkgs}
 
-Much like a biological ecosystem, the tidyverse works because while the entities (packages, functions) are specialized, they share common concepts (syntax, structures), which allows them to flexibly adapt to different problems (modeling, visualization) of varying complexity. I hope other biologists can appreciate the metaphors as much as I do.
+Programming with the tidyverse is not that much like programming in base R, and I hope to make the case here that the tidyverse is not _better_ per se (although I clearly prefer it), but certainly more _coherent_ than the base R domain knowledge to carry out the same tasks. The tidyverse works because it consists of specialized entities (packages, functions) that share common concepts (syntax, structures) to help you flexibly adapt to different problems of varying complexity.
 
-Here's an overview of some of the packages we're going to discuss today and for your reference.
+Here's an overview for your reference. In this post I will start with the very basics and mostly cover tidying and manipulating now, and programming with `purrr` later. In [this post](../tidyverse-covid-19) and [this post](../tidyverse-gut-diversity) I cover transforming, cleaning, and visualizing. 
 
 <center>
 ![](data/tidy.ecosystem.png)
@@ -83,11 +83,11 @@ What's even better, 99 times out of 100 any function in R that accepts a data fr
 class(as_tibble(mtcars))
 ```
 
-On a data structural level, what differentiates tibbles from data frames and a matrices is that **tibbles cannot have rownames.** That may seem silly, but it's actually really smart. Including e.g. "SampleID" and treating it as any other column doesn't really have downsides, but it has the huge upside of never having to call `rownames()` when coding. The rowname is after all just another variable describing the data - why not treat it as such structurally.
+On a practical level, what differentiates tibbles from data frames and a matrices is that **tibbles cannot have rownames.** That may seem silly, but it's actually really smart. Including e.g. "SampleID" and treating it as any other column doesn't really have downsides, but it has the huge upside of never having to call `rownames()` when coding. The rowname is after all just another variable describing the data - why not treat it as such structurally.
 
-Importantly, as the code chunk above confirms,  **tibbles are _not_ equivalent to numeric matrices**, and need to undergo a few transformations before applying functions that require numeric matrices. This is frequently the case in my little biostatistics niche and would reasonably be considered a downside for most (including former me).
+Importantly, as the code chunk above confirms, **tibbles are _not_ equivalent to numeric matrices**, and need to undergo a few transformations before applying functions that require numeric matrices. This is frequently the case in my little biostatistics niche.
 
-The package is aware that many existing R functions work with rownames and/or matrices. There are two **key methods for interconverting between data frames/matrices and tibbles** that I use all the time: one for converting a data frame to a tibble so I can explore it (`rownames_to_column()`), and another for converting a tibble I've been working with to a data frame in order to apply an external function (`column_to_rownames()`). 
+That's definitely a downside, but it's one the package is aware of. There are two **key methods for interconverting between data frames/matrices and tibbles** that I use all the time: one for converting a data frame to a tibble so I can explore it (`rownames_to_column()`), and another for converting a tibble I've been working with to a data frame in order to apply an external function (`column_to_rownames()`). 
 
 ```{r}
 # convert data frame with rownames (mtcars) to tibble
@@ -104,7 +104,7 @@ If you're thinking, "I thought she said the tidyverse would _save_ time not _add
 
 One of the weirdest things about the tidyverse that probably deters beginners, as it did me, is its use of the **pipe** `%>%` operator. Bioinformaticians coming from other scripting and shell languages might be more comfortable thinking flexibly about operators, but it was pretty foreign to me, even as someone with a formal (albeit distantly so) programming background. I didn't know any off the top of my head except `<-` and `=`.
 
-The learning curve pays off, though. The intent of the pipe is to **make code more readable,** almost like a recipe. Remember, the whole idea of _The Grammar of Graphics_ was to break a data visualization down into raw ingredients, and this same recipe mentality is present in the `ggplot2` implementation that combines these ingredients in a structured, stepwise way using the `+` operator. The pipe however comes from the [magrittr](https://magrittr.tidyverse.org/) package, but it functions much the same by 'piping' the product of a function or calculation forward to another one. 
+The intent of the pipe is to **make code more readable,** almost like a recipe. Remember, the whole idea of _The Grammar of Graphics_ was to break a data visualization down into raw ingredients, and this same recipe mentality is present in the `ggplot2` implementation that combines these ingredients in a structured, stepwise way using the `+` operator. The pipe however comes from the [magrittr](https://magrittr.tidyverse.org/) package, but it functions much the same by 'piping' the product of a function or calculation forward to another one. 
 
 From our above example interconverting between data frames and tibbles, here's how the pipe operator would execute the same command:
 
@@ -120,7 +120,7 @@ This is the most general way the pipe is used (but not the only one); the first 
 
 In my opinion, this is not only easier to read but also a lot less frustrating when working in the console. I suspect the tidyverse developers work on Macs and aren't used to having a home/end/insert key, because cursoring around to add parentheses and whatnot without those three keys was the bane of my R existence before I started using pipes.
 
-Importantly, **the pipe only works with tibbles and data frames**, not matrices (hence why we did have to call `as.matrix()` a few code chunks ago), but its use extends far beyond the tidyverse: the pipe operator and 'piping' works for base R commands (like `nrow()`, provided it's the end command in your pipe) and functions from specialized packages that read data frames, too. 
+Its use extends far beyond the tidyverse: the pipe operator and 'piping' works for base R commands (like `nrow()`, provided it's the end command in your pipe) and functions from specialized packages that read data frames, too. 
 
 Here are two equivalent expressions calculating a Spearman correlation matrix from `mtcars`.
 
@@ -365,9 +365,9 @@ Coming soon
 <!-- For loops are not as important in R as they are in other languages because R is a functional programming language. This means that it’s possible to wrap up for loops in a function, and call that function instead of using the for loop directly. -->
 
 
-### Strings and Factors {#stringr.forcats}
+<!-- ### Strings and Factors {#stringr.forcats} -->
 
-Coming soon
+<!-- Coming soon -->
 <!-- mutate_at -->
 <!-- - stringr - str_detect with filter -->
 <!-- - forcats for factors - useful before plotting -->
