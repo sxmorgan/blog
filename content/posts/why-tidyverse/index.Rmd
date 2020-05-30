@@ -253,10 +253,7 @@ Adding the `_at()` suffix to any of the basic commands above allows me to specif
 To get an idea of the scope of the categorical variables in `mtcars.tbl`, we'll first `mutate()` the variables we suspect are factors by name, then we'll `select()` only those columns, and finally we will `summarize()` each factor variable and compress all of our observations into a summary statistic, `nlevels`.
 
 ```{r}
-mtcars.tbl %>% 
-    mutate_at(c('cyl','vs','am','gear','carb'), as.factor) %>%
-    select_if(is.factor) %>%
-    summarize_all(nlevels)
+
 ```
 
 The last two basic functions are `filter()` and `arrange()`. To introduce those with a very practical question, what if I'm only curious about the mileage for cars with 8 cylinders and 3 gears? We can start with our `mtcars.tbl` without converting any of the factors. We'll `filter()` according to `cyl`, and then `arrange()` our data by `mpg` in `desc`ending order. 
