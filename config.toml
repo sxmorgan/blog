@@ -2,7 +2,8 @@ baseurl = "/"
 title = "data+science"
 theme = "hugo-theme-console"
 languageCode = "en-us"
-ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
+ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_cache$", #"_files$",
+               "\\.knit\\.md$", "\\.utf8\\.md$"]
 
 #[permalinks]
 #  posts = "/:title/"
