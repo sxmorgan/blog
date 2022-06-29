@@ -6,10 +6,19 @@
     <description>Recent content in Posts on data&#43;science</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 10 May 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 29 Jun 2022 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>The Promise of Systems Medicine</title>
+      <link>/posts/what-is-systems-medicine/</link>
+      <pubDate>Wed, 29 Jun 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/posts/what-is-systems-medicine/</guid>
+      <description>What kinds of science are being done under this paradigm and how will it deliver a better future?</description>
+    </item>
     
     <item>
       <title>Gut Microbiome Diversity Visualization</title>

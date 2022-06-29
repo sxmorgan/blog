@@ -6,10 +6,19 @@
     <description>Recent content on data&#43;science</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 10 May 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 29 Jun 2022 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>The Promise of Systems Medicine</title>
+      <link>/posts/what-is-systems-medicine/</link>
+      <pubDate>Wed, 29 Jun 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/posts/what-is-systems-medicine/</guid>
+      <description>What kinds of science are being done under this paradigm and how will it deliver a better future?</description>
+    </item>
     
     <item>
       <title>Gut Microbiome Diversity Visualization</title>
@@ -44,7 +53,7 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/about/</guid>
-      <description>img { border-radius: 50%; width: 20em; }  I’m Morgan, a second year systems biology / bioinformatics PhD student in the Forslund Lab at the Experimental and Clinical Research Center in Berlin, Germany.
+      <description>img { border-radius: 50%; width: 20em; }  I’m Morgan, a third year computational medical science PhD student in the Forslund Lab at the Experimental and Clinical Research Center in Berlin, Germany.
 My academic background consists of a BSc in Pharmaceutical Sciences from Purdue University (2015) and a MSc in Systems Biology from Heidelberg University (2018). Though my curiosity to learn the inner workings of the human body has had the strongest influence on my professional decisions, I have nurtured a joy for programming since I first took Java in high school.</description>
     </item>
     

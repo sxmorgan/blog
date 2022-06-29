@@ -1,0 +1,26 @@
+---
+title: The Promise of Systems Medicine
+author: Morgan Essex
+date: '2022-06-29'
+slug: what-is-systems-medicine
+output:
+  blogdown::html_page:
+    fig_caption: true
+    css: tomorrow.css
+    toc: true
+    toc_depth: 3
+category: article
+tags:
+  - forslund-lab
+  - microbiome
+  - systems biology
+  - systems medicine
+summary:
+    What kinds of science are being done under this paradigm and how will it deliver a better future?
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## TBD
