@@ -69,6 +69,17 @@
       "Hash": "32e79b908fda56ee57fe518a8d37b864",
       "Requirements": []
     },
+    "RcppEigen": {
+      "Package": "RcppEigen",
+      "Version": "0.3.3.9.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "4c86baed78388ceb06f88e3e9a1d87f5",
+      "Requirements": [
+        "Matrix",
+        "Rcpp"
+      ]
+    },
     "SparseM": {
       "Package": "SparseM",
       "Version": "1.81",
@@ -183,6 +194,22 @@
         "yaml"
       ]
     },
+    "boot": {
+      "Package": "boot",
+      "Version": "1.3-28",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "0baa960e3b49c6176a4f42addcbacc59",
+      "Requirements": []
+    },
+    "brio": {
+      "Package": "brio",
+      "Version": "1.1.3",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "976cf154dfb043c012d87cddd8bca363",
+      "Requirements": []
+    },
     "broom": {
       "Package": "broom",
       "Version": "0.8.0",
@@ -237,12 +264,23 @@
       "Requirements": [
         "MASS",
         "abind",
+        "carData",
+        "lme4",
         "maptools",
         "mgcv",
         "nlme",
+        "nnet",
         "pbkrtest",
         "quantreg"
       ]
+    },
+    "carData": {
+      "Package": "carData",
+      "Version": "3.0-5",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "ac6cdb8552c61bd36b0e54d07cf2aab7",
+      "Requirements": []
     },
     "cellranger": {
       "Package": "cellranger",
@@ -271,6 +309,14 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "3f038e5ac7f41d4ac41ce658c85e3042",
+      "Requirements": []
+    },
+    "cluster": {
+      "Package": "cluster",
+      "Version": "2.1.3",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "c5f8447373ec2a0f593c694024e5b7ee",
       "Requirements": []
     },
     "colorspace": {
@@ -356,6 +402,28 @@
         "tidyselect",
         "vctrs",
         "withr"
+      ]
+    },
+    "desc": {
+      "Package": "desc",
+      "Version": "1.4.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "eebd27ee58fcc58714eedb7aa07d8ad1",
+      "Requirements": [
+        "R6",
+        "cli",
+        "rprojroot"
+      ]
+    },
+    "diffobj": {
+      "Package": "diffobj",
+      "Version": "0.3.5",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "bcaa8b95f8d7d01a5dedfd959ce88ab8",
+      "Requirements": [
+        "crayon"
       ]
     },
     "digest": {
@@ -458,6 +526,14 @@
         "rlang",
         "tibble"
       ]
+    },
+    "foreign": {
+      "Package": "foreign",
+      "Version": "0.8-82",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "32b25c97ce306a760c4d9f787991b5d9",
+      "Requirements": []
     },
     "fs": {
       "Package": "fs",
@@ -825,6 +901,24 @@
         "rlang"
       ]
     },
+    "lme4": {
+      "Package": "lme4",
+      "Version": "1.1-29",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "4f55df530bfb9fe95fc42738fa55f183",
+      "Requirements": [
+        "MASS",
+        "Matrix",
+        "Rcpp",
+        "RcppEigen",
+        "boot",
+        "lattice",
+        "minqa",
+        "nlme",
+        "nloptr"
+      ]
+    },
     "lubridate": {
       "Package": "lubridate",
       "Version": "1.8.0",
@@ -851,6 +945,7 @@
       "Repository": "CRAN",
       "Hash": "e60a1728ad29c48a3491777e0c55a07d",
       "Requirements": [
+        "foreign",
         "lattice",
         "sp"
       ]
@@ -873,6 +968,16 @@
       "Repository": "CRAN",
       "Hash": "18e9c28c1d3ca1560ce30658b22ce104",
       "Requirements": []
+    },
+    "minqa": {
+      "Package": "minqa",
+      "Version": "1.2.4",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "eaee7d2a6f3ed4491df868611cb064cc",
+      "Requirements": [
+        "Rcpp"
+      ]
     },
     "modelr": {
       "Package": "modelr",
@@ -911,6 +1016,32 @@
         "lattice"
       ]
     },
+    "nloptr": {
+      "Package": "nloptr",
+      "Version": "2.0.3",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "277c67a08f358f42b6a77826e4492f79",
+      "Requirements": [
+        "testthat"
+      ]
+    },
+    "nnet": {
+      "Package": "nnet",
+      "Version": "7.3-17",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "cb1d8d9f300a7e536b89c8a88c53f610",
+      "Requirements": []
+    },
+    "numDeriv": {
+      "Package": "numDeriv",
+      "Version": "2016.8-1.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "df58958f293b166e4ab885ebcad90e02",
+      "Requirements": []
+    },
     "openssl": {
       "Package": "openssl",
       "Version": "2.0.2",
@@ -933,7 +1064,9 @@
         "broom",
         "dplyr",
         "knitr",
-        "magrittr"
+        "lme4",
+        "magrittr",
+        "numDeriv"
       ]
     },
     "permute": {
@@ -979,9 +1112,11 @@
       "Requirements": [
         "cli",
         "crayon",
+        "desc",
         "fs",
         "glue",
         "rlang",
+        "rprojroot",
         "withr"
       ]
     },
@@ -991,6 +1126,14 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "ceb5c2a59ba33d42d051285a3e8a5118",
+      "Requirements": []
+    },
+    "praise": {
+      "Package": "praise",
+      "Version": "1.0.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "a555924add98c99d2f411e37e7d25e9f",
       "Requirements": []
     },
     "prettyunits": {
@@ -1068,7 +1211,8 @@
         "MASS",
         "Matrix",
         "MatrixModels",
-        "SparseM"
+        "SparseM",
+        "survival"
       ]
     },
     "rappdirs": {
@@ -1183,6 +1327,14 @@
         "xfun",
         "yaml"
       ]
+    },
+    "rprojroot": {
+      "Package": "rprojroot",
+      "Version": "2.0.3",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "1de7ab598047a87bba48434ba35d497d",
+      "Requirements": []
     },
     "rstatix": {
       "Package": "rstatix",
@@ -1313,6 +1465,16 @@
         "stringi"
       ]
     },
+    "survival": {
+      "Package": "survival",
+      "Version": "3.3-1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "f6189c70451d3d68e0d571235576e833",
+      "Requirements": [
+        "Matrix"
+      ]
+    },
     "sys": {
       "Package": "sys",
       "Version": "3.4",
@@ -1320,6 +1482,34 @@
       "Repository": "CRAN",
       "Hash": "b227d13e29222b4574486cfcbde077fa",
       "Requirements": []
+    },
+    "testthat": {
+      "Package": "testthat",
+      "Version": "3.1.4",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "f76c2a02d0fdc24aa7a47ea34261a6e3",
+      "Requirements": [
+        "R6",
+        "brio",
+        "callr",
+        "cli",
+        "crayon",
+        "desc",
+        "digest",
+        "ellipsis",
+        "evaluate",
+        "jsonlite",
+        "lifecycle",
+        "magrittr",
+        "pkgload",
+        "praise",
+        "processx",
+        "ps",
+        "rlang",
+        "waldo",
+        "withr"
+      ]
     },
     "tibble": {
       "Package": "tibble",
@@ -1466,6 +1656,7 @@
       "Hash": "97bfb04067dc125eb0f00fda67801898",
       "Requirements": [
         "MASS",
+        "cluster",
         "lattice",
         "mgcv",
         "permute"
@@ -1500,6 +1691,22 @@
         "tzdb",
         "vctrs",
         "withr"
+      ]
+    },
+    "waldo": {
+      "Package": "waldo",
+      "Version": "0.4.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "035fba89d0c86e2113120f93301b98ad",
+      "Requirements": [
+        "cli",
+        "diffobj",
+        "fansi",
+        "glue",
+        "rematch2",
+        "rlang",
+        "tibble"
       ]
     },
     "withr": {
