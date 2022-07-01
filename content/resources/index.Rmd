@@ -2,7 +2,15 @@
 title: "Resources"
 ---
 
-Here's where I'll eventually link to all the tagged/categorized resources I've used.
+Wirbel J, Essex M, Foslund SK, Zeller G. *Evaluation of microbiome association models under realistic and confounded conditions.* [bioRxiv](https://doi.org/10.1101/2022.05.09.491139) (2022)
 
-<img src="../megan-diddie-connected.png">
-<a href="http://www.megandiddie.com/">Work by Megan Diddie.</a>
+- SIMBA [repository](https://github.com/zellerlab/SIMBA) for the simulation code
+- BAMBI [repository](https://github.com/zellerlab/BAMBI) for the benchmarking code
+
+Essex M, Rios-Rodriguez V et al. *Spondyloarthritis, acute anterior uveitis, and Crohn's disease have both shared and distinct gut microbiota.* [medRxiv](https://doi.org/10.1101/2022.05.13.22275044) (2022)
+
+-   Public [repository](https://github.com/sxmorgan/gespic-public) with all data needed for figures and supplement
+
+[Tutorial](https://www.notion.so/Annotating-Binning-WGS-Samples-51ed82878e444f52a8ace135559b664b) to functionally profile WGS metagenomic samples
+
+<img src="../megan-diddie-connected.png"/> <a href="http://www.megandiddie.com/">Work by Megan Diddie.</a>

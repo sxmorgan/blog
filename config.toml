@@ -33,3 +33,7 @@ ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_cache$", #"_files$",
 #[markup]
 #  [markup.highlight]
 #    style = "tomorrow"
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
