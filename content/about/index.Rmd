@@ -14,9 +14,9 @@ img {
 
 My academic background consists of a BSc in Pharmaceutical Sciences from Purdue University (2015) and a MSc in Systems Biology from Heidelberg University (2018); check out my [LinkedIn](https://www.linkedin.com/in/messex/) for more detail. Though my curiosity to learn the inner workings of the human body has had the strongest influence on my professional decisions, I have nurtured a joy for programming since I first took Java in high school.
 
-I built this site during the initial covid lockdown as a place to digest and document what I was learning at the time, as a resource for my colleagues and future students in my shoes, and as a reminder to myself that I can learn and do almost anything I set my mind to. It may become something different in the future, but I do hope to document and preserve a bit more before my PhD is over.
+I built this site during the initial covid lockdown as a place to digest and document what I was learning at the time, as a resource for my colleagues and future students in my shoes, and as a reminder to myself that I can learn and do almost anything I set my mind to. It may become something different in the future, but I do hope to document and preserve a bit more of PhD journey before it is over.
 
-Data science is just a modern term for the ultimate system of inquiry that's been around much longer: empirical analysis. The name of this site, ("data _and_ science"), is a tiny homage to the pillars of this paradigm, and their interdependence. Data without the scientific method is meaningless, and the spirit of science is, or should be, continually integrating as much data as possible.
+I consider data science a modern name for the ultimate system of inquiry that's been around much longer: empirical analysis. The name of this site, ("data _and_ science"), is a tiny homage to the pillars of this paradigm and their interdependence, which I strive to think about in all areas of my life but especially my work. Data without the scientific method is meaningless, and the spirit of science is, or should be, continually integrating as much data as thoroughly as possible.
 
 You can check out some of my [code](https://github.com/sxmorgan) on GitHub, my [publications](https://scholar.google.com/citations?user=bZuOHS8AAAAJ&hl=en) on Google Scholar, or my [photography](https://cargocollective.com/messex) on Cargo.
 
